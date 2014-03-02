@@ -67,10 +67,15 @@ module.exports = function (grunt) {
     uglify: {
       dev: {
         options: {
-          beautify: true
+          beautify: true,
+          banner: '$(document).ready(function() {',
+          footer: '});',
         },
         files: {
-          'dist/app.js': 'assets/javascripts/*.js'
+          'dist/app.js': [
+            'assets/javascripts/app.js',
+            'assets/javascripts/*.js'
+          ]
         }
       },
       lib: {
