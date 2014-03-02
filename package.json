@@ -1,0 +1,22 @@
+{
+  "name": "App-test",
+  "main": "index.html",
+  "version": "0.0.1",
+  "window": {
+    "title": "App-test",
+    "icon": "assets/images/app-icon.jpg",
+    "toolbar": true,
+    "frame": true,
+    "width": 325,
+    "height": 500,
+    "resizable": false
+  },
+  "devDependencies": {
+    "grunt": "~0.4.2",
+    "grunt-contrib-compass": "~0.7.2",
+    "grunt-contrib-uglify": "~0.4.0",
+    "grunt-contrib-watch": "~0.5.3",
+    "grunt-node-webkit-builder": "~0.1.17",
+    "load-grunt-tasks": "~0.3.0"
+  }
+}
