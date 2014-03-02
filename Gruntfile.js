@@ -49,11 +49,6 @@ module.exports = function (grunt) {
     // Grunt-contrib-less
     less: {
       dev: {
-        options: {
-          sourceMap: true,
-          sourceMapFilename: 'assets/stylesheets/main.css.map',
-          sourceMapRootpath: '/'
-        },
         files: {
           'dist/app.css': 'assets/stylesheets/main.less'
         }
