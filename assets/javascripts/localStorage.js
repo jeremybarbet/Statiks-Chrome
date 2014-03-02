@@ -24,6 +24,14 @@ var saveProfile = {
     }
   },
 
+  cinqcentpx: function(data) {
+    if (localStorage) {
+      localStorage.setItem('500px_username', data.photos[0].user.username);
+
+      console.log(localStorage);
+    }
+  },
+
   github: function(data) {
     if (localStorage) {
       localStorage.setItem('github_username', data.login);

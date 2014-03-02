@@ -56,6 +56,44 @@ var api = {
 
 
 
+  cinqcentpx: function($this, _social_value, _social_site) {
+    var itemList = $('<li class="test"><div class="left"><h2>social</h2><p>Username</p></div><div class="right"><div class="nbr">1422</div><p>followers</p></div></li>')
+
+    $.getJSON('https://api.500px.com/v1/photos?feature=user&username=' + _social_value + '&consumer_key=GKHCkl4MdEE2rCFLVeIOWbYxhgk06s69xKnUzad3', function(data) {
+      console.log(data.photos[0].user.username);
+
+      var success = $('<span class="icon-check"></span>');
+
+      console.log(data.photos[0].user.username, data.photos[0].user.followers_count);
+
+      $this.find('input').blur();
+      $('.icon-error').remove();
+
+      $this.append(success);
+
+      saveProfile['cinqcentpx'](data);
+
+      // Test
+      // Add data to template
+      $('.list-social').find('ul').append(itemList);
+
+      $('.test').addClass(_social_site);
+      $('.test').find('.left h2').html('500px'); // To fix dynamically
+      $('.test').find('.left p').html(data.photos[0].user.username);
+      
+      $('.test').find('.right .nbr').html(data.photos[0].user.followers_count);
+    })
+    .fail(function() {
+      var error = $('<span class="icon-error"></span>');
+
+      $this.find('input').val('');
+      $('.icon-check').remove();
+
+      $this.append(error);
+    });
+  },
+
+
   github: function($this, _social_value, _social_site) {
     var itemList = $('<li class="test"><div class="left"><h2>social</h2><p>Username</p></div><div class="right"><div class="nbr">1422</div><p>followers</p></div></li>')
 

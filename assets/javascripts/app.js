@@ -70,7 +70,6 @@ $('.choose-social').on('click', 'li', function() {
     $('.list-social').css('display', 'block');
     $('.list-social').find('li').addClass('bounceIn');
 
-
     setTimeout(function() {
       $('.choose-social').css('display', 'none');
 
