@@ -9,13 +9,15 @@ module.exports = function (grunt) {
   };
 
   grunt.registerTask('default', [
-    'compass:dev',
+    'clean',
+    'less:dev',
     'uglify',
     'watch'
   ]);
 
   grunt.registerTask('dev', [
-    'compass:dev',
+    'clean',
+    'less:dev',
     'uglify'
   ]);
 
@@ -27,31 +29,29 @@ module.exports = function (grunt) {
   grunt.initConfig({
     config: configuration,
 
-    // Grunt-contrib-compass
-    compass: {
-      options: {
-        http_path: '/',
-        sassDir: 'assets/stylesheets/',
-        cssDir: 'dist/',
-        imagesDir: 'assets/images/',
-        javascriptsDir: 'assets/javascripts/',
-        fontsDir: 'assets/fonts/',
-        noLineComments: true,
-        force: true
+    // Grunt-contrib-clean
+    clean: {
+      dist: ['dist/']
+    },
+
+    // Grunt-contrib-less
+    less: {
+      dev: {
+        options: {
+          sourceMap: true,
+          sourceMapFilename: 'assets/stylesheets/main.css.map',
+          sourceMapRootpath: '/'
+        },
+        files: {
+          'dist/main.css': 'assets/stylesheets/main.less'
+        }
       },
       dist: {
         options: {
-          environment: 'production',
-          outputStyle: 'compressed'
-        }
-      },
-      dev: {
-        options: {
-          environment: 'development',
-          outputStyle: 'nested'
+          compress: true
         },
         files: {
-          'dist/app.css': 'assets/stylesheets/*.scss'
+          'dist/main.min.css': 'assets/stylesheets/main.less'
         }
       }
     },
@@ -99,9 +99,9 @@ module.exports = function (grunt) {
           'dist/*.js'
         ]
       },
-      compass: {
+      less: {
         files: ['assets/stylesheets/*.scss'],
-        tasks: ['compass:dev']
+        tasks: ['less:dev']
       },
       uglify: {
         files: ['assets/javascripts/*.js'],
