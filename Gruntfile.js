@@ -10,6 +10,7 @@ module.exports = function (grunt) {
 
   grunt.registerTask('default', [
     'clean',
+    'copy',
     'less:dev',
     'uglify',
     'watch'
@@ -17,6 +18,7 @@ module.exports = function (grunt) {
 
   grunt.registerTask('dev', [
     'clean',
+    'copy',
     'less:dev',
     'uglify'
   ]);
@@ -34,6 +36,16 @@ module.exports = function (grunt) {
       dist: ['dist/']
     },
 
+    // Grunt-contrib-clean
+    copy: {
+      files: {
+        expand: true,
+        flatten: true,
+        src: ['assets/fonts/*'],
+        dest: 'dist/fonts/'
+      },
+    },
+
     // Grunt-contrib-less
     less: {
       dev: {
@@ -43,7 +55,7 @@ module.exports = function (grunt) {
           sourceMapRootpath: '/'
         },
         files: {
-          'dist/main.css': 'assets/stylesheets/main.less'
+          'dist/app.css': 'assets/stylesheets/main.less'
         }
       },
       dist: {
@@ -51,7 +63,7 @@ module.exports = function (grunt) {
           compress: true
         },
         files: {
-          'dist/main.min.css': 'assets/stylesheets/main.less'
+          'dist/app.min.css': 'assets/stylesheets/main.less'
         }
       }
     },
@@ -100,7 +112,7 @@ module.exports = function (grunt) {
         ]
       },
       less: {
-        files: ['assets/stylesheets/*.scss'],
+        files: ['assets/stylesheets/*.less'],
         tasks: ['less:dev']
       },
       uglify: {
