@@ -2,6 +2,33 @@
 var gui = require('nw.gui');
 var win = gui.Window.get();
 
+$(window).load(function() {
+  // TODO - clean each reload
+  // localStorage.clear();
+  checkData();
+});
+
+function checkData() {
+  if (localStorage.getItem('dribbble') != null) {
+    console.log('storage');
+    console.log( JSON.parse(localStorage.getItem('dribbble'))[0] );
+
+    // Delete add social button
+    $('.add-social').remove();
+
+    // Display config button
+    $('.icon-settings').css('display', 'block');
+
+    // Display data on main screen
+    $('.list-social').find('ul').append(JSON.parse(localStorage.getItem('dribbble'))[1]);
+
+    // Display usernames in config screen
+    $('.choose-social').find('.dribbble span').css('marginLeft', '-240px');
+    $('.choose-social').find('.dribbble input').show();
+    $('.choose-social').find('.dribbble input').focus();
+    $('.choose-social').find('.dribbble input').val(JSON.parse(localStorage.getItem('dribbble'))[0]);
+  }
+}
 
 // Window events
 $('.win-close').on('click', function() {
@@ -72,7 +99,6 @@ $('.choose-social').on('click', 'li', function() {
 
     setTimeout(function() {
       $('.choose-social').css('display', 'none');
-
       $('.icon-settings').css('display', 'block');
     }, 300);
   }
