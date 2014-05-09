@@ -3,7 +3,8 @@ function successSocialItem($this, site, username, followers) {
 
   $this.find('input').blur();
   $('.icon-error').remove();
-  $this.append(success);
+  
+  if (!$('.icon-check').length) $this.append(success);
   
   saveProfile(site, username, followers);
 };
@@ -11,16 +12,18 @@ function successSocialItem($this, site, username, followers) {
 function failSocialItem($this, response) {
   var error = $('<span class="icon-error"></span>');
 
-  $('.alert').animate({marginTop: '41px', opacity: '1'}, 500).find('p').text(response);
+  if (response) {
+    $('.alert').animate({marginTop: '41px', opacity: '1'}, 500).find('p').text(response);
 
-  setTimeout(function() {
-    $('.alert').animate({marginTop: '-41px', opacity: '0'}, 500);
-  }, 4000);
+    setTimeout(function() {
+      $('.alert').animate({marginTop: '-41px', opacity: '0'}, 500);
+    }, 4000);    
+  }
 
   $this.find('input').val('');
   $('.icon-check').remove();
 
-  $this.append(error);
+  if (!$('.icon-error').length) $this.append(error);
 };
 
 var api = {
@@ -32,7 +35,8 @@ var api = {
       if ( username != undefined && followers != undefined ) {
         successSocialItem($this, site, username, followers);
       } else {
-        console.log('Data from API are wrong.');
+        var errorCustomMessage = 'Data from API are incorrect.';
+        failSocialItem($this, errorCustomMessage);
       }
     })
     .fail(function(response) {
@@ -66,7 +70,8 @@ var api = {
       if ( username != undefined && followers != undefined ) {
         successSocialItem($this, site, username, followers);
       } else {
-        console.log('Data from API are wrong.');
+        var errorCustomMessage = 'Data from API are incorrect.';
+        failSocialItem($this, errorCustomMessage);
       }
     })
     .fail(function(response) {
@@ -86,7 +91,8 @@ var api = {
       if ( username != undefined && followers != undefined ) {
         successSocialItem($this, site, username, followers);
       } else {
-        console.log('Data from API are wrong.');
+        var errorCustomMessage = 'Data from API are incorrect.';
+        failSocialItem($this, errorCustomMessage);
       }
     })
     .fail(function(response) {
@@ -102,7 +108,8 @@ var api = {
       if ( username != undefined && followers != undefined ) {
         successSocialItem($this, site, username, followers);
       } else {
-        console.log('Data from API are wrong.');
+        var errorCustomMessage = 'Data from API are incorrect.';
+        failSocialItem($this, errorCustomMessage);
       }
     })
     .fail(function(response) {
@@ -118,7 +125,8 @@ var api = {
       if ( username != undefined && followers != undefined ) {
         successSocialItem($this, site, username, followers);
       } else {
-        console.log('Data from API are wrong.');
+        var errorCustomMessage = 'Data from API are incorrect.';
+        failSocialItem($this, errorCustomMessage);
       }
     })
     .fail(function(response) {

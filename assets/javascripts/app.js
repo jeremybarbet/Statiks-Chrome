@@ -22,7 +22,16 @@ function checkData() {
         .find('span').css('marginLeft', '-240px')
         .parent()
         .find('input').show().focus().val(dataArray[key].username);
+
+      // Display total followers and total network connected
+      var totalFollowers;
+
+      // console.log(dataArray[key].followers);
+      // total += dataArray[key].followers;
+      // console.log(total);
     });
+
+    var totalSites = Object.keys(dataArray).length;
   }
 };
 
@@ -39,7 +48,7 @@ $('.add-social').on('click', function() {
   }, 300);
 });
 
-// To fix
+// Settings
 $('.icon-settings').on('click', function() {
   var $this = $(this);
 
@@ -90,6 +99,19 @@ $('.choose-social').on('click', 'li', function() {
       $('.icon-settings').css('display', 'block');
     }, 300);
   }
+});
+
+$(document).on('click', '.icon-error', function() {
+  var $this = $(this).parent();
+
+  $this.find('span').animate({
+    marginLeft: '0'
+  }, 400, function() {
+    $this.find('input').hide();
+    $this.find('input').blur();
+  });
+
+  $(this).remove();
 });
 
 // Check local storage on load
