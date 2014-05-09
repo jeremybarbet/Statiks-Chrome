@@ -8,6 +8,5 @@ function saveProfile(site, username, followers) {
     };
 
     localStorage.setItem('user-data', JSON.stringify(dataArray));
-    console.log(dataArray);
   }
 };

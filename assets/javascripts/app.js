@@ -1,18 +1,12 @@
-$(window).load(function() {
-  // TODO - clean each reload
-  // localStorage.clear();
-  checkData();
-});
-
 function renderData(site, username, followers) {
   var itemList = '<li class="' + site + '"><div class="left"><h2>' + site + '</h2><p>' + username + '</p></div><div class="right"><div class="nbr">' + followers + '</div><p>followers</p></div></li>';
   $('.list-social').find('ul').append(itemList);
-}
+};
 
 function checkData() {
-  dataArray = JSON.parse(localStorage.getItem('user-data'));
-
   if (localStorage.getItem('user-data') != null) {
+    dataArray = JSON.parse(localStorage.getItem('user-data'));
+
     // Delete add social button
     $('.add-social').remove();
 
@@ -30,7 +24,7 @@ function checkData() {
         .find('input').show().focus().val(dataArray[key].username);
     });
   }
-}
+};
 
 // Applications events
 $('.add-social').on('click', function() {
@@ -80,7 +74,8 @@ $('.choose-social').on('click', 'li', function() {
       var site = $this.data('social');
       var value = $this.find('input').val();
 
-      api[site]($this, value, site);
+      if ( value != '' ) api[site]($this, value, site);
+
       e.preventDefault();
     });
   } else {
@@ -95,4 +90,9 @@ $('.choose-social').on('click', 'li', function() {
       $('.icon-settings').css('display', 'block');
     }, 300);
   }
+});
+
+// Check local storage on load
+$(window).load(function() {
+  checkData();
 });
