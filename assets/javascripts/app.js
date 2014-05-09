@@ -8,10 +8,36 @@ $(window).load(function() {
   checkData();
 });
 
+function renderData() {
+  var itemList = '<li class="' + site + '"><div class="left"><h2>' + site + '</h2><p>' + username + '</p></div><div class="right"><div class="nbr">' + followers + '</div><p>followers</p></div></li>';
+  $('.list-social').find('ul').append(itemList);
+}
+
 function checkData() {
+
+  if (localStorage.getItem('userData') != null) {
+
+    console.log( JSON.parse(localStorage.getItem('userData')) );
+
+    // Site
+    console.log( JSON.parse(localStorage.getItem('userData'))[0] );
+
+    // Username
+    console.log( JSON.parse(localStorage.getItem('userData'))[0]['site']['username'] );
+
+    // Username
+    console.log( JSON.parse(localStorage.getItem('userData'))[0]['site']['followers'] );
+
+
+
+
+  }
+
+
+  /*
   if (localStorage.getItem('dribbble') != null) {
-    console.log('storage');
-    console.log( JSON.parse(localStorage.getItem('dribbble'))[0] );
+    // console.log('storage');
+    // console.log( JSON.parse(localStorage.getItem('dribbble'))[0] );
 
     // Delete add social button
     $('.add-social').remove();
@@ -28,6 +54,8 @@ function checkData() {
     $('.choose-social').find('.dribbble input').focus();
     $('.choose-social').find('.dribbble input').val(JSON.parse(localStorage.getItem('dribbble'))[0]);
   }
+  */
+
 }
 
 // Window events
@@ -84,10 +112,10 @@ $('.choose-social').on('click', 'li', function() {
     });
 
     $this.on('submit', function(e) {
-      var _social_site = $this.data('social');
-      var _social_value = $this.find('input').val();
+      var site = $this.data('social');
+      var value = $this.find('input').val();
 
-      api[_social_site]($this, _social_value, _social_site);
+      api[site]($this, value, site);
       e.preventDefault();
     });
   } else {
