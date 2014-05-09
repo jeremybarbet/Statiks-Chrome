@@ -23,10 +23,6 @@ module.exports = function (grunt) {
     'uglify'
   ]);
 
-  grunt.registerTask('deploy', [
-    'nodewebkit'
-  ]);
-
   // Initialization
   grunt.initConfig({
     config: configuration,
@@ -83,20 +79,6 @@ module.exports = function (grunt) {
           'dist/jquery-1.11.0.min.js': 'assets/javascripts/lib/jquery-1.11.0.min.js'
         }
       }
-    },
-
-    // Grunt-node-webkit-builder
-    nodewebkit: {
-      options: {
-        version: '0.9.2',
-        build_dir: './build',
-        // mac_icns: '',
-        mac: true,
-        win: false,
-        linux32: false,
-        linux64: false
-      },
-      src: './**/*'
     },
 
     // Grunt-contrib-watch
