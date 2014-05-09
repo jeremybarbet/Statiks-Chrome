@@ -1,15 +1,10 @@
 {
   "name": "statiks",
-  "main": "index.html",
-  "version": "0.0.1",
-  "window": {
-    "title": "statiks",
-    "icon": "assets/images/app-icon.jpg",
-    "toolbar": true,
-    "frame": true,
-    "width": 325,
-    "height": 500,
-    "resizable": false
+  "version": "1.0.0",
+  "author": "Jérémy Barbet <jeremgraph@gmail.com> (http://www.jeremybarbet.com)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JeremDsgn/statiks"
   },
   "devDependencies": {
     "grunt": "~0.4.2",

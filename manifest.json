@@ -1,0 +1,24 @@
+{
+  "name": "Statiks",
+  "version": "1.0.0",
+  "description": "Get the stats",
+  "author": "Jérémy Barbet",
+  "homepage_url": "http://www.jeremybarbet.com/",
+  "icons": {
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "permissions": [
+    "http://api.dribbble.com/*",
+    "https://www.behance.net/v2/users/*",
+    "https://api.500px.com/v1/*",
+    "https://api.github.com/users/*",
+    "http://vimeo.com/api/v2/*",
+    "storage"
+  ],
+  "browser_action": {
+    "default_icon": "icon.png",
+    "default_popup": "popup.html"
+  },
+  "manifest_version": 2
+}

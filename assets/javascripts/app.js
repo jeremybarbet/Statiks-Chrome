@@ -1,7 +1,3 @@
-// Global variables
-var gui = require('nw.gui');
-var win = gui.Window.get();
-
 $(window).load(function() {
   // TODO - clean each reload
   // localStorage.clear();
@@ -57,15 +53,6 @@ function checkData() {
   */
 
 }
-
-// Window events
-$('.win-close').on('click', function() {
-  win.close();
-});
-
-$('.win-minimize').on('click', function() {
-  win.minimize();
-});
 
 // Applications events
 $('.add-social').on('click', function() {
