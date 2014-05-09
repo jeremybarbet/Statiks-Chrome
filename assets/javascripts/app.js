@@ -4,37 +4,15 @@ $(window).load(function() {
   checkData();
 });
 
-function renderData() {
+function renderData(site, username, followers) {
   var itemList = '<li class="' + site + '"><div class="left"><h2>' + site + '</h2><p>' + username + '</p></div><div class="right"><div class="nbr">' + followers + '</div><p>followers</p></div></li>';
   $('.list-social').find('ul').append(itemList);
 }
 
 function checkData() {
+  dataArray = JSON.parse(localStorage.getItem('user-data'));
 
-  if (localStorage.getItem('userData') != null) {
-
-    console.log( JSON.parse(localStorage.getItem('userData')) );
-
-    // Site
-    console.log( JSON.parse(localStorage.getItem('userData'))[0] );
-
-    // Username
-    console.log( JSON.parse(localStorage.getItem('userData'))[0]['site']['username'] );
-
-    // Username
-    console.log( JSON.parse(localStorage.getItem('userData'))[0]['site']['followers'] );
-
-
-
-
-  }
-
-
-  /*
-  if (localStorage.getItem('dribbble') != null) {
-    // console.log('storage');
-    // console.log( JSON.parse(localStorage.getItem('dribbble'))[0] );
-
+  if (localStorage.getItem('user-data') != null) {
     // Delete add social button
     $('.add-social').remove();
 
@@ -42,16 +20,16 @@ function checkData() {
     $('.icon-settings').css('display', 'block');
 
     // Display data on main screen
-    $('.list-social').find('ul').append(JSON.parse(localStorage.getItem('dribbble'))[1]);
+    Object.keys(dataArray).forEach(function(key) {
+      renderData(key, dataArray[key].username, dataArray[key].followers);
 
-    // Display usernames in config screen
-    $('.choose-social').find('.dribbble span').css('marginLeft', '-240px');
-    $('.choose-social').find('.dribbble input').show();
-    $('.choose-social').find('.dribbble input').focus();
-    $('.choose-social').find('.dribbble input').val(JSON.parse(localStorage.getItem('dribbble'))[0]);
+      // Render username in config screen
+      $('.choose-social').find('.' + key)
+        .find('span').css('marginLeft', '-240px')
+        .parent()
+        .find('input').show().focus().val(dataArray[key].username);
+    });
   }
-  */
-
 }
 
 // Applications events
