@@ -68,7 +68,7 @@ header {
 
 // Main content
 .add-social {
-  margin-top: 140px;
+  padding-top: 140px;
   cursor: pointer;
   .transition(all .3s ease);
 
@@ -115,6 +115,9 @@ header {
     line-height: 105px;
     text-align: center;
     cursor: pointer;
+    .transition(all .3s ease);
+
+    .icon { font-size: 40px; }
 
     .icon-check,
     .icon-error {
@@ -158,27 +161,27 @@ header {
     }
 
     &.dribbble {
-      background-color: #ea4c89;
+      background-color: desaturate(#ea4c89, 5%);
       &:hover { background-color: darken(#ea4c89, 5%); }
     }
     &.twitter {
-      background-color: #55acee;
+      background-color: desaturate(#55acee, 5%);
       &:hover { background-color: darken(#55acee, 5%); }
     }
     &.behance {
-      background-color: #1769ff;
+      background-color: desaturate(#1769ff, 5%);
       &:hover { background-color: darken(#1769ff, 5%); }
     }
     &.cinqcentpx {
-      background-color: #222222;
+      background-color: desaturate(#222222, 5%);
       &:hover { background-color: darken(#222222, 5%); }
     }
     &.github {
-      background-color: #4183c4;
+      background-color: desaturate(#4183c4, 5%);
       &:hover { background-color: darken(#4183c4, 5%); }
     }
     &.vimeo {
-      background-color: #1ab7ea;
+      background-color: desaturate(#1ab7ea, 5%);
       &:hover { background-color: darken(#1ab7ea, 5%); }
     }
   }
