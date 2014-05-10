@@ -13,6 +13,10 @@ function checkData() {
     // Display config button
     $('.icon-settings').css('display', 'block');
 
+    // Vars
+    var totalFollowers = 0;
+    var totalSites;
+
     // Display data on main screen
     Object.keys(dataArray).forEach(function(key) {
       renderData(key, dataArray[key].username, dataArray[key].followers);
@@ -23,15 +27,13 @@ function checkData() {
         .parent()
         .find('input').show().focus().val(dataArray[key].username);
 
-      // Display total followers and total network connected
-      var totalFollowers;
-
-      // console.log(dataArray[key].followers);
-      // total += dataArray[key].followers;
-      // console.log(total);
+      // Calculate total followers
+      totalFollowers += parseInt(dataArray[key].followers);
     });
 
-    var totalSites = Object.keys(dataArray).length;
+    // Display total followers and total network connected
+    totalSites = Object.keys(dataArray).length + ((Object.keys(dataArray).length > 1) ? ' networks connected' : ' network connected');
+    renderData('total', totalSites, totalFollowers);
   }
 };
 
