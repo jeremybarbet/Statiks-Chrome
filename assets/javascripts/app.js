@@ -7,6 +7,12 @@ function checkData() {
   if (localStorage.getItem('user-data') != null) {
     dataArray = JSON.parse(localStorage.getItem('user-data'));
 
+    // Display if data
+    $('.list-social').css('display', 'block');
+
+    // Delete DOM
+    $('.list-social').find('ul').empty();
+
     // Delete add social button
     $('.add-social').remove();
 
@@ -46,6 +52,7 @@ $('.add-social').on('click', function() {
   setTimeout(function() {
     $this.css('display', 'none');
     $('.choose-social').fadeIn('400');
+    $('.choose-social').removeClass('fadeOut');
     $('.choose-social').find('li').addClass('bounceIn');
   }, 300);
 });
@@ -95,14 +102,30 @@ $('.choose-social').on('click', 'li', function() {
   } else {
     $('.choose-social').addClass('fadeOut');
 
-    $('.list-social').removeClass('fadeOut');
-    $('.list-social').css('display', 'block');
-    $('.list-social').find('li').addClass('bounceIn');
+    if ($('.list-social').find('li').length > 0) {
+      $('.list-social').removeClass('fadeOut');
+      $('.list-social').css('display', 'block');
+      $('.list-social').find('li').addClass('bounceIn');
 
-    setTimeout(function() {
-      $('.choose-social').css('display', 'none');
-      $('.icon-settings').css('display', 'block');
-    }, 300);
+      $('.choose-social').addClass('fadeOut');
+
+      console.log(dataArray);
+
+      checkData();
+
+      setTimeout(function() {
+        $('.choose-social').css('display', 'none');
+      }, 300);
+    }
+    else {
+      $('.add-social').removeClass('fadeOut');
+      $('.choose-social').addClass('fadeOut');
+
+      setTimeout(function() {
+        $('.add-social').css('display', 'block');
+        $('.choose-social').css('display', 'none');
+      }, 300);
+    }
   }
 });
 
