@@ -54,10 +54,15 @@ var api = {
       url: 'https://twitter.com/' + value, success: function(data) {
         console.log(data);
 
-        var username = value;
-        var followers = $('.follower_stats').find('.js-mini-profile-stat').html();
+        var regex = /\"followers_count\":([^\,]+)/;
+        var getF = regex.test(data);
 
-        successSocialItem($this, site, username, followers);
+        console.log(toto);
+
+        // var username = value;
+        // var followers = $('.follower_stats').find('.js-mini-profile-stat').html();
+
+        // successSocialItem($this, site, username, followers);
       }
     });
   },

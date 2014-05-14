@@ -10,6 +10,7 @@
   },
   "permissions": [
     "http://api.dribbble.com/*",
+    "https://twitter.com/*",
     "https://www.behance.net/v2/users/*",
     "https://api.500px.com/v1/*",
     "https://api.github.com/users/*",
