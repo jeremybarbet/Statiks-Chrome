@@ -1,5 +1,5 @@
 function renderData(site, username, followers) {
-  var itemList = '<li class="' + site + '"><div class="left"><h2>' + site + '</h2><p>' + username + '</p></div><div class="right"><div class="nbr">' + followers + '</div><p>followers</p></div></li>';
+  var itemList = '<li class="' + site + '"><div class="left"><h2>' +  ((site === 'cinqcentpx') ? (site = '500px') : site) + '</h2><p>' + username + '</p></div><div class="right"><div class="nbr">' + followers + '</div><p>followers</p></div></li>';
   $('.list-social').find('ul').append(itemList);
 };
 
@@ -51,6 +51,9 @@ $('.add-social').on('click', function() {
 // Settings
 $('.icon-settings').on('click', function() {
   var $this = $(this);
+
+  // Hide list social at this point
+  $('.list-social').css('display', 'none');
 
   $('.list-social').addClass('fadeOut');
   $('.choose-social').removeClass('fadeOut').fadeIn('400');

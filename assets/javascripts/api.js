@@ -79,14 +79,10 @@ var api = {
     });
   },
 
-  // API has changed FUCK IT
-  // If term = bernard no way to find the first fucking username bernard
-  // https://api.500px.com/v1/users/search?term=jeremdsgn&consumer_key=GKHCkl4MdEE2rCFLVeIOWbYxhgk06s69xKnUzad3&type=users
-
   cinqcentpx: function($this, value, site) {
-    $.getJSON('https://api.500px.com/v1/photos?feature=user&username=' + value + '&consumer_key=GKHCkl4MdEE2rCFLVeIOWbYxhgk06s69xKnUzad3', function(data, response) {
-      var username = data.photos[0].user.username;
-      var followers = data.photos[0].user.followers_count;
+    $.getJSON('https://api.500px.com/v1/users/show?username=' + value + '&consumer_key=GKHCkl4MdEE2rCFLVeIOWbYxhgk06s69xKnUzad3', function(data, response) {
+      var username = data.user.username;
+      var followers = data.user.followers_count;
 
       if ( username != undefined && followers != undefined ) {
         successSocialItem($this, site, username, followers);
