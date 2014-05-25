@@ -1,48 +1,3 @@
-function renderData(site, username, followers) {
-  var itemList = '<li class="' + site + '"><div class="left"><h2>' +  ((site === 'cinqcentpx') ? (site = '500px') : site) + '</h2><p>' + username + '</p></div><div class="right"><div class="nbr">' + followers + '</div><p>followers</p></div></li>';
-  $('.list-social').find('ul').append(itemList);
-};
-
-function checkData() {
-  if (localStorage.getItem('user-data') != null) {
-    dataArray = JSON.parse(localStorage.getItem('user-data'));
-
-    // Display if data
-    $('.list-social').css('display', 'block');
-
-    // Delete DOM
-    $('.list-social').find('ul').empty();
-
-    // Delete add social button
-    $('.add-social').remove();
-
-    // Display config button
-    $('.icon-settings').css('display', 'block');
-
-    // Vars
-    var totalFollowers = 0;
-    var totalSites;
-
-    // Display data on main screen
-    Object.keys(dataArray).forEach(function(key) {
-      renderData(key, dataArray[key].username, dataArray[key].followers);
-
-      // Render username in config screen
-      $('.choose-social').find('.' + key)
-        .find('span').css('marginLeft', '-240px')
-        .parent()
-        .find('input').show().focus().val(dataArray[key].username);
-
-      // Calculate total followers
-      totalFollowers += parseInt(dataArray[key].followers);
-    });
-
-    // Display total followers and total network connected
-    totalSites = Object.keys(dataArray).length + ((Object.keys(dataArray).length > 1) ? ' networks connected' : ' network connected');
-    renderData('total', totalSites, totalFollowers);
-  }
-};
-
 // Applications events
 $('.add-social').on('click', function() {
   var $this = $(this);
@@ -69,13 +24,17 @@ $('.icon-settings').on('click', function() {
   $('.choose-social').find('li').addClass('bounceIn');
 });
 
-// Avoid space character
-$('.choose-social').find('li input').on('keypress', function(e) {
-  if (e.which == 32) {
-    return false;
-  }
+// TODO : Update stats
+$('.icon-reload').on('click', function() {
+
 });
 
+// Avoid space character
+$('.choose-social').find('li input').on('keypress', function(e) {
+  if (e.which == 32) return false;
+});
+
+// Add username to retrieve stats
 $('.choose-social').on('click', 'li', function() {
   var $this = $(this);
   var exception = $this.data('btn');
@@ -84,6 +43,19 @@ $('.choose-social').on('click', 'li', function() {
   $('.list-social').css('display', 'none');
 
   if ( exception !== 'back' ) {
+
+    $this.find('input').focusout(function() {
+      if ( $this.find('input').val() == '' ) {
+        $this.find('span').animate({
+          marginLeft: '0'
+        }, 400, function() {
+          $this.find('input').hide();
+          $this.find('input').val('');
+          $this.find('input').blur();
+        });
+      }
+    });
+
     $this.find('span').animate({
       marginLeft: '-240px'
     }, 400, function() {
@@ -102,14 +74,13 @@ $('.choose-social').on('click', 'li', function() {
   } else {
     $('.choose-social').addClass('fadeOut');
 
-    if ($('.list-social').find('li').length > 0) {
+    if (localStorage.getItem('user-data') != null) {
       $('.list-social').removeClass('fadeOut');
       $('.list-social').css('display', 'block');
       $('.list-social').find('li').addClass('bounceIn');
 
+      $('.icon-error, .icon-check').remove();
       $('.choose-social').addClass('fadeOut');
-
-      console.log(dataArray);
 
       checkData();
 
@@ -118,6 +89,8 @@ $('.choose-social').on('click', 'li', function() {
       }, 300);
     }
     else {
+      localStorage.removeItem('user-data');
+
       $('.add-social').removeClass('fadeOut');
       $('.choose-social').addClass('fadeOut');
 
@@ -129,17 +102,38 @@ $('.choose-social').on('click', 'li', function() {
   }
 });
 
-$(document).on('click', '.icon-error', function() {
+// Check if object if empty
+function isEmpty(o) {
+  for (var i in o) {
+    if (o.hasOwnProperty(i)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+$(document).on('click', '.icon-clear', function() {
   var $this = $(this).parent();
+  var site = $this.data('social');
+
+  $this.find('input').val('');
+  $this.find('input').blur();
 
   $this.find('span').animate({
     marginLeft: '0'
   }, 400, function() {
     $this.find('input').hide();
-    $this.find('input').blur();
   });
 
   $(this).remove();
+  delete dataArray[site];
+
+  if ( isEmpty(dataArray) == true ) {
+    localStorage.removeItem('user-data');
+  } else {
+    localStorage.setItem('user-data', JSON.stringify(dataArray));
+  }
 });
 
 // Check local storage on load
