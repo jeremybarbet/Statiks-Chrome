@@ -4,6 +4,7 @@ function successSocialItem($this, site, username, followers) {
   $this.find('input').blur();
   $('.icon-error').remove();
   
+  // TO FIX
   if (!$('.icon-check').length) $this.append(success);
   
   saveProfile(site, username, followers);
@@ -23,6 +24,7 @@ function failSocialItem($this, response) {
   $this.find('input').val('');
   $('.icon-check').remove();
 
+  // TO FIX
   if (!$('.icon-error').length) $this.append(error);
 };
 
@@ -44,25 +46,18 @@ var api = {
     });
   },
 
-  /*
-   * There isn't any way to do it with the Twitter API.
-   * So let's crawl the page and get the right followers div
-   */
-
   twitter: function($this, value, site) {
     $.ajax({
       url: 'https://twitter.com/' + value, success: function(data) {
-        console.log(data);
+        data = data.replace(/&quot;/g, '"');
 
         var regex = /\"followers_count\":([^\,]+)/;
-        var getF = regex.test(data);
+        var getFollowers = data.match(regex);
 
-        console.log(toto);
+        var username = value;
+        var followers = getFollowers[1];
 
-        // var username = value;
-        // var followers = $('.follower_stats').find('.js-mini-profile-stat').html();
-
-        // successSocialItem($this, site, username, followers);
+        successSocialItem($this, site, username, followers);
       }
     });
   },
