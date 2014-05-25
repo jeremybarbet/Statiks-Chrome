@@ -145,11 +145,22 @@ header {
     .icon { font-size: 40px; }
 
     .icon-check,
-    .icon-error {
+    .icon-error,
+    .icon-clear {
       position: absolute;
       right: 15px;
       font-size: 18px;
       top: 40px;
+    }
+
+    .icon-clear {
+      border: 1px solid @white;
+      width: 18px;
+      height: 18px;
+      .transition(all .4s ease);
+      .border-radius(18px);
+
+      &:hover { .box-shadow(inset 0 0 0 4px @white); }
     }
 
     form {
@@ -265,7 +276,13 @@ header {
       }
     }
 
-    &.total { background-color: #333; }
+    &.total {
+      color: #333;
+      background-color: #f4f4f4;
+
+      p { color: #333; }
+    }
+
     &.dribbble { background-color: #ea4c89; }
     &.twitter { background-color: #55acee; }
     &.behance { background-color: #1769ff; }
