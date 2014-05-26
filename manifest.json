@@ -1,9 +1,9 @@
 {
   "name": "Statiks",
   "version": "1.0.0",
-  "description": "Get the stats",
+  "description": "Get the stats of your favorites networks.",
   "author": "Jérémy Barbet",
-  "homepage_url": "http://www.jeremybarbet.com/",
+  "homepage_url": "http://www.jeremybarbet.com",
   "icons": {
     "48": "icon48.png",
     "128": "icon128.png"
@@ -18,8 +18,11 @@
     "storage"
   ],
   "browser_action": {
-    "default_icon": "icon.png",
-    "default_popup": "popup.html"
+    "default_icon": {
+      "38": "icon38.png"
+    },
+    "default_popup": "popup.html",
+    "default_title": "Statiks"
   },
   "manifest_version": 2
 }
