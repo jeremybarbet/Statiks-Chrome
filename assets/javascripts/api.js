@@ -10,7 +10,7 @@ function successSocialItem($this, site, username, followers) {
 
     setTimeout(function() {
       $this.find('.icon-check').remove();
-    }, 2000);
+    }, 1500);
   }
   
   saveProfile(site, username, followers);
@@ -36,7 +36,7 @@ function failSocialItem($this, response) {
 
     setTimeout(function() {
       $this.find('.icon-error').remove();
-    }, 2000);
+    }, 1500);
   }
 };
 

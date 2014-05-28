@@ -21,13 +21,22 @@ function checkData() {
     dataArray = JSON.parse(localStorage.getItem('user-data'));
 
     // Display if data
+    $('.list-social').removeClass('fadeOut');
     $('.list-social').css('display', 'block');
 
     // Delete DOM
     $('.list-social').find('ul').empty();
 
     // Delete add social button
-    $('.add-social').remove();
+    $('.add-social').addClass('fadeOut');
+    $('.add-social').css('display', 'none');
+
+    // Hide choose social list
+    $('.choose-social').addClass('fadeOut');
+
+    setTimeout(function() {
+      $('.choose-social').css('display', 'none');
+    }, 300);
 
     // Display config button
     $('.icon-settings').css('display', 'block');
