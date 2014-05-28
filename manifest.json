@@ -1,4 +1,4 @@
-{
+ {
   "name": "Statiks",
   "version": "1.0.0",
   "description": "Get the stats of your favorites networks.",
@@ -9,6 +9,8 @@
     "128": "icon128.png"
   },
   "permissions": [
+    "http://fonts.googleapis.com/",
+    "https://fonts.googleapis.com/",
     "http://api.dribbble.com/*",
     "https://twitter.com/*",
     "https://www.behance.net/v2/users/*",
