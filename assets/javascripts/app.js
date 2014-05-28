@@ -50,7 +50,6 @@ $('.choose-social').on('click', 'li', function() {
         }, 400, function() {
           $this.find('input').hide();
           $this.find('input').val('');
-          $this.find('input').blur();
         });
       }
     });
