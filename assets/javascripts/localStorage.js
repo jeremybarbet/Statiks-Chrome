@@ -47,7 +47,10 @@ function checkData() {
         .find('input').show().focus().val(dataArray[key].username);
 
       var clear = $('<span class="icon-clear"></span>');
-      $('.choose-social').find('.' + key).append(clear);
+
+      if (!$('.choose-social').find('.' + key).find('.icon-clear').length) {
+        $('.choose-social').find('.' + key).append(clear);
+      }
 
       // Calculate total followers
       totalFollowers += parseInt(dataArray[key].followers);

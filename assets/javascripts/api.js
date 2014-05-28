@@ -2,10 +2,16 @@ function successSocialItem($this, site, username, followers) {
   var success = $('<span class="icon-check"></span>');
 
   $this.find('input').blur();
-  $('.icon-error').remove();
-  
-  // TO FIX
-  if (!$('.icon-check').length) $this.append(success);
+  $this.find('.icon-error').remove();
+  $this.find('.icon-clear').remove();
+
+  if (!$this.find('.icon-check').length) {
+    $this.append(success);
+
+    setTimeout(function() {
+      $this.find('.icon-check').remove();
+    }, 2000);
+  }
   
   saveProfile(site, username, followers);
 };
@@ -22,10 +28,16 @@ function failSocialItem($this, response) {
   }
 
   $this.find('input').val('');
-  $('.icon-check').remove();
+  $this.find('.icon-check').remove();
+  $this.find('.icon-clear').remove();
 
-  // TO FIX
-  if (!$('.icon-error').length) $this.append(error);
+  if (!$this.find('.icon-error').length) {
+    $this.append(error);
+
+    setTimeout(function() {
+      $this.find('.icon-error').remove();
+    }, 2000);
+  }
 };
 
 var api = {
@@ -59,6 +71,10 @@ var api = {
 
         successSocialItem($this, site, username, followers);
       }
+    })
+    .fail(function() {
+      var errorCustomMessage = 'Invalid username.';
+      failSocialItem($this, errorCustomMessage);
     });
   },
 

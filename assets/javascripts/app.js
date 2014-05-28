@@ -43,7 +43,6 @@ $('.choose-social').on('click', 'li', function() {
   $('.list-social').css('display', 'none');
 
   if ( exception !== 'back' ) {
-
     $this.find('input').focusout(function() {
       if ( $this.find('input').val() == '' ) {
         $this.find('span').animate({
