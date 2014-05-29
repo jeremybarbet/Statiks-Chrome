@@ -34,6 +34,7 @@ header {
   }
 
   // Settings btn
+  .icon-reload,
   .icon-settings {
     display: none;
     position: absolute;
@@ -45,6 +46,18 @@ header {
     transition: all .3s ease;
 
     &:hover { color: darken(#ebebeb, 40%); }
+  }
+
+  .icon-reload {
+    right: 50px;
+    font-size: 18px;
+
+    &.inprogress { .animation(loader 0.5s infinite linear); }
+
+    &:hover {
+      -webkit-transform: rotate(180deg);
+              transform: rotate(180deg);
+    }
   }
 }
 
@@ -68,6 +81,45 @@ header {
 }
 
 // Main content
+.loading {
+  padding-top: 160px;
+
+  .loader {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    margin-left: -20px;
+    width: 40px;
+    height: 40px;
+    border: 1px solid @green;
+    border-top-color: transparent;
+    border-left-color: transparent;
+    .border-radius(100%);
+    .animation(loader 1s infinite linear);
+  }
+
+  p {
+    position: relative;
+    margin-top: 45%;
+    text-align: center;
+    color: @gray;
+    font-size: 16px;
+
+    span {
+      font-family: "Droid Sans Mono", monospace;
+      font-size: 12px;
+      color: darken(@gray, 25%);
+      letter-spacing: 0.5px;
+      margin-right: 4px;
+      border: 1px solid #DDD;
+      background-color: #F8F8F8;
+      text-transform: uppercase;
+      padding: 2px 6px;
+      border-radius: 2px;
+    }
+  }
+}
+
 .add-social {
   padding-top: 160px;
   cursor: pointer;
@@ -98,6 +150,7 @@ header {
       span {
         font-family: "Droid Sans Mono", monospace;
         font-size: 12px;
+        color: darken(@gray, 25%);
         letter-spacing: 0.5px;
         margin-right: 4px;
         border: 1px solid #DDD;
@@ -266,6 +319,14 @@ header {
       p {
         font-size: 14px;
         color: fade(@white, 60%);
+
+        span {
+          font-family: "Droid Sans Mono", monospace;
+          font-size: 12px;
+          color: @white;
+          margin-right: 4px;
+          font-weight: bold;
+        }
       }
     }
 
@@ -273,7 +334,10 @@ header {
       color: #333;
       background-color: #f4f4f4;
 
-      p { color: #333; }
+      p {
+        color: #333;
+        span { color: #333; }
+      }
     }
 
     &.dribbble { background-color: #ea4c89; }
