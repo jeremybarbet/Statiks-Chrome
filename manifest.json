@@ -1,5 +1,6 @@
  {
   "name": "Statiks",
+  "short_name": "Statiks",
   "version": "1.0.0",
   "description": "Get the stats of your favorites networks.",
   "author": "Jérémy Barbet",
