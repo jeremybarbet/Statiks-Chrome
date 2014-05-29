@@ -12,15 +12,16 @@ module.exports = function (grunt) {
     'clean',
     'copy',
     'less:dev',
-    'uglify',
+    'uglify:dev',
     'watch'
   ]);
 
-  grunt.registerTask('dev', [
+  grunt.registerTask('deploy', [
     'clean',
     'copy',
-    'less:dev',
-    'uglify'
+    'less:dist',
+    'uglify:dist',
+    'zip'
   ]);
 
   // Initialization
@@ -29,24 +30,30 @@ module.exports = function (grunt) {
 
     // Grunt-contrib-clean
     clean: {
-      dist: ['dist/']
+      dist: ['dist/'],
+      zip: ['statiks.zip']
     },
 
     // Grunt-contrib-clean
     copy: {
-      files: {
-        expand: true,
-        flatten: true,
-        src: ['assets/fonts/*'],
-        dest: 'dist/fonts/'
-      },
+      dist: {
+        files: [{
+          expand: true,
+          flatten: true,
+          src: ['assets/fonts/*'],
+          dest: 'dist/fonts/'
+        },
+        {
+          'dist/jquery.min.js': 'assets/javascripts/lib/jquery.min.js'
+        }]
+      }
     },
 
     // Grunt-contrib-less
     less: {
       dev: {
         files: {
-          'dist/app.css': 'assets/stylesheets/main.less'
+          'dist/app.min.css': 'assets/stylesheets/main.less'
         }
       },
       dist: {
@@ -63,22 +70,35 @@ module.exports = function (grunt) {
     uglify: {
       dev: {
         options: {
-          beautify: true,
-          banner: '$(document).ready(function() {',
-          footer: '});',
+          beautify: true
         },
         files: {
-          'dist/app.js': [
+          'dist/app.min.js': [
             'assets/javascripts/app.js',
             'assets/javascripts/*.js'
           ]
         }
       },
-      lib: {
+      dist: {
         files: {
-          'dist/jquery-1.11.0.min.js': 'assets/javascripts/lib/jquery-1.11.0.min.js'
+          'dist/app.min.js': [
+            'assets/javascripts/app.js',
+            'assets/javascripts/*.js'
+          ]
         }
       }
+    },
+
+    zip: {
+      'statiks.zip': [
+        'popup.html',
+        'manifest.json',
+        'icon19.png',
+        'icon38.png',
+        'icon48.png',
+        'icon128.png',
+        'dist/**'
+      ]
     },
 
     // Grunt-contrib-watch
