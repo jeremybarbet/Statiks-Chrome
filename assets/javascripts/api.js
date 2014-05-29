@@ -1,3 +1,5 @@
+var dataDiff = {};
+
 function successSocialItem($this, site, username, followers) {
   var success = $('<span class="icon-check"></span>');
 
@@ -40,6 +42,33 @@ function failSocialItem($this, response) {
   }
 };
 
+function reloadData($this, site, followers) {
+  if ( dataArray[site].followers !== followers ) {
+    var diff = followers - dataArray[site].followers;
+
+    dataDiff[site] = {
+      diff: diff
+    };
+
+    // Update value of object
+    dataArray[site].followers = followers;
+
+    // Push to localstorage
+    localStorage.setItem('user-data', JSON.stringify(dataArray));
+    localStorage.setItem('user-diff', JSON.stringify(dataDiff));
+
+    // Render new data
+    $('.list-social').find('.' + site + ' .right .nbr').text(followers);
+
+    $('.list-social').find('.' + site + ' .right p span').remove();
+    $('.list-social').find('.' + site + ' .right p').prepend('<span></span>');
+    $('.list-social').find('.' + site + ' .right p span').text((diff > 0 ? '+' : '') + diff);
+
+    // Change total value
+    checkData('reload', null);
+  }
+};
+
 var api = {
   dribbble: function($this, value, site) {
     $.getJSON('http://api.dribbble.com/' + value, function(data) {
@@ -47,7 +76,11 @@ var api = {
       var followers = data.followers_count;
 
       if ( username != undefined && followers != undefined ) {
-        successSocialItem($this, site, username, followers);
+        if ( $this === 'reload' ) {
+          reloadData($this, site, followers);
+        } else {
+          successSocialItem($this, site, username, followers);
+        }
       } else {
         var errorCustomMessage = 'Data from API are incorrect.';
         failSocialItem($this, errorCustomMessage);
@@ -69,7 +102,11 @@ var api = {
         var username = value;
         var followers = getFollowers[1];
 
-        successSocialItem($this, site, username, followers);
+        if ( $this === 'reload' ) {
+          reloadData($this, site, followers);
+        } else {
+          successSocialItem($this, site, username, followers);
+        }
       }
     })
     .fail(function() {
@@ -84,7 +121,11 @@ var api = {
       var followers = data.user.stats.followers;
 
       if ( username != undefined && followers != undefined ) {
-        successSocialItem($this, site, username, followers);
+        if ( $this === 'reload' ) {
+          reloadData($this, site, followers);
+        } else {
+          successSocialItem($this, site, username, followers);
+        }
       } else {
         var errorCustomMessage = 'Data from API are incorrect.';
         failSocialItem($this, errorCustomMessage);
@@ -101,7 +142,11 @@ var api = {
       var followers = data.user.followers_count;
 
       if ( username != undefined && followers != undefined ) {
-        successSocialItem($this, site, username, followers);
+        if ( $this === 'reload' ) {
+          reloadData($this, site, followers);
+        } else {
+          successSocialItem($this, site, username, followers);
+        }
       } else {
         var errorCustomMessage = 'Data from API are incorrect.';
         failSocialItem($this, errorCustomMessage);
@@ -118,7 +163,11 @@ var api = {
       var followers = data.followers;
 
       if ( username != undefined && followers != undefined ) {
-        successSocialItem($this, site, username, followers);
+        if ( $this === 'reload' ) {
+          reloadData($this, site, followers);
+        } else {
+          successSocialItem($this, site, username, followers);
+        }
       } else {
         var errorCustomMessage = 'Data from API are incorrect.';
         failSocialItem($this, errorCustomMessage);
@@ -135,7 +184,11 @@ var api = {
       var followers = data.total_contacts;
 
       if ( username != undefined && followers != undefined ) {
-        successSocialItem($this, site, username, followers);
+        if ( $this === 'reload' ) {
+          reloadData($this, site, followers);
+        } else {
+          successSocialItem($this, site, username, followers);
+        }
       } else {
         var errorCustomMessage = 'Data from API are incorrect.';
         failSocialItem($this, errorCustomMessage);
