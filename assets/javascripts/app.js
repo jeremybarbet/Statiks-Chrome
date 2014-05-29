@@ -24,9 +24,16 @@ $('.icon-settings').on('click', function() {
   $('.choose-social').find('li').addClass('bounceIn');
 });
 
-// TODO : Update stats
 $('.icon-reload').on('click', function() {
+  $(this).addClass('inprogress');
 
+  Object.keys(dataArray).forEach(function(key) {
+    api[key]('reload', dataArray[key].username, key);
+  });
+
+  $(document).ajaxStop(function() {
+    $('.icon-reload').removeClass('inprogress');
+  });
 });
 
 // Avoid space character
@@ -83,16 +90,14 @@ $('.choose-social').on('click', '.btn-back', function() {
       $('.choose-social').css('display', 'none');
     }, 300);
   } else {
-    checkData();
+    checkData(null, 'clear');
   }
 });
 
 // Check if object if empty
 function isEmpty(o) {
   for (var i in o) {
-    if (o.hasOwnProperty(i)) {
-      return false;
-    }
+    if (o.hasOwnProperty(i)) return false;
   }
 
   return true;
@@ -123,5 +128,20 @@ $(document).on('click', '.icon-clear', function() {
 
 // Check local storage on load
 $(window).load(function() {
+  if (localStorage.getItem('user-data') != null) {
+    // Change new followers value on loading screen
+    dataDiff = JSON.parse(localStorage.getItem('user-diff'));
+
+    var totalDiff = 0;
+
+    Object.keys(dataDiff).forEach(function(key) {
+      totalDiff += parseInt(dataDiff[key].diff);
+    });
+
+    $('.loading').find('p span').text((totalDiff > 0 ? '+' : '') + totalDiff)
+  } else {
+    $('.loading').hide();
+  }
+
   checkData();
 });

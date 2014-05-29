@@ -16,57 +16,96 @@ function renderData(site, username, followers) {
   $('.list-social').find('ul').append(itemList);
 };
 
-function checkData() {
-  if (localStorage.getItem('user-data') != null) {
+function initData() {
+  $('.loading').hide();
+
+  // Display if data
+  $('.list-social').removeClass('fadeOut');
+  $('.list-social').show();
+
+  // Delete DOM
+  $('.list-social').find('ul').empty();
+
+  // Hide choose social list
+  $('.choose-social').addClass('fadeOut');
+
+  setTimeout(function() {
+    $('.choose-social').hide();
+  }, 300);
+
+  // Display parameters button
+  $('.icon-settings, .icon-reload').show();
+
+  // Vars
+  var totalFollowers = 0;
+  var totalSites;
+
+  // Display data on main screen
+  Object.keys(dataArray).forEach(function(key) {
+    renderData(key, dataArray[key].username, dataArray[key].followers);
+
+    // Render username in config screen
+    $('.choose-social').find('.' + key)
+      .find('span').css('marginLeft', '-240px')
+      .parent()
+      .find('input').show().focus().val(dataArray[key].username);
+
+    var clear = $('<span class="icon-clear"></span>');
+
+    if (!$('.choose-social').find('.' + key).find('.icon-clear').length) {
+      $('.choose-social').find('.' + key).append(clear);
+    }
+
+    // Calculate total followers
+    totalFollowers += parseInt(dataArray[key].followers);
+  });
+
+  // Display total followers and total network connected
+  totalSites = Object.keys(dataArray).length + ((Object.keys(dataArray).length > 1) ? ' networks connected' : ' network connected');
+  renderData('total', totalSites, totalFollowers);
+};
+
+function checkData(param, timer) {
+  if (localStorage.getItem('user-data') != null && param !== 'reload') {
     dataArray = JSON.parse(localStorage.getItem('user-data'));
-
-    // Display if data
-    $('.list-social').removeClass('fadeOut');
-    $('.list-social').css('display', 'block');
-
-    // Delete DOM
-    $('.list-social').find('ul').empty();
 
     // Delete add social button
     $('.add-social').addClass('fadeOut');
-    $('.add-social').css('display', 'none');
+    $('.add-social').hide();
 
-    // Hide choose social list
-    $('.choose-social').addClass('fadeOut');
-
+    // Loading
     setTimeout(function() {
-      $('.choose-social').css('display', 'none');
-    }, 300);
+      $('.loading').fadeOut();
+    }, 1500);
 
-    // Display config button
-    $('.icon-settings').css('display', 'block');
+    // Show data after loading or back btn action
+    if (timer == 'clear') {
+      initData();
+    } else {
+      var timer = setTimeout(function() {
+        initData();
+      }, 2000);
+    }
+  } else if (localStorage.getItem('user-data') != null) {
+    dataArray = JSON.parse(localStorage.getItem('user-data'));
+    dataDiff = JSON.parse(localStorage.getItem('user-diff'));
 
-    // Vars
     var totalFollowers = 0;
-    var totalSites;
+    var totalDiff = 0;
 
-    // Display data on main screen
     Object.keys(dataArray).forEach(function(key) {
-      renderData(key, dataArray[key].username, dataArray[key].followers);
-
-      // Render username in config screen
-      $('.choose-social').find('.' + key)
-        .find('span').css('marginLeft', '-240px')
-        .parent()
-        .find('input').show().focus().val(dataArray[key].username);
-
-      var clear = $('<span class="icon-clear"></span>');
-
-      if (!$('.choose-social').find('.' + key).find('.icon-clear').length) {
-        $('.choose-social').find('.' + key).append(clear);
-      }
-
-      // Calculate total followers
       totalFollowers += parseInt(dataArray[key].followers);
     });
 
-    // Display total followers and total network connected
-    totalSites = Object.keys(dataArray).length + ((Object.keys(dataArray).length > 1) ? ' networks connected' : ' network connected');
-    renderData('total', totalSites, totalFollowers);
+    Object.keys(dataDiff).forEach(function(key) {
+      totalDiff += parseInt(dataDiff[key].diff);
+    });
+
+    // Render new data
+    $('.total').find('.right .nbr').text(totalFollowers);
+
+    $('.total').find('.right p span').remove();
+    $('.total').find('.right p').prepend('<span></span>');
+    if (dataDiff != null) $('.total').find('.right p span').text((totalDiff > 0 ? '+' : '') + totalDiff);
   }
 };
