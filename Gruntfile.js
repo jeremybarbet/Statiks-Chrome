@@ -45,6 +45,9 @@ module.exports = function (grunt) {
         },
         {
           'dist/jquery.min.js': 'assets/javascripts/lib/jquery.min.js'
+        },
+        {
+          'dist/popup.js': 'assets/javascripts/popup.js'
         }]
       }
     },
