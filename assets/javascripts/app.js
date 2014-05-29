@@ -129,16 +129,21 @@ $(document).on('click', '.icon-clear', function() {
 // Check local storage on load
 $(window).load(function() {
   if (localStorage.getItem('user-data') != null) {
-    // Change new followers value on loading screen
-    dataDiff = JSON.parse(localStorage.getItem('user-diff'));
+    if (localStorage.getItem('user-diff') != null) {
+      // Change new followers value on loading screen
+      dataDiff = JSON.parse(localStorage.getItem('user-diff'));
 
-    var totalDiff = 0;
+      var totalDiff = 0;
 
-    Object.keys(dataDiff).forEach(function(key) {
-      totalDiff += parseInt(dataDiff[key].diff);
-    });
+      Object.keys(dataDiff).forEach(function(key) {
+        totalDiff += parseInt(dataDiff[key].diff);
+      });
 
-    $('.loading').find('p span').text((totalDiff > 0 ? '+' : '') + totalDiff)
+      $('.loading').find('p').show();
+      $('.loading').find('p span').text((totalDiff > 0 ? '+' : '') + totalDiff);
+    } else {
+      $('.loading').find('p').hide();
+    }
   } else {
     $('.loading').hide();
   }
