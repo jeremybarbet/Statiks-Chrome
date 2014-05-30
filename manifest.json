@@ -18,6 +18,7 @@
     "https://api.500px.com/v1/*",
     "https://api.github.com/users/*",
     "http://vimeo.com/api/v2/*",
+    "http://instagram.com/*",
     "storage"
   ],
   "browser_action": {
