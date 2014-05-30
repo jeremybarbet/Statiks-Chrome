@@ -1,4 +1,4 @@
-var _AnalyticsCode = 'UA-35732292-3';
+var _AnalyticsCode = 'UA-51492936-2';
 
 var _gaq = _gaq || [];
 _gaq.push(['_setAccount', _AnalyticsCode]);
