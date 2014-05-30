@@ -21,6 +21,11 @@ function successSocialItem($this, site, username, followers) {
 function failSocialItem($this, response) {
   var error = $('<span class="icon-error"></span>');
 
+  if (!$('.alert').length) {
+    var alert = '<div class="alert"><p></p></div>';
+    $(alert).insertAfter('header');
+  }
+
   if (response) {
     $('.alert').animate({marginTop: '41px', opacity: '1'}, 500).find('p').text(response);
 

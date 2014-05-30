@@ -17,6 +17,12 @@ function renderData(site, username, followers) {
 };
 
 function initData() {
+  // Build item container
+  if (!$('.list-social').length) {
+    var itemsContainer = '<div class="list-social"><ul></ul></div>';
+    $(itemsContainer).insertAfter('.choose-social');
+  }
+
   var itemsData = $('.list-social');
 
   /*

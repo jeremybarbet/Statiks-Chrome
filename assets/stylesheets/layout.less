@@ -13,7 +13,19 @@ body {
   .text-rendering(optimizelegibility);
 }
 
+::selection {
+  background: #F5F8FA;
+  color: #303940;
+}
+
 :focus { outline: 0; }
+
+.donottouch {
+  cursor: default;
+
+  -webkit-user-select: none;
+          user-select: none;
+}
 
 // Header
 header {
@@ -25,6 +37,7 @@ header {
   right: 0;
   height: 40px;
   border-bottom: 1px solid #ebebeb;
+  .donottouch;
 
   // App name
   h1 {
@@ -52,7 +65,10 @@ header {
     right: 50px;
     font-size: 18px;
 
-    &.inprogress { .animation(loader 0.5s infinite linear); }
+    &.inprogress {
+      -webkit-animation: loader 0.5s infinite linear;
+              animation: loader 0.5s infinite linear;
+    }
 
     &:hover {
       -webkit-transform: rotate(180deg);
@@ -83,6 +99,7 @@ header {
 // Main content
 .loading {
   padding-top: 160px;
+  .donottouch;
 
   .loader {
     position: absolute;
@@ -94,8 +111,9 @@ header {
     border: 1px solid @green;
     border-top-color: transparent;
     border-left-color: transparent;
-    .border-radius(100%);
-    .animation(loader 1s infinite linear);
+    border-radius: 100%;
+    -webkit-animation: loader 1s infinite linear;
+            animation: loader 1s infinite linear;
   }
 
   p {
@@ -215,7 +233,7 @@ header {
       height: 100%;
       top: 0;
 
-      input {
+      input[type="text"] {
         display: none;
         font-family: @font;
         font-weight: 300;
@@ -271,6 +289,7 @@ header {
 .list-social {
   display: none;
   margin-top: 41px;
+  .donottouch;
 
   li {
     width: 100%;
