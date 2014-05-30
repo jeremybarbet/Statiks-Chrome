@@ -235,6 +235,29 @@ var api = {
       var errorCustomMessage = 'Invalid username.';
       failSocialItem($this, errorCustomMessage);
     });
-  }
+  },
 
+  pinterest: function($this, value, site) {
+    $.ajax({
+      url: 'http://www.pinterest.com/' + value, success: function(data) {
+        data = data.replace(/\\/g, '');
+
+        var regex = /\"follower_count\":([^\,]+)/g;
+        var getFollowers = data.match(regex);
+
+        var username = value;
+        var followers = getFollowers[1].substr(getFollowers[1].indexOf(':') + 1);
+
+        if ( $this === 'reload' ) {
+          reloadData($this, site, followers);
+        } else {
+          successSocialItem($this, site, username, followers);
+        }
+      }
+    })
+    .fail(function() {
+      var errorCustomMessage = 'Invalid username.';
+      failSocialItem($this, errorCustomMessage);
+    });
+  }
 };

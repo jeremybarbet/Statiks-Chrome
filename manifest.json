@@ -19,6 +19,7 @@
     "https://api.github.com/users/*",
     "http://vimeo.com/api/v2/*",
     "http://instagram.com/*",
+    "http://www.pinterest.com/*",
     "storage"
   ],
   "browser_action": {
