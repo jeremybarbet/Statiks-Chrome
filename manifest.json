@@ -20,6 +20,7 @@
     "http://vimeo.com/api/v2/*",
     "http://instagram.com/*",
     "http://www.pinterest.com/*",
+    "https://gdata.youtube.com/*",
     "storage"
   ],
   "browser_action": {

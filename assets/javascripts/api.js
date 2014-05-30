@@ -259,5 +259,26 @@ var api = {
       var errorCustomMessage = 'Invalid username.';
       failSocialItem($this, errorCustomMessage);
     });
+  },
+
+  youtube: function($this, value, site) {
+    $.getJSON('https://gdata.youtube.com/feeds/api/users/' + value + '?v=2&alt=json', function(data) {
+      var username = data.entry.yt$username.$t;
+      var followers = data.entry.yt$statistics.subscriberCount;
+
+      if ( username != undefined && followers != undefined ) {
+        if ( $this === 'reload' ) {
+          reloadData($this, site, followers);
+        } else {
+          successSocialItem($this, site, username, followers);
+        }
+      } else {
+        var errorCustomMessage = 'Data from API are incorrect.';
+        failSocialItem($this, errorCustomMessage);
+      }
+    })
+    .fail(function(response) {
+      failSocialItem($this, response.statusText);
+    });
   }
 };
