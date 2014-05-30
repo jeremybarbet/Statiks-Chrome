@@ -249,7 +249,7 @@ var api = {
         var getFollowers = data.match(regex);
 
         var username = value;
-        var followers = getFollowers[1].substr(getFollowers[1].indexOf(':') + 1);
+        var followers = getFollowers[1].substr(getFollowers[1].indexOf(' ') + 1);
 
         if ( $this === 'reload' ) {
           reloadData($this, site, followers);
