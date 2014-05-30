@@ -17,21 +17,16 @@ function renderData(site, username, followers) {
 };
 
 function initData() {
-  $('.loading').hide();
+  var itemsData = $('.list-social');
 
-  // Display if data
-  $('.list-social').removeClass('fadeOut');
-  $('.list-social').show();
-
-  // Delete DOM
-  $('.list-social').find('ul').empty();
+  /*
+  * Delete DOM to prevent any issue
+  * Probably something to improve
+  */
+  itemsData.find('ul').empty();
 
   // Hide choose social list
-  $('.choose-social').addClass('fadeOut');
-
-  setTimeout(function() {
-    $('.choose-social').hide();
-  }, 300);
+  $('.choose-social').fadeOut('400');
 
   // Display parameters button
   $('.icon-settings, .icon-reload').show();
@@ -63,19 +58,25 @@ function initData() {
   // Display total followers and total network connected
   totalSites = Object.keys(dataArray).length + ((Object.keys(dataArray).length > 1) ? ' networks connected' : ' network connected');
   renderData('total', totalSites, totalFollowers);
+
+  // Finally display items and remove class after animation completed
+  itemsData.fadeIn('400');
+
+  itemsData.find('li').bind('animationend webkitAnimationEnd', function() {
+    $(this).removeClass('bounceIn');
+  }).addClass('bounceIn');
 };
 
 function checkData(param, timer) {
   if (localStorage.getItem('user-data') != null && param !== 'reload') {
     dataArray = JSON.parse(localStorage.getItem('user-data'));
 
-    // Delete add social button
-    $('.add-social').addClass('fadeOut');
+    // Hide add social button
     $('.add-social').hide();
 
     // Loading
     setTimeout(function() {
-      $('.loading').fadeOut();
+      $('.loading').fadeOut('400');
     }, 1500);
 
     // Show data after loading or back btn action

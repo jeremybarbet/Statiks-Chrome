@@ -1,27 +1,28 @@
 // Applications events
 $('.add-social').on('click', function() {
   var $this = $(this);
-
-  $this.addClass('fadeOut');
+  $this.fadeOut('400');
 
   setTimeout(function() {
-    $this.css('display', 'none');
     $('.choose-social').fadeIn('400');
-    $('.choose-social').removeClass('fadeOut');
     $('.choose-social').find('li').addClass('bounceIn');
-  }, 300);
+  }, 400);
 });
 
 // Settings
 $('.icon-settings').on('click', function() {
-  var $this = $(this);
+  var itemsData = $('.list-social');
+  var itemsParam = $('.choose-social');
 
-  // Hide list social at this point
-  $('.list-social').css('display', 'none');
+  if (itemsData.is(':visible')) {
+    $('.icon-reload').fadeOut('400');
+    itemsData.fadeOut('400');
+    itemsParam.fadeIn('400');
 
-  $('.list-social').addClass('fadeOut');
-  $('.choose-social').removeClass('fadeOut').fadeIn('400');
-  $('.choose-social').find('li').addClass('bounceIn');
+    itemsParam.find('li').bind('animationend webkitAnimationEnd', function() {
+      $(this).removeClass('bounceIn');
+    }).addClass('bounceIn');
+  }
 });
 
 $('.icon-reload').on('click', function() {
@@ -46,17 +47,13 @@ $('.choose-social').on('click', 'li', function() {
   var $this = $(this);
   var exception = $this.data('btn');
 
-  // Hide list social at this point
-  $('.list-social').css('display', 'none');
-
   if ( exception !== 'back' ) {
     $this.find('input').focusout(function() {
       if ( $this.find('input').val() == '' ) {
         $this.find('span').animate({
           marginLeft: '0'
         }, 400, function() {
-          $this.find('input').hide();
-          $this.find('input').val('');
+          $this.find('input').hide().val('');
         });
       }
     });
@@ -64,8 +61,7 @@ $('.choose-social').on('click', 'li', function() {
     $this.find('span').animate({
       marginLeft: '-240px'
     }, 400, function() {
-      $this.find('input').show();
-      $this.find('input').focus();
+      $this.find('input').show().focus();
     });
 
     $this.on('submit', function(e) {
@@ -82,19 +78,15 @@ $('.choose-social').on('click', 'li', function() {
 // Back button
 $('.choose-social').on('click', '.btn-back', function() {
   if (isEmpty(dataArray) == true) {
-    $('.add-social').removeClass('fadeOut');
-    $('.choose-social').addClass('fadeOut');
-
-    setTimeout(function() {
-      $('.add-social').css('display', 'block');
-      $('.choose-social').css('display', 'none');
-    }, 300);
+    $('.icon-settings').hide();
+    $('.choose-social').hide();
+    $('.add-social').show();
   } else {
     checkData(null, 'clear');
   }
 });
 
-// Check if object if empty
+// Check if object is empty
 function isEmpty(o) {
   for (var i in o) {
     if (o.hasOwnProperty(i)) return false;
@@ -107,8 +99,7 @@ $(document).on('click', '.icon-clear', function() {
   var $this = $(this).parent();
   var site = $this.data('social');
 
-  $this.find('input').val('');
-  $this.find('input').blur();
+  $this.find('input').val('').blur();
 
   $this.find('span').animate({
     marginLeft: '0'
