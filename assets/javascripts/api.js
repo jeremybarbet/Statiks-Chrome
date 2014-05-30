@@ -26,19 +26,21 @@ function failSocialItem($this, response) {
 
     setTimeout(function() {
       $('.alert').animate({marginTop: '-41px', opacity: '0'}, 500);
-    }, 4000);    
+    }, 4000);
   }
 
-  $this.find('input').val('');
-  $this.find('.icon-check').remove();
-  $this.find('.icon-clear').remove();
+  if ($this !== null) {
+    $this.find('input').val('');
+    $this.find('.icon-check').remove();
+    $this.find('.icon-clear').remove();
 
-  if (!$this.find('.icon-error').length) {
-    $this.append(error);
+    if (!$this.find('.icon-error').length) {
+      $this.append(error);
 
-    setTimeout(function() {
-      $this.find('.icon-error').remove();
-    }, 1500);
+      setTimeout(function() {
+        $this.find('.icon-error').remove();
+      }, 1500);
+    }
   }
 };
 
@@ -59,13 +61,14 @@ function reloadData($this, site, followers) {
 
     // Render new data
     $('.list-social').find('.' + site + ' .right .nbr').text(followers);
-
     $('.list-social').find('.' + site + ' .right p span').remove();
     $('.list-social').find('.' + site + ' .right p').prepend('<span></span>');
     $('.list-social').find('.' + site + ' .right p span').text((diff > 0 ? '+' : '') + diff);
 
     // Change total value
     checkData('reload', null);
+  } else {
+    failSocialItem(null, 'Nothing new :(');
   }
 };
 
