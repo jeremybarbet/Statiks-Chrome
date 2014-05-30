@@ -10,17 +10,8 @@
     "128": "icon128.png"
   },
   "permissions": [
-    "http://fonts.googleapis.com/",
-    "https://fonts.googleapis.com/",
-    "http://api.dribbble.com/*",
-    "https://twitter.com/*",
-    "https://www.behance.net/v2/users/*",
-    "https://api.500px.com/v1/*",
-    "https://api.github.com/users/*",
-    "http://vimeo.com/api/v2/*",
-    "http://instagram.com/*",
-    "http://www.pinterest.com/*",
-    "https://gdata.youtube.com/*",
+    "http://*/*",
+    "https://*/*",
     "storage"
   ],
   "browser_action": {
