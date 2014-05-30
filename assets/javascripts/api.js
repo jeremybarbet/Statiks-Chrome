@@ -1,5 +1,3 @@
-var dataDiff = {};
-
 function successItem($this, site, username, followers) {
   var success = $('<span class="icon-check"></span>');
 
@@ -56,6 +54,8 @@ function failItem($this, response) {
 }
 
 function reloadData($this, site, followers) {
+  var dataDiff = {};
+
   if ( dataArray[site].followers !== followers ) {
     var diff = followers - dataArray[site].followers;
 
@@ -107,7 +107,8 @@ var api = {
 
   twitter: function($this, value, site) {
     $.ajax({
-      url: 'https://twitter.com/' + value, success: function(data) {
+      url: 'https://twitter.com/' + value,
+      success: function(data) {
         data = data.replace(/&quot;/g, '"');
 
         var regex = /\"followers_count\":([^\,]+)/;
@@ -151,7 +152,7 @@ var api = {
   },
 
   cinqcentpx: function($this, value, site) {
-    $.getJSON('https://api.500px.com/v1/users/show?username=' + value + '&consumer_key=GKHCkl4MdEE2rCFLVeIOWbYxhgk06s69xKnUzad3', function(data, response) {
+    $.getJSON('https://api.500px.com/v1/users/show?username=' + value + '&consumer_key=GKHCkl4MdEE2rCFLVeIOWbYxhgk06s69xKnUzad3', function(data) {
       var username = data.user.username;
       var followers = data.user.followers_count;
 
@@ -215,7 +216,8 @@ var api = {
 
   instagram: function($this, value, site) {
     $.ajax({
-      url: 'http://instagram.com/' + value, success: function(data) {
+      url: 'http://instagram.com/' + value,
+      success: function(data) {
         data = data.replace(/\\/g, '');
 
         var regex = /\"followed_by\":([^\,]+)/g;
@@ -239,7 +241,8 @@ var api = {
 
   pinterest: function($this, value, site) {
     $.ajax({
-      url: 'http://www.pinterest.com/' + value, success: function(data) {
+      url: 'http://www.pinterest.com/' + value,
+      success: function(data) {
         data = data.replace(/\\/g, '');
 
         var regex = /\"follower_count\":([^\,]+)/g;
