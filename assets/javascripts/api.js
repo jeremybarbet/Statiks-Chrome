@@ -16,7 +16,7 @@ function successSocialItem($this, site, username, followers) {
   }
   
   saveProfile(site, username, followers);
-};
+}
 
 function failSocialItem($this, response) {
   var error = $('<span class="icon-error"></span>');
@@ -47,7 +47,7 @@ function failSocialItem($this, response) {
       }, 1500);
     }
   }
-};
+}
 
 function reloadData($this, site, followers) {
   if ( dataArray[site].followers !== followers ) {
@@ -75,7 +75,7 @@ function reloadData($this, site, followers) {
   } else {
     failSocialItem(null, 'Nothing new :(');
   }
-};
+}
 
 var api = {
   dribbble: function($this, value, site) {
@@ -83,7 +83,7 @@ var api = {
       var username = data.username;
       var followers = data.followers_count;
 
-      if ( username != undefined && followers != undefined ) {
+      if ( username !== undefined && followers !== undefined ) {
         if ( $this === 'reload' ) {
           reloadData($this, site, followers);
         } else {
@@ -128,7 +128,7 @@ var api = {
       var username = data.user.username;
       var followers = data.user.stats.followers;
 
-      if ( username != undefined && followers != undefined ) {
+      if ( username !== undefined && followers !== undefined ) {
         if ( $this === 'reload' ) {
           reloadData($this, site, followers);
         } else {
@@ -149,7 +149,7 @@ var api = {
       var username = data.user.username;
       var followers = data.user.followers_count;
 
-      if ( username != undefined && followers != undefined ) {
+      if ( username !== undefined && followers !== undefined ) {
         if ( $this === 'reload' ) {
           reloadData($this, site, followers);
         } else {
@@ -170,7 +170,7 @@ var api = {
       var username = data.login;
       var followers = data.followers;
 
-      if ( username != undefined && followers != undefined ) {
+      if ( username !== undefined && followers !== undefined ) {
         if ( $this === 'reload' ) {
           reloadData($this, site, followers);
         } else {
@@ -191,7 +191,7 @@ var api = {
       var username = value;
       var followers = data.total_contacts;
 
-      if ( username != undefined && followers != undefined ) {
+      if ( username !== undefined && followers !== undefined ) {
         if ( $this === 'reload' ) {
           reloadData($this, site, followers);
         } else {

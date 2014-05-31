@@ -1,7 +1,7 @@
 var dataArray = {};
 
 function saveProfile(site, username, followers) {
-  if (localStorage != null) {
+  if (localStorage !== null) {
     dataArray[site] = {
       username: username,
       followers: followers
@@ -9,12 +9,12 @@ function saveProfile(site, username, followers) {
 
     localStorage.setItem('user-data', JSON.stringify(dataArray));
   }
-};
+}
 
 function renderData(site, username, followers) {
   var itemList = '<li class="' + site + '"><div class="left"><h2>' +  ((site === 'cinqcentpx') ? (site = '500px') : site) + '</h2><p>' + username + '</p></div><div class="right"><div class="nbr">' + followers + '</div><p>followers</p></div></li>';
   $('.list-social').find('ul').append(itemList);
-};
+}
 
 function initData() {
   // Build item container
@@ -71,10 +71,10 @@ function initData() {
   itemsData.find('li').bind('animationend webkitAnimationEnd', function() {
     $(this).removeClass('bounceIn');
   }).addClass('bounceIn');
-};
+}
 
 function checkData(param, timer) {
-  if (localStorage.getItem('user-data') != null && param !== 'reload') {
+  if (localStorage.getItem('user-data') !== null && param !== 'reload') {
     dataArray = JSON.parse(localStorage.getItem('user-data'));
 
     // Hide add social button
@@ -89,11 +89,11 @@ function checkData(param, timer) {
     if (timer == 'clear') {
       initData();
     } else {
-      var timer = setTimeout(function() {
+      timer = setTimeout(function() {
         initData();
       }, 2000);
     }
-  } else if (localStorage.getItem('user-data') != null) {
+  } else if (localStorage.getItem('user-data') !== null) {
     dataArray = JSON.parse(localStorage.getItem('user-data'));
     dataDiff = JSON.parse(localStorage.getItem('user-diff'));
 
@@ -113,6 +113,6 @@ function checkData(param, timer) {
 
     $('.total').find('.right p span').remove();
     $('.total').find('.right p').prepend('<span></span>');
-    if (dataDiff != null) $('.total').find('.right p span').text((totalDiff > 0 ? '+' : '') + totalDiff);
+    if (dataDiff !== null) $('.total').find('.right p span').text((totalDiff > 0 ? '+' : '') + totalDiff);
   }
-};
+}

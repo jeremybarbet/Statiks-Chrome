@@ -49,7 +49,7 @@ $('.choose-social').on('click', 'li', function() {
 
   if ( exception !== 'back' ) {
     $this.find('input').focusout(function() {
-      if ( $this.find('input').val() == '' ) {
+      if ( $this.find('input').val() === '' ) {
         $this.find('span').animate({
           marginLeft: '0'
         }, 400, function() {
@@ -68,7 +68,7 @@ $('.choose-social').on('click', 'li', function() {
       var site = $this.data('social');
       var value = $this.find('input').val();
 
-      if ( value != '' ) api[site]($this, value, site);
+      if ( value !== '' ) api[site]($this, value, site);
 
       e.preventDefault();
     });
@@ -77,7 +77,7 @@ $('.choose-social').on('click', 'li', function() {
 
 // Back button
 $('.choose-social').on('click', '.btn-back', function() {
-  if (isEmpty(dataArray) == true) {
+  if (isEmpty(dataArray) === true) {
     $('.icon-settings').hide();
     $('.choose-social').hide();
     $('.add-social').show();
@@ -110,7 +110,7 @@ $(document).on('click', '.icon-clear', function() {
   $(this).remove();
   delete dataArray[site];
 
-  if ( isEmpty(dataArray) == true ) {
+  if ( isEmpty(dataArray) === true ) {
     localStorage.removeItem('user-data');
   } else {
     localStorage.setItem('user-data', JSON.stringify(dataArray));
@@ -119,8 +119,8 @@ $(document).on('click', '.icon-clear', function() {
 
 // Check local storage on load
 $(window).load(function() {
-  if (localStorage.getItem('user-data') != null) {
-    if (localStorage.getItem('user-diff') != null) {
+  if (localStorage.getItem('user-data') !== null) {
+    if (localStorage.getItem('user-diff') !== null) {
       // Change new followers value on loading screen
       dataDiff = JSON.parse(localStorage.getItem('user-diff'));
 
