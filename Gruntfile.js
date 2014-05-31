@@ -24,6 +24,10 @@ module.exports = function (grunt) {
     'zip'
   ]);
 
+  grunt.registerTask('release', [
+    'bump'
+  ]);
+
   // Initialization
   grunt.initConfig({
     config: configuration,
@@ -66,6 +70,22 @@ module.exports = function (grunt) {
         files: {
           'dist/app.min.css': 'assets/stylesheets/main.less'
         }
+      }
+    },
+
+    // Grunt-bump
+    bump: {
+      options: {
+        files: [
+          'package.json',
+          'manifest.json'
+        ],
+        commitFiles: [
+          'package.json',
+          'manifest.json'
+        ],
+        tagName: '%VERSION%',
+        push: false
       }
     },
 
