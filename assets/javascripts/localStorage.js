@@ -35,10 +35,11 @@ function initData() {
   itemsData.find('ul').empty();
 
   // Hide choose social list
-  $('.choose-social').fadeOut('400');
+  $('.choose-social').hide();
 
   // Display parameters button
-  $('.icon-settings, .icon-reload').show();
+  $('.icon-settings, .icon-reload').fadeIn('400');
+  $('.icon-back').fadeOut('400');
 
   // Vars
   var totalFollowers = 0;

@@ -16,6 +16,8 @@ $('.icon-settings').on('click', function() {
 
   if (itemsData.is(':visible')) {
     $('.icon-reload').fadeOut('400');
+    $('.icon-back').fadeIn('400');
+
     itemsData.fadeOut('400');
     itemsParam.fadeIn('400');
 
@@ -76,7 +78,7 @@ $('.choose-social').on('click', 'li', function() {
 });
 
 // Back button
-$('.choose-social').on('click', '.btn-back', function() {
+$('.choose-social .btn-back, .icon-back').on('click', function() {
   if (isEmpty(dataArray) === true) {
     $('.icon-settings').hide();
     $('.choose-social').hide();
