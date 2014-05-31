@@ -24,10 +24,6 @@ module.exports = function (grunt) {
     'zip'
   ]);
 
-  grunt.registerTask('release', [
-    'bump'
-  ]);
-
   grunt.registerTask('test', [
     'clean',
     'uglify:dev',
