@@ -28,6 +28,12 @@ module.exports = function (grunt) {
     'bump'
   ]);
 
+  grunt.registerTask('test', [
+    'clean',
+    'uglify:dev',
+    'jshint'
+  ]);
+
   // Initialization
   grunt.initConfig({
     config: configuration,
@@ -110,6 +116,14 @@ module.exports = function (grunt) {
           ]
         }
       }
+    },
+
+    // Grunt-contrib-jshint
+    jshint: {
+      options: {
+        ignores: ['assets/javascripts/lib/*.js']
+      },
+      files: ['assets/javascripts/*.js']
     },
 
     zip: {
