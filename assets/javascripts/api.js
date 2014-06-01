@@ -1,6 +1,6 @@
 var dataDiff = {};
 
-function successSocialItem($this, site, username, followers) {
+function successItem($this, site, username, followers) {
   var success = $('<span class="icon-check"></span>');
 
   $this.find('input').blur();
@@ -18,7 +18,7 @@ function successSocialItem($this, site, username, followers) {
   saveProfile(site, username, followers);
 }
 
-function failSocialItem($this, response) {
+function failItem($this, response) {
   var error = $('<span class="icon-error"></span>');
 
   if (!$('.alert').length) {
@@ -73,7 +73,7 @@ function reloadData($this, site, followers) {
     // Change total value
     checkData('reload', null);
   } else {
-    failSocialItem(null, 'Nothing new :(');
+    failItem(null, 'Nothing new :(');
   }
 }
 
@@ -87,15 +87,15 @@ var api = {
         if ( $this === 'reload' ) {
           reloadData($this, site, followers);
         } else {
-          successSocialItem($this, site, username, followers);
+          successItem($this, site, username, followers);
         }
       } else {
         var errorCustomMessage = 'Data from API are incorrect.';
-        failSocialItem($this, errorCustomMessage);
+        failItem($this, errorCustomMessage);
       }
     })
     .fail(function(response) {
-      failSocialItem($this, response.responseJSON.message[1]);
+      failItem($this, response.responseJSON.message[1]);
     });
   },
 
@@ -113,13 +113,13 @@ var api = {
         if ( $this === 'reload' ) {
           reloadData($this, site, followers);
         } else {
-          successSocialItem($this, site, username, followers);
+          successItem($this, site, username, followers);
         }
       }
     })
     .fail(function() {
       var errorCustomMessage = 'Invalid username.';
-      failSocialItem($this, errorCustomMessage);
+      failItem($this, errorCustomMessage);
     });
   },
 
@@ -132,15 +132,15 @@ var api = {
         if ( $this === 'reload' ) {
           reloadData($this, site, followers);
         } else {
-          successSocialItem($this, site, username, followers);
+          successItem($this, site, username, followers);
         }
       } else {
         var errorCustomMessage = 'Data from API are incorrect.';
-        failSocialItem($this, errorCustomMessage);
+        failItem($this, errorCustomMessage);
       }
     })
     .fail(function(response) {
-      failSocialItem($this, response.responseJSON.http_code);
+      failItem($this, response.responseJSON.http_code);
     });
   },
 
@@ -153,15 +153,15 @@ var api = {
         if ( $this === 'reload' ) {
           reloadData($this, site, followers);
         } else {
-          successSocialItem($this, site, username, followers);
+          successItem($this, site, username, followers);
         }
       } else {
         var errorCustomMessage = 'Data from API are incorrect.';
-        failSocialItem($this, errorCustomMessage);
+        failItem($this, errorCustomMessage);
       }
     })
     .fail(function(response) {
-      failSocialItem($this, response.responseJSON.error);
+      failItem($this, response.responseJSON.error);
     });
   },
 
@@ -174,15 +174,15 @@ var api = {
         if ( $this === 'reload' ) {
           reloadData($this, site, followers);
         } else {
-          successSocialItem($this, site, username, followers);
+          successItem($this, site, username, followers);
         }
       } else {
         var errorCustomMessage = 'Data from API are incorrect.';
-        failSocialItem($this, errorCustomMessage);
+        failItem($this, errorCustomMessage);
       }
     })
     .fail(function(response) {
-      failSocialItem($this, response.responseJSON.message);
+      failItem($this, response.responseJSON.message);
     });
   },
 
@@ -195,15 +195,15 @@ var api = {
         if ( $this === 'reload' ) {
           reloadData($this, site, followers);
         } else {
-          successSocialItem($this, site, username, followers);
+          successItem($this, site, username, followers);
         }
       } else {
         var errorCustomMessage = 'Data from API are incorrect.';
-        failSocialItem($this, errorCustomMessage);
+        failItem($this, errorCustomMessage);
       }
     })
     .fail(function(response) {
-      failSocialItem($this, response.responseText);
+      failItem($this, response.responseText);
     });
   }
 };
