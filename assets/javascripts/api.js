@@ -27,10 +27,16 @@ function failItem($this, response) {
   }
 
   if (response) {
-    $('.alert').animate({marginTop: '41px', opacity: '1'}, 500).find('p').text(response);
+    $('.alert').animate({
+      marginTop: '41px',
+      opacity: '1'
+    }, 500).find('p').text(response);
 
     setTimeout(function() {
-      $('.alert').animate({marginTop: '-41px', opacity: '0'}, 500);
+      $('.alert').animate({
+        marginTop: '-41px',
+        opacity: '0'
+      }, 500);
     }, 4000);
   }
 
