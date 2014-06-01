@@ -1,12 +1,16 @@
+var timingEffect = 400;
+
 // Applications events
 $('.add-social').on('click', function() {
   var $this = $(this);
-  $this.fadeOut('400');
+
+  $this.fadeOut(timingEffect);
+  $('.icon-back').fadeIn(timingEffect);
 
   setTimeout(function() {
-    $('.choose-social').fadeIn('400');
+    $('.choose-social').fadeIn(timingEffect);
     $('.choose-social').find('li').addClass('bounceIn');
-  }, 400);
+  }, timingEffect);
 });
 
 // Settings
@@ -15,11 +19,11 @@ $('.icon-settings').on('click', function() {
   var itemsParam = $('.choose-social');
 
   if (itemsData.is(':visible')) {
-    $('.icon-reload').fadeOut('400');
-    $('.icon-back').fadeIn('400');
+    $('.icon-reload').fadeOut(timingEffect);
+    $('.icon-back').fadeIn(timingEffect);
 
-    itemsData.fadeOut('400');
-    itemsParam.fadeIn('400');
+    itemsData.fadeOut(timingEffect);
+    itemsParam.fadeIn(timingEffect);
 
     itemsParam.find('li').bind('animationend webkitAnimationEnd', function() {
       $(this).removeClass('bounceIn');
@@ -54,7 +58,7 @@ $('.choose-social').on('click', 'li', function() {
       if ( $this.find('input').val() === '' ) {
         $this.find('span').animate({
           marginLeft: '0'
-        }, 400, function() {
+        }, timingEffect, function() {
           $this.find('input').hide().val('');
         });
       }
@@ -62,7 +66,7 @@ $('.choose-social').on('click', 'li', function() {
 
     $this.find('span').animate({
       marginLeft: '-240px'
-    }, 400, function() {
+    }, timingEffect, function() {
       $this.find('input').show().focus();
     });
 
@@ -80,8 +84,7 @@ $('.choose-social').on('click', 'li', function() {
 // Back button
 $('.choose-social .btn-back, .icon-back').on('click', function() {
   if (isEmpty(dataArray) === true) {
-    $('.icon-settings').hide();
-    $('.choose-social').hide();
+    $('.icon-settings, .icon-back, .choose-social').hide();
     $('.add-social').show();
   } else {
     checkData(null, 'clear');
@@ -105,7 +108,7 @@ $(document).on('click', '.icon-clear', function() {
 
   $this.find('span').animate({
     marginLeft: '0'
-  }, 400, function() {
+  }, timingEffect, function() {
     $this.find('input').hide();
   });
 
@@ -132,8 +135,7 @@ $(window).load(function() {
         totalDiff += parseInt(dataDiff[key].diff);
       });
 
-      $('.loading').find('p').show();
-      $('.loading').find('p span').text((totalDiff > 0 ? '+' : '') + totalDiff);
+      $('.loading').find('p').show().find('span').text((totalDiff > 0 ? '+' : '') + totalDiff);
     } else {
       $('.loading').find('p').hide();
     }

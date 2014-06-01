@@ -38,8 +38,8 @@ function initData() {
   $('.choose-social').hide();
 
   // Display parameters button
-  $('.icon-settings, .icon-reload').fadeIn('400');
-  $('.icon-back').fadeOut('400');
+  $('.icon-settings, .icon-reload').fadeIn(timingEffect);
+  $('.icon-back').fadeOut(timingEffect);
 
   // Vars
   var totalFollowers = 0;
@@ -70,7 +70,7 @@ function initData() {
   renderData('total', totalSites, totalFollowers);
 
   // Finally display items and remove class after animation completed
-  itemsData.fadeIn('400');
+  itemsData.fadeIn(timingEffect);
 
   itemsData.find('li').bind('animationend webkitAnimationEnd', function() {
     $(this).removeClass('bounceIn');
@@ -86,7 +86,7 @@ function checkData(param, timer) {
 
     // Loading
     setTimeout(function() {
-      $('.loading').fadeOut('400');
+      $('.loading').fadeOut(timingEffect);
     }, 1500);
 
     // Show data after loading or back btn action

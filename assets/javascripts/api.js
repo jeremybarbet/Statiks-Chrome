@@ -28,13 +28,13 @@ function failItem($this, response) {
     $('.alert').animate({
       marginTop: '41px',
       opacity: '1'
-    }, 500).find('p').text(response);
+    }, timingEffect).find('p').text(response);
 
     setTimeout(function() {
       $('.alert').animate({
         marginTop: '-41px',
         opacity: '0'
-      }, 500);
+      }, timingEffect);
     }, 4000);
   }
 
@@ -229,13 +229,13 @@ var api = {
         if ( $this === 'reload' ) {
           reloadData($this, site, followers);
         } else {
-          successSocialItem($this, site, username, followers);
+          successItem($this, site, username, followers);
         }
       }
     })
     .fail(function() {
       var errorCustomMessage = 'Invalid username.';
-      failSocialItem($this, errorCustomMessage);
+      failItem($this, errorCustomMessage);
     });
   },
 
@@ -254,13 +254,13 @@ var api = {
         if ( $this === 'reload' ) {
           reloadData($this, site, followers);
         } else {
-          successSocialItem($this, site, username, followers);
+          successItem($this, site, username, followers);
         }
       }
     })
     .fail(function() {
       var errorCustomMessage = 'Invalid username.';
-      failSocialItem($this, errorCustomMessage);
+      failItem($this, errorCustomMessage);
     });
   },
 
@@ -269,19 +269,19 @@ var api = {
       var username = data.entry.yt$username.$t;
       var followers = data.entry.yt$statistics.subscriberCount;
 
-      if ( username != undefined && followers != undefined ) {
+      if ( username !== undefined && followers !== undefined ) {
         if ( $this === 'reload' ) {
           reloadData($this, site, followers);
         } else {
-          successSocialItem($this, site, username, followers);
+          successItem($this, site, username, followers);
         }
       } else {
         var errorCustomMessage = 'Data from API are incorrect.';
-        failSocialItem($this, errorCustomMessage);
+        failItem($this, errorCustomMessage);
       }
     })
     .fail(function(response) {
-      failSocialItem($this, response.statusText);
+      failItem($this, response.statusText);
     });
   }
 };
