@@ -15,7 +15,7 @@ function renderData(site, username, followers) {
   // Formatting big numbers
   followers = (followers + "").replace(/.(?=(?:.{3})+$)/g, '$& ');
 
-  var itemList = '<li class="' + site + '"><div class="left"><h2>' +  ((site === 'cinqcentpx') ? (site = '500px') : site) + '</h2><p>' + username + '</p></div><div class="right"><div class="nbr">' + followers + '</div><p>followers</p></div></li>';
+  var itemList = '<li class="' + site + '"><div class="left"><h2>' +  ((site === 'cinqcentpx') ? '500px' : site) + '</h2><p>' + username + '</p></div><div class="right"><div class="nbr">' + followers + '</div><p>followers</p></div></li>';
   $('.list-social').find('ul').append(itemList);
 }
 
