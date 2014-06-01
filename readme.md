@@ -1,8 +1,8 @@
 Statiks
 ========
 
-Statiks is a easy-to-use chrome extension allowing you to connect several social networks and retrieve your followers data.
-You can reload your data and consult for each networks how many followers you gained (or lost).
+Statiks is an easy-to-use chrome extension allowing you to connect several social networks and retrieve your followers data.
+You can reload your data and consult for each network how many followers you gained (or lost).
 
 This is a _MVP_ Minimal Valuable Product, I will keep improving, adding new networks and more stats. Feel free to contribute.
 
@@ -10,6 +10,14 @@ This is a _MVP_ Minimal Valuable Product, I will keep improving, adding new netw
 
 Changelog
 ---------
+
+__v1.0.1__
+
+* Improve global animations fa34dae
+* Avoid user-select and create markup in renderData() function 2b9680f
+* Add a fail alert if there is no new followers after reloading data. Change alert color bed523a
+* Add bump and jshint dependencies 0569065 6ab52e3
+* Fix warnings according to jshint f4f51bb
 
 __v1.0.0__
 
