@@ -37,7 +37,7 @@ You need first to [fork](https://github.com/JeremDsgn/statiks/fork) the project.
 
 Now, make a clone of this fork on your computer.
 
-`git clone https://github.com/[your_github_username]/statiks.git`
+`git clone https://github.com/[your_github_username]/statiks.git`  
 `cd statiks`
 
 __Running__
