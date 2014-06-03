@@ -73,9 +73,9 @@ header {
               animation: loader 0.5s infinite linear;
     }
 
-    &:hover {
-      -webkit-transform: rotate(180deg);
-              transform: rotate(180deg);
+    &.pause {
+      -webkit-animation-play-state: paused;
+              animation-play-state: paused;
     }
   }
 }

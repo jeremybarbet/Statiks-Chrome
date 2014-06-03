@@ -34,12 +34,14 @@ $('.icon-settings').on('click', function() {
 $('.icon-reload').on('click', function() {
   $(this).addClass('inprogress');
 
+  if ($(this).hasClass('pause')) $(this).removeClass('pause');
+
   Object.keys(dataArray).forEach(function(key) {
     api[key]('reload', dataArray[key].username, key);
   });
 
   $(document).ajaxStop(function() {
-    $('.icon-reload').removeClass('inprogress');
+    $('.icon-reload').addClass('pause');
   });
 });
 
