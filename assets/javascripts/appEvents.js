@@ -1,6 +1,14 @@
+/**
+ * Global timing for differents fades.
+ * @global
+ */
 var timingEffect = 400;
 
-// Add social networks
+/**
+ * Add social actions. Hide the button, and display
+ * connect's form to add newtworks and type username.
+ * Only display if there is no connected networks.
+ */
 $('.add-social').on('click', function() {
   var $this = $(this);
 
@@ -13,7 +21,27 @@ $('.add-social').on('click', function() {
   }, timingEffect);
 });
 
-// Display settings views
+/**
+ * Action to reload data with the connected networks.
+ */
+$('.icon-reload').on('click', function() {
+  $(this).addClass('inprogress');
+
+  if ($(this).hasClass('pause')) $(this).removeClass('pause');
+
+  Object.keys(dataArray).forEach(function(site) {
+    api[site]('reload', dataArray[site].username, site);
+  });
+
+  $(document).ajaxStop(function() {
+    $('.icon-reload').addClass('pause');
+  });
+});
+
+/**
+ * Another way to display the connect's form.
+ * Display if there is at least one connected network.
+ */
 $('.icon-settings').on('click', function() {
   var itemsData = $('.list-social');
   var itemsParam = $('.choose-social');
@@ -31,26 +59,18 @@ $('.icon-settings').on('click', function() {
   }
 });
 
-$('.icon-reload').on('click', function() {
-  $(this).addClass('inprogress');
-
-  if ($(this).hasClass('pause')) $(this).removeClass('pause');
-
-  Object.keys(dataArray).forEach(function(key) {
-    api[key]('reload', dataArray[key].username, key);
-  });
-
-  $(document).ajaxStop(function() {
-    $('.icon-reload').addClass('pause');
-  });
-});
-
-// Avoid space character
+/**
+ * Avoid the space characther on the form
+ */
 $('.choose-social').find('li input').on('keypress', function(e) {
   if (e.which == 32) return false;
 });
 
-// Add username to retrieve stats
+/**
+ * Actions related to the connect's form.
+ * - Displayed the input on click on an item
+ * - Called the api function to retrieve related data
+ */
 $('.choose-social').on('click', 'li', function() {
   var $this = $(this);
   var exception = $this.data('btn');
@@ -83,7 +103,10 @@ $('.choose-social').on('click', 'li', function() {
   }
 });
 
-// Back button
+/**
+ * Back buttons actions with the top button on the header
+ * and the back button at the bottom of the settings views
+ */
 $('.choose-social .btn-back, .icon-back').on('click', function() {
   if (isEmpty(dataArray) === true) {
     $('.icon-settings, .icon-back, .choose-social').hide();
@@ -93,15 +116,10 @@ $('.choose-social .btn-back, .icon-back').on('click', function() {
   }
 });
 
-// Check if object is empty
-function isEmpty(o) {
-  for (var i in o) {
-    if (o.hasOwnProperty(i)) return false;
-  }
-
-  return true;
-}
-
+/**
+ * Action to remove a connected network. Firstly, remove input
+ * val, DOM element and finally, remove from the object
+ */
 $(document).on('click', '.icon-clear', function() {
   var $this = $(this).parent();
   var site = $this.data('social');
@@ -126,7 +144,9 @@ $(document).on('click', '.icon-clear', function() {
   }
 });
 
-// Check local storage on load
+/**
+ * Initialization after loaded app
+ */
 $(window).load(function() {
   if (localStorage.getItem('user-data') !== null) {
     if (localStorage.getItem('user-diff') !== null) {
@@ -137,8 +157,8 @@ $(window).load(function() {
 
       var totalDiff = 0;
 
-      Object.keys(dataDiff).forEach(function(key) {
-        totalDiff += parseInt(dataDiff[key].diff);
+      Object.keys(dataDiff).forEach(function(site) {
+        totalDiff += parseInt(dataDiff[site].diff);
       });
 
       if (!$('.notification').length) $('.loading').append(notification);

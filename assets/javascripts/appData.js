@@ -1,14 +1,19 @@
+/**
+ * Declare global array to store data.
+ * @global
+ */
 var dataArray = {};
 
-function saveProfile(site, username, followers) {
-  if (localStorage !== null) {
-    dataArray[site] = {
-      username: username,
-      followers: followers
-    };
-
-    localStorage.setItem('user-data', JSON.stringify(dataArray));
+/**
+ * Function to check if an object is empty
+ * @global
+ */
+function isEmpty(o) {
+  for (var i in o) {
+    if (o.hasOwnProperty(i)) return false;
   }
+
+  return true;
 }
 
 function renderData(site, username, followers) {
@@ -55,23 +60,23 @@ function initData() {
   var totalSites;
 
   // Display data on main screen
-  Object.keys(dataArray).forEach(function(key) {
-    renderData(key, dataArray[key].username, dataArray[key].followers);
+  Object.keys(dataArray).forEach(function(site) {
+    renderData(site, dataArray[site].username, dataArray[site].followers);
 
     // Render username in config screen
-    $('.choose-social').find('.' + key)
+    $('.choose-social').find('.' + site)
       .find('span').css('marginLeft', '-240px')
       .parent()
-      .find('input').show().focus().val(dataArray[key].username);
+      .find('input').show().focus().val(dataArray[site].username);
 
     var clear = $('<span class="icon-clear"></span>');
 
-    if (!$('.choose-social').find('.' + key).find('.icon-clear').length) {
-      $('.choose-social').find('.' + key).append(clear);
+    if (!$('.choose-social').find('.' + site).find('.icon-clear').length) {
+      $('.choose-social').find('.' + site).append(clear);
     }
 
     // Calculate total followers
-    totalFollowers += parseInt(dataArray[key].followers);
+    totalFollowers += parseInt(dataArray[site].followers);
   });
 
   // Display total followers and total network connected
@@ -113,12 +118,12 @@ function checkData(param, timer) {
     var totalFollowers = 0;
     var totalDiff = 0;
 
-    Object.keys(dataArray).forEach(function(key) {
-      totalFollowers += parseInt(dataArray[key].followers);
+    Object.keys(dataArray).forEach(function(site) {
+      totalFollowers += parseInt(dataArray[site].followers);
     });
 
-    Object.keys(dataDiff).forEach(function(key) {
-      totalDiff += parseInt(dataDiff[key].diff);
+    Object.keys(dataDiff).forEach(function(site) {
+      totalDiff += parseInt(dataDiff[site].diff);
     });
 
     // Render new data
