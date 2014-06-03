@@ -99,7 +99,7 @@ module.exports = function (grunt) {
         },
         files: {
           'dist/app.min.js': [
-            'assets/javascripts/app.js',
+            'assets/javascripts/appEvents.js',
             'assets/javascripts/*.js'
           ]
         }
@@ -107,7 +107,7 @@ module.exports = function (grunt) {
       dist: {
         files: {
           'dist/app.min.js': [
-            'assets/javascripts/app.js',
+            'assets/javascripts/appEvents.js',
             'assets/javascripts/*.js'
           ]
         }

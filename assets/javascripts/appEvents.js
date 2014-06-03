@@ -1,6 +1,6 @@
 var timingEffect = 400;
 
-// Applications events
+// Add social networks
 $('.add-social').on('click', function() {
   var $this = $(this);
 
@@ -13,7 +13,7 @@ $('.add-social').on('click', function() {
   }, timingEffect);
 });
 
-// Settings
+// Display settings views
 $('.icon-settings').on('click', function() {
   var itemsData = $('.list-social');
   var itemsParam = $('.choose-social');
