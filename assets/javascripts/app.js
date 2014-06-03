@@ -130,6 +130,8 @@ $(document).on('click', '.icon-clear', function() {
 $(window).load(function() {
   if (localStorage.getItem('user-data') !== null) {
     if (localStorage.getItem('user-diff') !== null) {
+      var notification = '<p class="notification"></p>';
+
       // Change new followers value on loading screen
       dataDiff = JSON.parse(localStorage.getItem('user-diff'));
 
@@ -139,9 +141,17 @@ $(window).load(function() {
         totalDiff += parseInt(dataDiff[key].diff);
       });
 
-      $('.loading').find('p').show().find('span').text((totalDiff > 0 ? '+' : '') + totalDiff);
+      if (!$('.notification').length) $('.loading').append(notification);
+
+      if (totalDiff < 0) {
+        $('.loading').find('.notification').show().html('<span>' + totalDiff + '</span> followers');
+      } else if (totalDiff == 1) {
+        $('.loading').find('.notification').show().html('<span>+' + totalDiff + '</span> new follower');
+      } else if (totalDiff > 1) {
+        $('.loading').find('.notification').show().html('<span>+' + totalDiff + '</span> news followers');
+      }
     } else {
-      $('.loading').find('p').hide();
+      $('.loading').find('.notification').hide();
     }
   } else {
     $('.loading').hide();
