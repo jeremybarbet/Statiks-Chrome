@@ -113,6 +113,8 @@ $(document).on('click', '.icon-clear', function() {
   });
 
   $(this).remove();
+  $('.list-social').find('.' + site).remove();
+
   delete dataArray[site];
 
   if ( isEmpty(dataArray) === true ) {

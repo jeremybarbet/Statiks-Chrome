@@ -16,7 +16,22 @@ function renderData(site, username, followers) {
   followers = (followers + "").replace(/.(?=(?:.{3})+$)/g, '$& ');
 
   var itemList = '<li class="' + site + '"><div class="left"><h2>' +  ((site === 'cinqcentpx') ? '500px' : site) + '</h2><p>' + username + '</p></div><div class="right"><div class="nbr">' + followers + '</div><p>followers</p></div></li>';
-  $('.list-social').find('ul').append(itemList);
+
+  if ( site === 'total' ) {
+    if (!$('.list-social').find('.total').length) {
+      // If not total sum up display to the last li child of ul
+      $('.list-social').find('li').last().parent().append(itemList);
+    } else {
+      // Move to the total item bottom
+      $('.list-social').find('.total').appendTo('.list-social ul');
+
+      // Update total data
+      $('.list-social .total').find('.left p').text(username);
+      $('.list-social .total').find('.right .nbr').text(followers);
+    }
+  } else {
+    if (!$('.list-social').find('.' + site).length) $('.list-social').find('ul').append(itemList);
+  }
 }
 
 function initData() {
@@ -27,12 +42,6 @@ function initData() {
   }
 
   var itemsData = $('.list-social');
-
-  /*
-  * Delete DOM to prevent any issue
-  * Probably something to improve
-  */
-  itemsData.find('ul').empty();
 
   // Hide choose social list
   $('.choose-social').hide();
