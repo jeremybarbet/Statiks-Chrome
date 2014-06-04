@@ -1,6 +1,6 @@
 /**
- * API namespace with all related methods :
- * Success, fail, and connects
+ * API namespace with related methods
+ * Success, fail, reload and API connects
  * @global
  */
 var api = {
@@ -110,16 +110,34 @@ var api = {
       localStorage.setItem('user-data', JSON.stringify(dataArray));
       localStorage.setItem('user-diff', JSON.stringify(dataDiff));
 
-      // Render new data
+      // Render new data for each networks
       $('.list-social').find('.' + site + ' .right .nbr').text(followers);
       $('.list-social').find('.' + site + ' .right p span').remove();
       $('.list-social').find('.' + site + ' .right p').prepend('<span></span>');
       $('.list-social').find('.' + site + ' .right p span').text((diff > 0 ? '+' : '') + diff);
 
-      // Change total value
-      checkData('reload', null);
+      var totalFollowers = 0;
+      var totalDiff = 0;
+
+      Object.keys(dataArray).forEach(function(site) {
+        totalFollowers += parseInt(dataArray[site].followers);
+      });
+
+      Object.keys(dataDiff).forEach(function(site) {
+        totalDiff += parseInt(dataDiff[site].diff);
+      });
+
+      $('.total').find('.right .nbr').text(totalFollowers);
+
+      $('.total').find('.right p span').remove();
+      $('.total').find('.right p').prepend('<span></span>');
+
+      if (dataDiff !== null) $('.total').find('.right p span').text((totalDiff > 0 ? '+' : '') + totalDiff);
+
     } else {
-      api.fail(null, 'Nothing new :(');
+      $(document).ajaxStop(function() {
+        api.fail(null, 'Nothing new :(');
+      });
     }
   },
 

@@ -112,7 +112,7 @@ $('.choose-social .btn-back, .icon-back').on('click', function() {
     $('.icon-settings, .icon-back, .choose-social').hide();
     $('.add-social').show();
   } else {
-    checkData(null, 'clear');
+    data.check();
   }
 });
 
@@ -148,34 +148,5 @@ $(document).on('click', '.icon-clear', function() {
  * Initialization after loaded app
  */
 $(window).load(function() {
-  if (localStorage.getItem('user-data') !== null) {
-    if (localStorage.getItem('user-diff') !== null) {
-      var notification = '<p class="notification"></p>';
-
-      // Change new followers value on loading screen
-      dataDiff = JSON.parse(localStorage.getItem('user-diff'));
-
-      var totalDiff = 0;
-
-      Object.keys(dataDiff).forEach(function(site) {
-        totalDiff += parseInt(dataDiff[site].diff);
-      });
-
-      if (!$('.notification').length) $('.loading').append(notification);
-
-      if (totalDiff < 0) {
-        $('.loading').find('.notification').show().html('<span>' + totalDiff + '</span> followers');
-      } else if (totalDiff == 1) {
-        $('.loading').find('.notification').show().html('<span>+' + totalDiff + '</span> new follower');
-      } else if (totalDiff > 1) {
-        $('.loading').find('.notification').show().html('<span>+' + totalDiff + '</span> news followers');
-      }
-    } else {
-      $('.loading').find('.notification').hide();
-    }
-  } else {
-    $('.loading').hide();
-  }
-
-  checkData();
+  data.loading();
 });
