@@ -27,7 +27,7 @@ $('.add-social').on('click', function() {
 $('.icon-reload').on('click', function() {
   $(this).addClass('inprogress');
 
-  if ($(this).hasClass('pause')) $(this).removeClass('pause');
+  if ( $(this).hasClass('pause') ) $(this).removeClass('pause');
 
   Object.keys(dataArray).forEach(function(site) {
     api[site]('reload', dataArray[site].username, site);
@@ -46,7 +46,7 @@ $('.icon-settings').on('click', function() {
   var itemsData = $('.list-social');
   var itemsParam = $('.choose-social');
 
-  if (itemsData.is(':visible')) {
+  if ( itemsData.is(':visible') ) {
     $('.icon-reload').fadeOut(timingEffect);
     $('.icon-back').fadeIn(timingEffect);
 
@@ -63,7 +63,7 @@ $('.icon-settings').on('click', function() {
  * Avoid the space characther on the form
  */
 $('.choose-social').find('li input').on('keypress', function(e) {
-  if (e.which == 32) return false;
+  if ( e.which == 32 ) return false;
 });
 
 /**
@@ -108,7 +108,7 @@ $('.choose-social').on('click', 'li', function() {
  * and the back button at the bottom of the settings views
  */
 $('.choose-social .btn-back, .icon-back').on('click', function() {
-  if (isEmpty(dataArray) === true) {
+  if ( isEmpty(dataArray) === true ) {
     $('.icon-settings, .icon-back, .choose-social').hide();
     $('.add-social').show();
   } else {

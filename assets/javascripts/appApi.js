@@ -17,7 +17,7 @@ var api = {
     * Display the check icon during a short time
     * Not add it on the DOM again, if is already append
     */
-    if (!$this.find('.icon-check').length) {
+    if ( !$this.find('.icon-check').length ) {
       $this.append(success);
 
       setTimeout(function() {
@@ -49,11 +49,11 @@ var api = {
     * Display the cross icon during a short time
     * Not add it on the DOM again, if is already append
     */
-    if ($this !== null) {
+    if ( $this !== null ) {
       $this.find('input').val('');
       $this.find('.icon-check, .icon-clear').remove();
 
-      if (!$this.find('.icon-error').length) {
+      if ( !$this.find('.icon-error').length ) {
         $this.append(error);
 
         setTimeout(function() {
@@ -67,7 +67,7 @@ var api = {
     */
     if (alert) {
       // Not add it on the DOM again, if is already append
-      if (!$('.alert').length) {
+      if ( !$('.alert').length ) {
         var alert = '<div class="alert"><p></p></div>';
         $(alert).insertAfter('header');
       }
@@ -98,6 +98,8 @@ var api = {
      */
     if ( dataArray[site].followers !== followers ) {
       var diff = followers - dataArray[site].followers;
+      var socialItem = $('.list-social').find('.' + site + ' .right');
+      var totalItem = $('.total').find('.right');
 
       dataDiff[site] = {
         diff: diff
@@ -111,10 +113,8 @@ var api = {
       localStorage.setItem('user-diff', JSON.stringify(dataDiff));
 
       // Render new data for each networks
-      $('.list-social').find('.' + site + ' .right .nbr').text(followers);
-      $('.list-social').find('.' + site + ' .right p span').remove();
-      $('.list-social').find('.' + site + ' .right p').prepend('<span></span>');
-      $('.list-social').find('.' + site + ' .right p span').text((diff > 0 ? '+' : '') + diff);
+      socialItem.find('.nbr').text(followers);
+      socialItem.find('p span').text((diff > 0 ? '+' : '') + diff);
 
       var totalFollowers = 0;
       var totalDiff = 0;
@@ -127,14 +127,11 @@ var api = {
         totalDiff += parseInt(dataDiff[site].diff);
       });
 
-      $('.total').find('.right .nbr').text(totalFollowers);
-
-      $('.total').find('.right p span').remove();
-      $('.total').find('.right p').prepend('<span></span>');
-
-      if (dataDiff !== null) $('.total').find('.right p span').text((totalDiff > 0 ? '+' : '') + totalDiff);
+      totalItem.find('.nbr').text(totalFollowers);
+      if ( dataDiff !== null ) totalItem.find('p span').text((totalDiff > 0 ? '+' : '') + totalDiff);
 
     } else {
+      // TO FIX
       $(document).ajaxStop(function() {
         api.fail(null, 'Nothing new :(');
       });

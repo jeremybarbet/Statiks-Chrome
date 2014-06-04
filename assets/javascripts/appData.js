@@ -4,7 +4,7 @@
  */
 function isEmpty(o) {
   for (var i in o) {
-    if (o.hasOwnProperty(i)) return false;
+    if ( o.hasOwnProperty(i) ) return false;
   }
 
   return true;
@@ -21,7 +21,7 @@ var data = {
    * Launching's function app
    */
   loading: function() {
-    if (localStorage.getItem('user-data') !== null) {
+    if ( localStorage.getItem('user-data') !== null ) {
       // Hide add social button
       $('.add-social').hide();
 
@@ -46,7 +46,7 @@ var data = {
    * Sum up and display diff numbers
    */
   diff: function() {
-    if (localStorage.getItem('user-diff') !== null) {
+    if ( localStorage.getItem('user-diff') !== null ) {
       var notifwrapper = '<p class="notification"></p>';
       var totalDiff = 0;
 
@@ -57,15 +57,15 @@ var data = {
         totalDiff += parseInt(dataDiff[site].diff);
       });
 
-      if (!$('.notification').length) $('.loading').append(notifwrapper);
+      if ( !$('.notification').length ) $('.loading').append(notifwrapper);
 
       var notif = $('.loading').find('.notification');
 
-      if (totalDiff < 0) {
+      if ( totalDiff < 0 ) {
         notif.show().html('<span>' + totalDiff + '</span> followers');
-      } else if (totalDiff == 1) {
+      } else if ( totalDiff == 1 ) {
         notif.show().html('<span>+' + totalDiff + '</span> new follower');
-      } else if (totalDiff > 1) {
+      } else if ( totalDiff > 1 ) {
         notif.show().html('<span>+' + totalDiff + '</span> news followers');
       }
     } else {
@@ -80,11 +80,11 @@ var data = {
     // Formatting big numbers
     followers = (followers + "").replace(/.(?=(?:.{3})+$)/g, '$& ');
 
-    var itemList = '<li class="' + site + '"><div class="left"><h2>' +  ((site === 'cinqcentpx') ? '500px' : site) + '</h2><p>' + username + '</p></div><div class="right"><div class="nbr">' + followers + '</div><p>followers</p></div></li>';
+    var itemList = '<li class="' + site + '"><div class="left"><h2>' +  ((site === 'cinqcentpx') ? '500px' : site) + '</h2><p>' + username + '</p></div><div class="right"><div class="nbr">' + followers + '</div><p><span></span>followers</p></div></li>';
     var itemTotal = $('.list-social').find('.total');
 
     if ( site === 'total' ) {
-      if (!itemTotal.length) {
+      if ( !itemTotal.length ) {
         // If not total sum up display to the last li child of ul
         $('.list-social').find('li').last().parent().append(itemList);
       } else {
@@ -96,7 +96,7 @@ var data = {
         itemTotal.find('.right .nbr').text(followers);
       }
     } else {
-      if (!$('.list-social').find('.' + site).length) $('.list-social').find('ul').append(itemList);
+      if ( !$('.list-social').find('.' + site).length ) $('.list-social').find('ul').append(itemList);
     }
   },
 
@@ -107,7 +107,7 @@ var data = {
     dataArray = JSON.parse(localStorage.getItem('user-data'));
 
     // Build item container
-    if (!$('.list-social').length) {
+    if ( !$('.list-social').length ) {
       var itemsContainer = '<div class="list-social"><ul></ul></div>';
       $(itemsContainer).insertAfter('.choose-social');
     }
@@ -144,7 +144,7 @@ var data = {
       // Render username in config screen
       $('.choose-social').find('.' + site).find('span').css('marginLeft', '-240px').parent().find('input').show().val(dataArray[site].username);
 
-      if (!$('.choose-social').find('.' + site).find('.icon-clear').length) $('.choose-social').find('.' + site).append(clear);
+      if ( !$('.choose-social').find('.' + site).find('.icon-clear').length ) $('.choose-social').find('.' + site).append(clear);
 
       // Calculate total followers
       totalFollowers += parseInt(dataArray[site].followers);
@@ -156,7 +156,7 @@ var data = {
   },
 
   check: function() {
-    if (localStorage.getItem('user-data') !== null) {
+    if ( localStorage.getItem('user-data') !== null ) {
       // Hide add social button
       $('.add-social').hide();
 
