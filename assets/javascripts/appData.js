@@ -50,30 +50,23 @@ var data = {
    * Sum up and display diff numbers
    */
   diff: function() {
-    if ( localStorage.getItem('user-diff') !== null ) {
-      var notifwrapper = '<p class="notification"></p>';
-      var totalDiff = 0;
+    var notifwrapper = '<p class="notification"></p>';
+    var totalDiff = 0;
 
-      // Change new followers value on loading screen
-      dataDiff = JSON.parse(localStorage.getItem('user-diff'));
+    Object.keys(dataArray).forEach(function(site) {
+      totalDiff += parseInt(dataArray[site].diff);
+    });
 
-      Object.keys(dataDiff).forEach(function(site) {
-        totalDiff += parseInt(dataDiff[site].diff);
-      });
+    if ( !$('.notification').length ) $('.loading').append(notifwrapper);
 
-      if ( !$('.notification').length ) $('.loading').append(notifwrapper);
+    var notif = $('.loading').find('.notification');
 
-      var notif = $('.loading').find('.notification');
-
-      if ( totalDiff < 0 ) {
-        notif.show().html('<span>' + totalDiff + '</span> followers');
-      } else if ( totalDiff == 1 ) {
-        notif.show().html('<span>+' + totalDiff + '</span> new follower');
-      } else if ( totalDiff > 1 ) {
-        notif.show().html('<span>+' + totalDiff + '</span> news followers');
-      }
-    } else {
-      notif.hide();
+    if ( totalDiff < 0 ) {
+      notif.show().html('<span>' + totalDiff + '</span> followers');
+    } else if ( totalDiff == 1 ) {
+      notif.show().html('<span>+' + totalDiff + '</span> new follower');
+    } else if ( totalDiff > 1 ) {
+      notif.show().html('<span>+' + totalDiff + '</span> news followers');
     }
   },
 

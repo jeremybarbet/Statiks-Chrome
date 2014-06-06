@@ -32,7 +32,8 @@ var api = {
     if (localStorage !== null) {
       dataArray[site] = {
         username: username,
-        followers: followers
+        followers: followers,
+        diff: 0
       };
 
       localStorage.setItem('user-data', JSON.stringify(dataArray));
@@ -91,26 +92,17 @@ var api = {
    * the diff since the last app launched.
    */
   reload: function($this, site, followers) {
-    var dataDiff = {};
-
-    /*
-     * Only excute if followers numbers are differents.
-     */
     if ( dataArray[site].followers !== followers ) {
       var diff = followers - dataArray[site].followers;
       var socialItem = $('.list-social').find('.' + site + ' .right');
       var totalItem = $('.total').find('.right');
 
-      dataDiff[site] = {
-        diff: diff
-      };
-
       // Update value of object
+      dataArray[site].diff = diff;
       dataArray[site].followers = followers;
 
       // Push to localstorage
       localStorage.setItem('user-data', JSON.stringify(dataArray));
-      localStorage.setItem('user-diff', JSON.stringify(dataDiff));
 
       // Render new data for each networks
       socialItem.find('.nbr').text(followers);
@@ -121,14 +113,11 @@ var api = {
 
       Object.keys(dataArray).forEach(function(site) {
         totalFollowers += parseInt(dataArray[site].followers);
-      });
-
-      Object.keys(dataDiff).forEach(function(site) {
-        totalDiff += parseInt(dataDiff[site].diff);
+        totalDiff += parseInt(dataArray[site].diff);
       });
 
       totalItem.find('.nbr').text(totalFollowers);
-      if ( dataDiff !== null ) totalItem.find('p span').text((totalDiff > 0 ? '+' : '') + totalDiff);
+      if ( totalDiff !== null && typeof totalDiff === 'number' ) totalItem.find('p span').text((totalDiff > 0 ? '+' : '') + totalDiff);
 
     } else {
       // TO FIX
