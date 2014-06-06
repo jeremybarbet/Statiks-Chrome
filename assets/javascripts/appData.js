@@ -133,7 +133,6 @@ var data = {
   },
 
   count: function() {
-    var clear = $('<span class="icon-clear"></span>');
     var totalFollowers = 0;
     var totalSites = 0;
 
@@ -144,6 +143,7 @@ var data = {
       // Render username in config screen
       $('.choose-social').find('.' + site).find('span').css('marginLeft', '-240px').parent().find('input').show().val(dataArray[site].username);
 
+      var clear = $('<span class="icon-clear"></span>');
       if ( !$('.choose-social').find('.' + site).find('.icon-clear').length ) $('.choose-social').find('.' + site).append(clear);
 
       // Calculate total followers
