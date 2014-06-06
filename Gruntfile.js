@@ -103,6 +103,7 @@ module.exports = function (grunt) {
         files: {
           'dist/lib.min.js': [
             'assets/javascripts/lib/jquery.min.js',
+            'assets/javascripts/lib/jquery-ui.min.js',
             'assets/javascripts/lib/chartnew.js'
           ]
         }
