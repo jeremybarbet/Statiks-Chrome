@@ -1,4 +1,10 @@
 /**
+ * Declare global array to store data.
+ * @global
+ */
+var dataArray = {};
+
+/**
  * Function to check if an object is empty
  * @global
  */
@@ -15,8 +21,6 @@ function isEmpty(o) {
  * @global
  */
 var data = {
-  dataArray : {},
-
   /**
    * Launching's function app
    */
