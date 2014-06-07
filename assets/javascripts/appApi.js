@@ -7,7 +7,7 @@ var api = {
   /**
    * Success fallback when retrieve data
    */
-  success: function($this, site, username, followers) {
+  success: function($this, site, username, followers, details) {
     var success = $('<span class="icon-check"></span>');
 
     $this.find('input').blur();
@@ -33,6 +33,7 @@ var api = {
       dataArray[site] = {
         username: username,
         followers: followers,
+        details: details,
         diff: 0
       };
 
@@ -100,6 +101,7 @@ var api = {
       // Update value of object
       dataArray[site].diff = diff;
       dataArray[site].followers = followers;
+      dataArray[site].details = details;
 
       // Push to localstorage
       localStorage.setItem('user-data', JSON.stringify(dataArray));
@@ -111,10 +113,10 @@ var api = {
       var totalFollowers = 0;
       var totalDiff = 0;
 
-      Object.keys(dataArray).forEach(function(site) {
+      for (var site in dataArray) {
         totalFollowers += parseInt(dataArray[site].followers);
         totalDiff += parseInt(dataArray[site].diff);
-      });
+      }
 
       totalItem.find('.nbr').text(totalFollowers);
       if ( totalDiff !== null && typeof totalDiff === 'number' ) totalItem.find('p span').text((totalDiff > 0 ? '+' : '') + totalDiff);
@@ -135,11 +137,21 @@ var api = {
       var username = data.username;
       var followers = data.followers_count;
 
+      // Details
+      var details = {
+        following: data.following_count,
+        likes: data.likes_received_count,
+        comments: data.comments_received_count,
+        shots: data.shots_count
+      }
+
+      console.log(details);
+
       if ( username !== undefined && followers !== undefined ) {
         if ( $this === 'reload' ) {
-          api.reload($this, site, followers);
+          api.reload($this, site, followers, details);
         } else {
-          api.success($this, site, username, followers);
+          api.success($this, site, username, followers, details);
         }
       } else {
         var errorCustomMessage = 'Data from API are incorrect.';
@@ -160,16 +172,29 @@ var api = {
       success: function(data) {
         data = data.replace(/&quot;/g, '"');
 
-        var regex = /\"followers_count\":([^\,]+)/;
-        var getFollowers = data.match(regex);
+        var getFollowers = data.match(/\"followers_count\":([^\,]+)/);
+        var getFollowing = data.match(/\"friends_count\":([^\,]+)/);
+        var getTweets = data.match(/\"statuses_count\":([^\,]+)/);
+        var getFavorites = data.match(/\"favourites_count\":([^\,]+)/);
+        var getListed = data.match(/\"listed_count\":([^\,]+)/);
 
         var username = value;
         var followers = getFollowers[1];
 
+        // Details
+        var details = {
+          following: getFollowing[1],
+          tweets: getTweets[1],
+          favorites: getFavorites[1],
+          listed: getListed[1]
+        }
+
+        console.log(details);
+
         if ( $this === 'reload' ) {
-          api.reload($this, site, followers);
+          api.reload($this, site, followers, details);
         } else {
-          api.success($this, site, username, followers);
+          api.success($this, site, username, followers, details);
         }
       }
     })
@@ -187,11 +212,21 @@ var api = {
       var username = data.user.username;
       var followers = data.user.stats.followers;
 
+      // Details
+      var details = {
+        following: data.user.stats.following,
+        likes: data.user.stats.appreciations,
+        comments: data.user.stats.comments,
+        views: data.user.stats.views
+      }
+
+      console.log(details);
+
       if ( username !== undefined && followers !== undefined ) {
         if ( $this === 'reload' ) {
-          api.reload($this, site, followers);
+          api.reload($this, site, followers, details);
         } else {
-          api.success($this, site, username, followers);
+          api.success($this, site, username, followers, details);
         }
       } else {
         var errorCustomMessage = 'Data from API are incorrect.';
@@ -211,11 +246,21 @@ var api = {
       var username = data.user.username;
       var followers = data.user.followers_count;
 
+      // Details
+      var details = {
+        following: data.user.friends_count,
+        affection: data.user.affection,
+        favorites: data.user.in_favorites_count,
+        photos: data.user.photos_count,
+      }
+
+      console.log(details);
+
       if ( username !== undefined && followers !== undefined ) {
         if ( $this === 'reload' ) {
-          api.reload($this, site, followers);
+          api.reload($this, site, followers, details);
         } else {
-          api.success($this, site, username, followers);
+          api.success($this, site, username, followers, details);
         }
       } else {
         var errorCustomMessage = 'Data from API are incorrect.';
@@ -235,11 +280,20 @@ var api = {
       var username = data.login;
       var followers = data.followers;
 
+      // Details
+      var details = {
+        following: data.following,
+        repo: data.public_repos,
+        gist: data.public_gists
+      }
+
+      console.log(details);
+
       if ( username !== undefined && followers !== undefined ) {
         if ( $this === 'reload' ) {
-          api.reload($this, site, followers);
+          api.reload($this, site, followers, details);
         } else {
-          api.success($this, site, username, followers);
+          api.success($this, site, username, followers, details);
         }
       } else {
         var errorCustomMessage = 'Data from API are incorrect.';
@@ -259,11 +313,20 @@ var api = {
       var username = value;
       var followers = data.total_contacts;
 
+      // Details
+      var details = {
+        videos: data.total_videos_uploaded,
+        likes: data.total_videos_liked,
+        albums: data.total_albums
+      }
+
+      console.log(details);
+
       if ( username !== undefined && followers !== undefined ) {
         if ( $this === 'reload' ) {
-          api.reload($this, site, followers);
+          api.reload($this, site, followers, details);
         } else {
-          api.success($this, site, username, followers);
+          api.success($this, site, username, followers, details);
         }
       } else {
         var errorCustomMessage = 'Data from API are incorrect.';
@@ -284,16 +347,25 @@ var api = {
       success: function(data) {
         data = data.replace(/\\/g, '');
 
-        var regex = /\"followed_by\":([^\,]+)/g;
-        var getFollowers = data.match(regex);
+        var getFollowers = data.match(/\"followed_by\":([^\,]+)/g);
+        var getFollowing = data.match(/\"follows\":([^\}]+)/g);
+        var getMedias = data.match(/\"media\":([^\,]+)/g);
 
         var username = value;
         var followers = getFollowers[1].substr(getFollowers[1].indexOf(':') + 1);
 
+        // Details
+        var details = {
+          following: getFollowing[0].substr(getFollowing[0].indexOf(':') + 1),
+          medias: getMedias[0].substr(getMedias[0].indexOf(':') + 1)
+        }
+
+        console.log(details);
+
         if ( $this === 'reload' ) {
-          api.reload($this, site, followers);
+          api.reload($this, site, followers, details);
         } else {
-          api.success($this, site, username, followers);
+          api.success($this, site, username, followers, details);
         }
       }
     })
@@ -312,16 +384,29 @@ var api = {
       success: function(data) {
         data = data.replace(/\\/g, '');
 
-        var regex = /\"follower_count\":([^\,]+)/g;
-        var getFollowers = data.match(regex);
+        var getFollowers = data.match(/\"follower_count\":([^\,]+)/g);
+        var getFollowing= data.match(/\"following_count\":([^\,]+)/g);
+        var getPins = data.match(/\"pin_count\":([^\,]+)/g);
+        var getBoards = data.match(/\"board_count\":([^\,]+)/g);
+        var getLikes = data.match(/\"like_count\":([^\,]+)/g);
 
         var username = value;
         var followers = getFollowers[1].substr(getFollowers[1].indexOf(' ') + 1);
 
+        // Details
+        var details = {
+          following: getFollowing[1].substr(getFollowing[1].indexOf(' ') + 1),
+          pins: getPins[1].substr(getPins[1].indexOf(' ') + 1),
+          boards: getBoards[1].substr(getBoards[1].indexOf(' ') + 1),
+          likes: getLikes[1].substr(getLikes[1].indexOf(' ') + 1)
+        }
+
+        console.log(details);
+
         if ( $this === 'reload' ) {
-          api.reload($this, site, followers);
+          api.reload($this, site, followers, details);
         } else {
-          api.success($this, site, username, followers);
+          api.success($this, site, username, followers, details);
         }
       }
     })
@@ -339,11 +424,18 @@ var api = {
       var username = data.entry.yt$username.$t;
       var followers = data.entry.yt$statistics.subscriberCount;
 
+      // Details
+      var details = {
+        views: data.entry.yt$statistics.totalUploadViews
+      }
+
+      console.log(details);
+
       if ( username !== undefined && followers !== undefined ) {
         if ( $this === 'reload' ) {
-          api.reload($this, site, followers);
+          api.reload($this, site, followers, details);
         } else {
-          api.success($this, site, username, followers);
+          api.success($this, site, username, followers, details);
         }
       } else {
         var errorCustomMessage = 'Data from API are incorrect.';

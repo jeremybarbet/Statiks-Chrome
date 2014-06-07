@@ -29,9 +29,9 @@ $('.icon-reload').on('click', function() {
 
   if ( $(this).hasClass('pause') ) $(this).removeClass('pause');
 
-  Object.keys(dataArray).forEach(function(site) {
+  for (var site in dataArray) {
     api[site]('reload', dataArray[site].username, site);
-  });
+  }
 
   $(document).ajaxStop(function() {
     $('.icon-reload').addClass('pause');
@@ -112,7 +112,10 @@ $('.choose-social .btn-back, .icon-back').on('click', function() {
     $('.icon-settings, .icon-back, .choose-social').hide();
     $('.add-social').show();
   } else {
-    data.check();
+    if ( localStorage.getItem('user-data') !== null ) {
+      $('.add-social, .loading').hide();
+      data.build();
+    }
   }
 });
 
@@ -142,6 +145,13 @@ $(document).on('click', '.icon-clear', function() {
   } else {
     localStorage.setItem('user-data', JSON.stringify(dataArray));
   }
+});
+
+/**
+ * Show detail for networks
+ */
+$(document).on('click', '.item', function() {
+  $(this).find('.detail-social').slideToggle(timingEffect);
 });
 
 /**

@@ -306,81 +306,126 @@ header {
   margin-top: 41px;
   .donottouch;
 
-  li {
-    width: 100%;
-    height: 100px;
-    color: @white;
+  > ul {
+    .item {
+      width: 100%;
+      padding-bottom: 4px;
+      color: @white;
 
-    .left,
-    .right {
-      display: inline-block;
-      vertical-align: top;
-      height: 100%;
+      .left,
+      .right {
+        display: inline-block;
+        vertical-align: top;
+        padding-bottom: 28px;
+      }
+
+      .left {
+        width: 60%;
+        padding-left: 15px;
+        box-sizing: border-box;
+
+        h2 {
+          font-size: 24px;
+          margin-top: 26px;
+          margin-bottom: 4px;
+          font-weight: 300;
+        }
+
+        p {
+          font-size: 14px;
+          color: fade(@white, 60%);
+        }
+      }
+
+      .right {
+        width: 40%;
+        text-align: right;
+        padding-right: 15px;
+        box-sizing: border-box;
+
+        .nbr {
+          font-size: 24px;
+          margin-top: 26px;
+          margin-bottom: 4px;
+          font-weight: 300;
+        }
+
+        p {
+          font-size: 14px;
+          color: fade(@white, 60%);
+
+          span {
+            font-family: "Droid Sans Mono", monospace;
+            font-size: 12px;
+            color: @white;
+            margin-right: 4px;
+            font-weight: bold;
+          }
+        }
+      }
+
+      &.total {
+        color: #333;
+        background-color: #f4f4f4;
+
+        p {
+          color: #333;
+          span { color: #333; }
+        }
+      }
+
+      &.dribbble { background-color: #ea4c89; }
+      &.twitter { background-color: #55acee; }
+      &.behance { background-color: #1769ff; }
+      &.cinqcentpx { background-color: #222222; }
+      &.github { background-color: #4183c4; }
+      &.vimeo { background-color: #1ab7ea; }
+      &.instagram { background-color: #3f729b; }
+      &.pinterest { background-color: #cc2127; }
+      &.youtube { background-color: #e52d27; }
     }
 
-    .left {
-      width: 60%;
-      padding-left: 15px;
-      box-sizing: border-box;
+    .detail-social {
+      display: none;
 
-      h2 {
-        font-size: 24px;
-        margin-top: 26px;
-        margin-bottom: 4px;
+      > li {
+        color: darken(@gray, 10%);
+        height: 40px;
         font-weight: 300;
-      }
+        background-color: darken(@white, 2%);
+        border-bottom: 1px solid darken(@white, 8%);
 
-      p {
-        font-size: 14px;
-        color: fade(@white, 60%);
-      }
-    }
+        &:last-child { border-bottom: 0; }
 
-    .right {
-      width: 40%;
-      text-align: right;
-      padding-right: 15px;
-      box-sizing: border-box;
+        .left,
+        .right {
+          display: inline-block;
+          vertical-align: top;
+          height: 100%;
+        }
 
-      .nbr {
-        font-size: 24px;
-        margin-top: 26px;
-        margin-bottom: 4px;
-        font-weight: 300;
-      }
-
-      p {
-        font-size: 14px;
-        color: fade(@white, 60%);
-
-        span {
-          font-family: "Droid Sans Mono", monospace;
+        .left {
+          width: 60%;
           font-size: 12px;
-          color: @white;
-          margin-right: 4px;
-          font-weight: bold;
+          line-height: 44px;
+          padding-left: 15px;
+          text-transform: uppercase;
+          box-sizing: border-box;
+        }
+
+        .right {
+          width: 40%;
+          font-size: 18px;
+          line-height: 42px;
+          text-align: right;
+          padding-right: 15px;
+          box-sizing: border-box;
+        }
+
+        p {
+
         }
       }
     }
-
-    &.total {
-      color: #333;
-      background-color: #f4f4f4;
-
-      p {
-        color: #333;
-        span { color: #333; }
-      }
-    }
-
-    &.dribbble { background-color: #ea4c89; }
-    &.twitter { background-color: #55acee; }
-    &.behance { background-color: #1769ff; }
-    &.cinqcentpx { background-color: #222222; }
-    &.github { background-color: #4183c4; }
-    &.vimeo { background-color: #1ab7ea; }
-    &.instagram { background-color: #3f729b; }
-    &.pinterest { background-color: #cc2127; }
-    &.youtube { background-color: #e52d27; }
   }
 }
