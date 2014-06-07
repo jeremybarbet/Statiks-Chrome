@@ -81,12 +81,9 @@ var data = {
     var itemTotal = $('.list-social').find('.total');
 
     if ( site === 'total' ) {
-      console.log(itemTotal);
-
       if ( !itemTotal.length ) {
-        console.log($('.total'));
         // If not total sum up display to the last li child of ul
-        $('.list-social').find('li').last().parent().append(itemList);
+        $('.list-social').find('.item').last().parent().append(itemList);
       } else {
         // Move to the total item bottom
         itemTotal.appendTo('.list-social .social-wrapper');
