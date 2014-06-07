@@ -92,7 +92,7 @@ var api = {
    * Method to reload data and store on another object
    * the diff since the last app launched.
    */
-  reload: function($this, site, followers) {
+  reload: function($this, site, followers, details) {
     if ( dataArray[site].followers !== followers ) {
       var diff = followers - dataArray[site].followers;
       var socialItem = $('.list-social').find('.' + site + ' .right');
@@ -101,6 +101,7 @@ var api = {
       // Update value of object
       dataArray[site].diff = diff;
       dataArray[site].followers = followers;
+
       dataArray[site].details = details;
 
       // Push to localstorage
