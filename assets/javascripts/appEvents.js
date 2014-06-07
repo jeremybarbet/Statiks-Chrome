@@ -71,9 +71,11 @@ $('.choose-social').find('li input').on('keypress', function(e) {
  * - Displayed the input on click on an item
  * - Called the api function to retrieve related data
  */
-$('.choose-social').on('click', 'li', function() {
+$('.choose-social').on('click', 'li', function(e) {
   var $this = $(this);
   var exception = $this.data('btn');
+
+  if ( $(e.target).attr('class') === 'icon-clear' ) return;
 
   if ( exception !== 'back' ) {
     $this.find('input').focusout(function() {
@@ -92,7 +94,7 @@ $('.choose-social').on('click', 'li', function() {
       $this.find('input').show().focus();
     });
 
-    $this.on('submit', function(e) {
+    $this.off('submit').on('submit', function(e) {
       var site = $this.data('social');
       var value = $this.find('input').val();
 
@@ -127,13 +129,11 @@ $(document).on('click', '.icon-clear', function() {
   var $this = $(this).parent();
   var site = $this.data('social');
 
-  $this.find('input').val('').blur();
+  $this.find('input').hide().val('').blur();
 
   $this.find('span').animate({
     marginLeft: '0'
-  }, timingEffect, function() {
-    $this.find('input').hide();
-  });
+  }, timingEffect);
 
   $(this).remove();
   $('.list-social').find('.' + site).remove();
