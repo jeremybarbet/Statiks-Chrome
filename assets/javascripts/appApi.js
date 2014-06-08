@@ -22,7 +22,7 @@ var api = {
 
       setTimeout(function() {
         $this.find('.icon-check').remove();
-      }, 1500);
+      }, timingEffect * 3);
     }
 
     /*
@@ -60,7 +60,7 @@ var api = {
 
         setTimeout(function() {
           $this.find('.icon-error').remove();
-        }, 1500);
+        }, timingEffect * 3);
       }
     }
 

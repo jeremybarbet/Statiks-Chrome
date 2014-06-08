@@ -34,38 +34,18 @@ var data = {
    */
   loading: function() {
     if ( localStorage.getItem('user-data') !== null ) {
-      var notifwrapper = '<p class="notification"></p>';
-      var totalDiff = 0;
-
       // Hide add social button
       $('.add-social').hide();
-
-      // Display diff number
-      for (var site in dataArray) {
-        totalDiff += parseInt(dataArray[site].diff);
-      }
-
-      if ( !$('.notification').length ) $('.loading').append(notifwrapper);
-
-      var notif = $('.loading').find('.notification');
-
-      if ( totalDiff < 0 ) {
-        notif.show().html('<span>' + totalDiff + '</span> followers');
-      } else if ( totalDiff == 1 ) {
-        notif.show().html('<span>+' + totalDiff + '</span> new follower');
-      } else if ( totalDiff > 1 ) {
-        notif.show().html('<span>+' + totalDiff + '</span> news followers');
-      }
 
       // Loading
       setTimeout(function() {
         $('.loading').fadeOut(timingEffect);
-      }, 1500);
+      }, timingEffect * 3);
 
       // Show data after loading
       setTimeout(function() {
         data.build();
-      }, 2000);
+      }, timingEffect * 4);
     } else {
       $('.loading').hide();
     }
