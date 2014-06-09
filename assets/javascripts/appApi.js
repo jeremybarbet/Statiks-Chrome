@@ -106,7 +106,7 @@ var api = {
       storage.set('user-data', dataArray);
 
       // Render new data for each networks
-      socialItem.find('.nbr').text(followers);
+      socialItem.find('.nbr').text(format(followers));
       socialItem.find('p span').text((diff > 0 ? '+' : '') + diff);
 
       var totalFollowers = 0;
@@ -117,7 +117,7 @@ var api = {
         totalDiff += parseInt(dataArray[site].diff);
       }
 
-      totalItem.find('.nbr').text(totalFollowers);
+      totalItem.find('.nbr').text(format(totalFollowers));
       if ( totalDiff !== null && typeof totalDiff === 'number' ) totalItem.find('p span').text((totalDiff > 0 ? '+' : '') + totalDiff);
 
     } else if ( JSON.stringify(dataArray[site].details) !== JSON.stringify(details) ) {
@@ -128,9 +128,7 @@ var api = {
       storage.set('user-data', dataArray);
 
       for (var key in details) {
-        // details[key] = format(details[key]);
-
-        $('.' + site).find('.' + key + ' .right').text(details[key]);
+        $('.' + site).find('.' + key + ' .right').text(format(details[key]));
       }
     } else {
       console.log(Object.keys(dataArray).length);

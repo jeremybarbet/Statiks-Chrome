@@ -71,9 +71,7 @@ var data = {
    * Generated and append items
    */
   render: function(site, username, followers, details) {
-    followers = format(followers);
-
-    var itemList = '<li class="item ' + site + '"><div class="left"><h2>' + ((site === 'cinqcentpx') ? '500px' : site) + '</h2><p>' + username + '</p></div><div class="right"><div class="nbr">' + followers + '</div><p><span></span>followers</p></div><ul class="detail-social ' + site + '"></ul></li>';
+    var itemList = '<li class="item ' + site + '"><div class="left"><h2>' + ((site === 'cinqcentpx') ? '500px' : site) + '</h2><p>' + username + '</p></div><div class="right"><div class="nbr">' + format(followers) + '</div><p><span></span>followers</p></div><ul class="detail-social ' + site + '"></ul></li>';
     var itemTotal = $('.list-social').find('.total');
 
     if ( site === 'total' ) {
@@ -86,26 +84,24 @@ var data = {
 
         // Update total data
         itemTotal.find('.left p').text(username);
-        itemTotal.find('.right .nbr').text(followers);
+        itemTotal.find('.right .nbr').text(format(followers));
       }
     } else {
       if ( !$('.list-social').find('.item.' + site).length ) {
         $('.list-social').find('.social-wrapper').append(itemList);
       } else {
         $('.item.' + site).find('.left p').text(username);
-        $('.item.' + site).find('.right .nbr').text(followers);
+        $('.item.' + site).find('.right .nbr').text(format(followers));
       }
       
       if ( site !== 'total' ) {
         for (var key in details) {
-          // details[key] = format(details[key]);
-
-          var itemDetail = '<li class="' + key + '"><div class="left">' + key + '</div><div class="right">' + details[key] + '</div></li>';
+          var itemDetail = '<li class="' + key + '"><div class="left">' + key + '</div><div class="right">' + format(details[key]) + '</div></li>';
 
           if ( !$('.item.' + site).find('.detail-social .' + key).length ) {
             $('.item.' + site).find('.detail-social').append(itemDetail);
           } else {
-            $('.item.' + site).find('.' + key + ' .right').text(details[key]);
+            $('.item.' + site).find('.' + key + ' .right').text(format(details[key]));
           }
         }
       }
