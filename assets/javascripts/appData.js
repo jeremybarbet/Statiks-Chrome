@@ -89,7 +89,12 @@ var data = {
         itemTotal.find('.right .nbr').text(followers);
       }
     } else {
-      if ( !$('.list-social').find('.' + site).length ) $('.list-social').find('.social-wrapper').append(itemList);
+      if ( !$('.list-social').find('.item.' + site).length ) {
+        $('.list-social').find('.social-wrapper').append(itemList);
+      } else {
+        $('.item.' + site).find('.left p').text(username);
+        $('.item.' + site).find('.right .nbr').text(followers);
+      }
       
       if ( site !== 'total' ) {
         for (var key in details) {
@@ -97,7 +102,11 @@ var data = {
 
           var itemDetail = '<li class="' + key + '"><div class="left">' + key + '</div><div class="right">' + details[key] + '</div></li>';
 
-          if ( !$('.detail-social' + site).length ) $('.' + site).find('.detail-social').append(itemDetail);
+          if ( !$('.item.' + site).find('.detail-social .' + key).length ) {
+            $('.item.' + site).find('.detail-social').append(itemDetail);
+          } else {
+            $('.item.' + site).find('.' + key + ' .right').text(details[key]);
+          }
         }
       }
     }
