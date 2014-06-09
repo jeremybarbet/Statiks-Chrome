@@ -25,6 +25,22 @@ function format(nbr) {
 }
 
 /**
+ * Localstorage methods
+ * @global
+ */
+var storage = {
+  set: function(item, value) {
+    localStorage.setItem(item, JSON.stringify(value));
+  },
+  get: function(item) {
+    return JSON.parse(localStorage.getItem(item));
+  },
+  rem: function(item) {
+    localStorage.removeItem(item);
+  }
+};
+
+/**
  * Data namespace with related methods
  * @global
  */
@@ -33,7 +49,7 @@ var data = {
    * Launching's function app
    */
   loading: function() {
-    if ( localStorage.getItem('user-data') !== null ) {
+    if ( storage.get('user-data') !== null ) {
       // Hide add social button
       $('.add-social').hide();
 
@@ -77,9 +93,9 @@ var data = {
       
       if ( site !== 'total' ) {
         for (var key in details) {
-          details[key] = format(details[key]);
+          // details[key] = format(details[key]);
 
-          var itemDetail = '<li><div class="left">' + key + '</div><div class="right">' + details[key] + '</div></li>';
+          var itemDetail = '<li class="' + key + '"><div class="left">' + key + '</div><div class="right">' + details[key] + '</div></li>';
 
           if ( !$('.detail-social' + site).length ) $('.' + site).find('.detail-social').append(itemDetail);
         }
@@ -91,7 +107,7 @@ var data = {
    * Build item wrapper
    */
   build: function() {
-    dataArray = JSON.parse(localStorage.getItem('user-data'));
+    dataArray = storage.get('user-data');
 
     // Build item container
     if ( !$('.list-social').length ) {

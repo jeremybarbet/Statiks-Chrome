@@ -114,7 +114,7 @@ $('.choose-social .btn-back, .icon-back').on('click', function() {
     $('.icon-settings, .icon-back, .choose-social').hide();
     $('.add-social').show();
   } else {
-    if ( localStorage.getItem('user-data') !== null ) {
+    if ( storage.get('user-data') !== null ) {
       $('.add-social, .loading').hide();
       data.build();
     }
@@ -141,9 +141,9 @@ $(document).on('click', '.icon-clear', function() {
   delete dataArray[site];
 
   if ( isEmpty(dataArray) === true ) {
-    localStorage.removeItem('user-data');
+    storage.rem('user-data');
   } else {
-    localStorage.setItem('user-data', JSON.stringify(dataArray));
+    storage.set('user-data', dataArray);
   }
 });
 

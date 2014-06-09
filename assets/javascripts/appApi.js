@@ -37,7 +37,7 @@ var api = {
         diff: 0
       };
 
-      localStorage.setItem('user-data', JSON.stringify(dataArray));
+      storage.set('user-data', dataArray);
     }
   },
 
@@ -102,10 +102,8 @@ var api = {
       dataArray[site].diff = diff;
       dataArray[site].followers = followers;
 
-      dataArray[site].details = details;
-
       // Push to localstorage
-      localStorage.setItem('user-data', JSON.stringify(dataArray));
+      storage.set('user-data', dataArray);
 
       // Render new data for each networks
       socialItem.find('.nbr').text(followers);
@@ -122,11 +120,25 @@ var api = {
       totalItem.find('.nbr').text(totalFollowers);
       if ( totalDiff !== null && typeof totalDiff === 'number' ) totalItem.find('p span').text((totalDiff > 0 ? '+' : '') + totalDiff);
 
+    } else if ( JSON.stringify(dataArray[site].details) !== JSON.stringify(details) ) {
+      // Update value of object
+      dataArray[site].details = details;
+
+      // Push to localstorage
+      storage.set('user-data', dataArray);
+
+      for (var key in details) {
+        // details[key] = format(details[key]);
+
+        $('.' + site).find('.' + key + ' .right').text(details[key]);
+      }
     } else {
+      console.log(Object.keys(dataArray).length);
+
       // TO FIX
-      $(document).ajaxStop(function() {
-        api.fail(null, 'Nothing new :(');
-      });
+      // $(document).ajaxStop(function() {
+        // api.fail(null, 'Nothing new :(');
+      // });
     }
   },
 
