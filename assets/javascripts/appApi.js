@@ -463,5 +463,36 @@ var api = {
     .fail(function(response) {
       api.fail($this, response.statusText);
     });
+  },
+
+  /**
+   * Soundcloud API connection
+   */
+  soundcloud: function($this, value, site) {
+    $.getJSON('http://api.soundcloud.com/users/' + value + '.json?client_id=6ff9d7c484c5e5d5517d1965ca18eca9', function(data) {
+      var username = data.permalink;
+      var followers = data.followers_count;
+
+      var details = {
+        following: data.followings_count,
+        tracks: data.track_count,
+        playlist: data.playlist_count,
+        favorites: data.public_favorites_count
+      };
+
+      if ( username !== undefined && followers !== undefined ) {
+        if ( $this === 'reload' ) {
+          api.reload($this, site, followers, details);
+        } else {
+          api.success($this, site, username, followers, details);
+        }
+      } else {
+        var errorCustomMessage = 'Data from API are incorrect.';
+        api.fail($this, errorCustomMessage);
+      }
+    })
+    .fail(function(response) {
+      api.fail($this, response.statusText);
+    });
   }
 };
