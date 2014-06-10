@@ -131,12 +131,15 @@ var api = {
         $('.' + site).find('.' + key + ' .right').text(format(details[key]));
       }
     } else {
-      console.log(Object.keys(dataArray).length);
+      api.notification();
+    }
+  },
 
-      // TO FIX
-      // $(document).ajaxStop(function() {
-        // api.fail(null, 'Nothing new :(');
-      // });
+  notification: function() {
+    reload++;
+
+    if ( Object.keys(dataArray).length == reload ) {
+      api.fail(null, 'Nothing new :(');
     }
   },
 

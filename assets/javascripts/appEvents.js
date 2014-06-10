@@ -1,8 +1,10 @@
 /**
  * Global timing for differents fades.
+ * Reload variable.
  * @global
  */
 var timingEffect = 400;
+var reload = 0;
 
 /**
  * Add social actions. Hide the button, and display
@@ -25,6 +27,8 @@ $('.add-social').on('click', function() {
  * Action to reload data with the connected networks.
  */
 $('.icon-reload').on('click', function() {
+  reload = 0;
+
   $(this).addClass('inprogress');
 
   if ( $(this).hasClass('pause') ) $(this).removeClass('pause');
