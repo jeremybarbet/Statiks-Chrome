@@ -70,8 +70,8 @@ var api = {
     if (alert) {
       // Not add it on the DOM again, if is already append
       if ( !$('.alert').length ) {
-        var alert = '<div class="alert"><p></p></div>';
-        $(alert).insertAfter('header');
+        var alertWrapper = '<div class="alert"><p></p></div>';
+        $(alertWrapper).insertAfter('header');
       }
 
       $('.alert').animate({
