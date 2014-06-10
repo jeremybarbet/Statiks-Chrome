@@ -432,5 +432,36 @@ var api = {
     .fail(function(response) {
       api.fail($this, response.statusText);
     });
+  },
+
+  /**
+   * Forrst API connection
+   */
+  forrst: function($this, value, site) {
+    $.getJSON('https://forrst.com/api/v2/users/info?username=' + value, function(data) {
+      var username = data.resp.username;
+      var followers = data.resp.followers;
+
+      var details = {
+        following: data.resp.following,
+        posts: data.resp.posts,
+        likes: data.resp.likes,
+        comments: data.resp.comments
+      };
+
+      if ( username !== undefined && followers !== undefined ) {
+        if ( $this === 'reload' ) {
+          api.reload($this, site, followers, details);
+        } else {
+          api.success($this, site, username, followers, details);
+        }
+      } else {
+        var errorCustomMessage = 'Data from API are incorrect.';
+        api.fail($this, errorCustomMessage);
+      }
+    })
+    .fail(function(response) {
+      api.fail($this, response.statusText);
+    });
   }
 };
