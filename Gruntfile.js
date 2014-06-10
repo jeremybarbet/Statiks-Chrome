@@ -50,10 +50,9 @@ module.exports = function (grunt) {
           dest: 'dist/fonts/'
         },
         {
-          'dist/jquery.min.js': 'assets/javascripts/lib/jquery.min.js'
-        },
-        {
-          'dist/popup.js': 'assets/javascripts/popup.js'
+          'dist/jquery.min.js': 'assets/javascripts/lib/jquery.min.js',
+          'dist/popup.js': 'assets/javascripts/popup.js',
+          'dist/chart.min.js': 'assets/javascripts/lib/chart.min.js'
         }]
       }
     },
