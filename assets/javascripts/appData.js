@@ -143,7 +143,7 @@ var data = {
 
       // Calculate total followers
       totalFollowers += parseInt(dataArray[site].followers);
-    };
+    }
 
     // Display total followers and total network connected
     totalSites = Object.keys(dataArray).length + ((Object.keys(dataArray).length > 1) ? ' networks connected' : ' network connected');
@@ -156,4 +156,4 @@ var data = {
       $(this).removeClass('bounceIn');
     }).addClass('bounceIn');
   }
-}
+};

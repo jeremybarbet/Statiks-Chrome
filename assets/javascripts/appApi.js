@@ -112,7 +112,7 @@ var api = {
       var totalFollowers = 0;
       var totalDiff = 0;
 
-      for (var site in dataArray) {
+      for (site in dataArray) {
         totalFollowers += parseInt(dataArray[site].followers);
         totalDiff += parseInt(dataArray[site].diff);
       }
@@ -156,7 +156,7 @@ var api = {
         likes: data.likes_received_count,
         comments: data.comments_received_count,
         shots: data.shots_count
-      }
+      };
 
       if ( username !== undefined && followers !== undefined ) {
         if ( $this === 'reload' ) {
@@ -197,7 +197,7 @@ var api = {
           tweets: getTweets[1],
           favorites: getFavorites[1],
           listed: getListed[1]
-        }
+        };
 
         if ( $this === 'reload' ) {
           api.reload($this, site, followers, details);
@@ -225,7 +225,7 @@ var api = {
         likes: data.user.stats.appreciations,
         comments: data.user.stats.comments,
         views: data.user.stats.views
-      }
+      };
 
       if ( username !== undefined && followers !== undefined ) {
         if ( $this === 'reload' ) {
@@ -256,7 +256,7 @@ var api = {
         affection: data.user.affection,
         favorites: data.user.in_favorites_count,
         photos: data.user.photos_count,
-      }
+      };
 
       if ( username !== undefined && followers !== undefined ) {
         if ( $this === 'reload' ) {
@@ -286,7 +286,7 @@ var api = {
         following: data.following,
         repo: data.public_repos,
         gist: data.public_gists
-      }
+      };
 
       if ( username !== undefined && followers !== undefined ) {
         if ( $this === 'reload' ) {
@@ -316,7 +316,7 @@ var api = {
         videos: data.total_videos_uploaded,
         likes: data.total_videos_liked,
         albums: data.total_albums
-      }
+      };
 
       if ( username !== undefined && followers !== undefined ) {
         if ( $this === 'reload' ) {
@@ -353,7 +353,7 @@ var api = {
         var details = {
           following: getFollowing[0].substr(getFollowing[0].indexOf(':') + 1),
           medias: getMedias[0].substr(getMedias[0].indexOf(':') + 1)
-        }
+        };
 
         if ( $this === 'reload' ) {
           api.reload($this, site, followers, details);
@@ -391,7 +391,7 @@ var api = {
           pins: getPins[1].substr(getPins[1].indexOf(' ') + 1),
           boards: getBoards[1].substr(getBoards[1].indexOf(' ') + 1),
           likes: getLikes[1].substr(getLikes[1].indexOf(' ') + 1)
-        }
+        };
 
         if ( $this === 'reload' ) {
           api.reload($this, site, followers, details);
@@ -416,7 +416,7 @@ var api = {
 
       var details = {
         views: data.entry.yt$statistics.totalUploadViews
-      }
+      };
 
       if ( username !== undefined && followers !== undefined ) {
         if ( $this === 'reload' ) {
