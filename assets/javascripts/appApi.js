@@ -135,6 +135,21 @@ var api = {
     }
   },
 
+  upgrade: function($this, site, followers, details) {
+    dataArray[site].followers = followers;
+    dataArray[site].details = details;
+    dataArray[site].diff = 0;
+    storage.set('user-data', dataArray);
+
+    setTimeout(function() {
+      $('.loading').fadeOut(timingEffect);
+
+      setTimeout(function() {
+        data.build();
+      }, timingEffect);
+    }, timingEffect * 6);
+  },
+
   notification: function() {
     reload++;
 
@@ -161,6 +176,8 @@ var api = {
       if ( username !== undefined && followers !== undefined ) {
         if ( $this === 'reload' ) {
           api.reload($this, site, followers, details);
+        } else if ( $this === 'upgrade' ) {
+          api.upgrade($this, site, followers, details);
         } else {
           api.success($this, site, username, followers, details);
         }
@@ -201,6 +218,8 @@ var api = {
 
         if ( $this === 'reload' ) {
           api.reload($this, site, followers, details);
+        } else if ( $this === 'upgrade' ) {
+          api.upgrade($this, site, followers, details);
         } else {
           api.success($this, site, username, followers, details);
         }
@@ -230,6 +249,8 @@ var api = {
       if ( username !== undefined && followers !== undefined ) {
         if ( $this === 'reload' ) {
           api.reload($this, site, followers, details);
+        } else if ( $this === 'upgrade' ) {
+          api.upgrade($this, site, followers, details);
         } else {
           api.success($this, site, username, followers, details);
         }
@@ -261,6 +282,8 @@ var api = {
       if ( username !== undefined && followers !== undefined ) {
         if ( $this === 'reload' ) {
           api.reload($this, site, followers, details);
+        } else if ( $this === 'upgrade' ) {
+          api.upgrade($this, site, followers, details);
         } else {
           api.success($this, site, username, followers, details);
         }
@@ -291,6 +314,8 @@ var api = {
       if ( username !== undefined && followers !== undefined ) {
         if ( $this === 'reload' ) {
           api.reload($this, site, followers, details);
+        } else if ( $this === 'upgrade' ) {
+          api.upgrade($this, site, followers, details);
         } else {
           api.success($this, site, username, followers, details);
         }
@@ -321,6 +346,8 @@ var api = {
       if ( username !== undefined && followers !== undefined ) {
         if ( $this === 'reload' ) {
           api.reload($this, site, followers, details);
+        } else if ( $this === 'upgrade' ) {
+          api.upgrade($this, site, followers, details);
         } else {
           api.success($this, site, username, followers, details);
         }
@@ -357,6 +384,8 @@ var api = {
 
         if ( $this === 'reload' ) {
           api.reload($this, site, followers, details);
+        } else if ( $this === 'upgrade' ) {
+          api.upgrade($this, site, followers, details);
         } else {
           api.success($this, site, username, followers, details);
         }
@@ -395,6 +424,8 @@ var api = {
 
         if ( $this === 'reload' ) {
           api.reload($this, site, followers, details);
+        } else if ( $this === 'upgrade' ) {
+          api.upgrade($this, site, followers, details);
         } else {
           api.success($this, site, username, followers, details);
         }
@@ -421,6 +452,8 @@ var api = {
       if ( username !== undefined && followers !== undefined ) {
         if ( $this === 'reload' ) {
           api.reload($this, site, followers, details);
+        } else if ( $this === 'upgrade' ) {
+          api.upgrade($this, site, followers, details);
         } else {
           api.success($this, site, username, followers, details);
         }
@@ -452,6 +485,8 @@ var api = {
       if ( username !== undefined && followers !== undefined ) {
         if ( $this === 'reload' ) {
           api.reload($this, site, followers, details);
+        } else if ( $this === 'upgrade' ) {
+          api.upgrade($this, site, followers, details);
         } else {
           api.success($this, site, username, followers, details);
         }
@@ -483,6 +518,8 @@ var api = {
       if ( username !== undefined && followers !== undefined ) {
         if ( $this === 'reload' ) {
           api.reload($this, site, followers, details);
+        } else if ( $this === 'upgrade' ) {
+          api.upgrade($this, site, followers, details);
         } else {
           api.success($this, site, username, followers, details);
         }

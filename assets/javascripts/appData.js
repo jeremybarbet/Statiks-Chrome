@@ -114,46 +114,54 @@ var data = {
   build: function() {
     dataArray = storage.get('user-data');
 
-    // Build item container
-    if ( !$('.list-social').length ) {
-      var itemsContainer = '<div class="list-social"><ul class="social-wrapper"></ul></div>';
-      $(itemsContainer).insertAfter('.choose-social');
-    }
-
-    var itemsData = $('.list-social');
-
-    // Hide choose social list
-    $('.choose-social').hide();
-
-    // Display parameters button
-    $('.icon-settings, .icon-reload').fadeIn(timingEffect);
-    $('.icon-back').fadeOut(timingEffect);
-
-    var totalFollowers = 0;
-    var totalSites = 0;
-
-    // Display data on main screen
     for (var site in dataArray) {
-      data.render(site, dataArray[site].username, dataArray[site].followers, dataArray[site].details);
+      if ( dataArray[site].hasOwnProperty('details') !== false && dataArray[site].hasOwnProperty('diff') !== false ) {
+        // Build item container
+        if ( !$('.list-social').length ) {
+          var itemsContainer = '<div class="list-social"><ul class="social-wrapper"></ul></div>';
+          $(itemsContainer).insertAfter('.choose-social');
+        }
 
-      // Render username in config screen
-      $('.choose-social').find('.' + site).find('span').css('marginLeft', '-240px').parent().find('input').show().val(dataArray[site].username);
-      var clear = $('<span class="icon-clear"></span>');
-      if ( !$('.choose-social').find('.' + site).find('.icon-clear').length ) $('.choose-social').find('.' + site).append(clear);
+        var itemsData = $('.list-social');
 
-      // Calculate total followers
-      totalFollowers += parseInt(dataArray[site].followers);
+        // Hide choose social list
+        $('.choose-social').hide();
+
+        // Display parameters button
+        $('.icon-settings, .icon-reload').fadeIn(timingEffect);
+        $('.icon-back').fadeOut(timingEffect);
+
+        var totalFollowers = 0;
+        var totalSites = 0;
+
+        // Display data on main screen
+        for (site in dataArray) {
+          data.render(site, dataArray[site].username, dataArray[site].followers, dataArray[site].details);
+
+          // Render username in config screen
+          $('.choose-social').find('.' + site).find('span').css('marginLeft', '-240px').parent().find('input').show().val(dataArray[site].username);
+          var clear = $('<span class="icon-clear"></span>');
+          if ( !$('.choose-social').find('.' + site).find('.icon-clear').length ) $('.choose-social').find('.' + site).append(clear);
+
+          // Calculate total followers
+          totalFollowers += parseInt(dataArray[site].followers);
+        }
+
+        // Display total followers and total network connected
+        totalSites = Object.keys(dataArray).length + ((Object.keys(dataArray).length > 1) ? ' networks connected' : ' network connected');
+        data.render('total', totalSites, totalFollowers);
+
+        // Finally display items and remove class after animation completed
+        itemsData.fadeIn(timingEffect);
+
+        itemsData.find('.item').bind('animationend webkitAnimationEnd', function() {
+          $(this).removeClass('bounceIn');
+        }).addClass('bounceIn');
+      } else {
+        $('.loading').fadeIn(timingEffect).find('p').text('Upgrade to the new version');
+        api[site]('upgrade', dataArray[site].username, site);
+        storage.rem('user-diff');
+      }
     }
-
-    // Display total followers and total network connected
-    totalSites = Object.keys(dataArray).length + ((Object.keys(dataArray).length > 1) ? ' networks connected' : ' network connected');
-    data.render('total', totalSites, totalFollowers);
-
-    // Finally display items and remove class after animation completed
-    itemsData.fadeIn(timingEffect);
-
-    itemsData.find('.item').bind('animationend webkitAnimationEnd', function() {
-      $(this).removeClass('bounceIn');
-    }).addClass('bounceIn');
   }
 };
