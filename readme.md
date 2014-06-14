@@ -11,13 +11,25 @@ This is a _MVP_ Minimal Valuable Product, I will keep improving, adding new netw
 Changelog
 ---------
 
+__v1.1.0__
+
+* New networks integrations : [Instagram](http://instagram.com), [Pinterest](http://www.pinterest.com), [Youtube](https://www.youtube.com), [Forrst](https://forrst.com) and [Soundcloud](https://soundcloud.com).
+* Add networks details, like following, tweets, favorites, photos, and lot more for the differents networks.
+* Add back button on header.
+* Refactoring code to easily add news features.
+* Add upgrade method for next releases.
+* Avoid multiple ajax calls.
+* Merge all data on the same object.
+* Improve animations and timing effects.
+* Fix a lot of bugs and make global improvement.
+
 __v1.0.1__
 
-* Improve global animations fa34dae
-* Avoid user-select and create markup in renderData() function 2b9680f
-* Add a fail alert if there is no new followers after reloading data. Change alert color bed523a
-* Add bump and jshint dependencies 0569065 6ab52e3
-* Fix warnings according to jshint f4f51bb
+* Improve global animations.
+* Avoid user-select and create markup in renderData() function.
+* Add a fail alert if there is no new followers after reloading data. Change alert color.
+* Add bump and jshint dependencies.
+* Fix warnings according to jshint.
 
 __v1.0.0__
 
