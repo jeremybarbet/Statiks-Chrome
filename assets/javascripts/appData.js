@@ -2,7 +2,7 @@
  * Declare global array to store data.
  * @global
  */
-var dataArray = {};
+var dataObj = {}; dataObj['sites'] = {}; dataObj['graph'] = []; dataObj['order'] = [];
 
 /**
  * Function to check if an object is empty
@@ -112,10 +112,10 @@ var data = {
    * Build item wrapper
    */
   build: function() {
-    dataArray = storage.get('user-data');
+    dataObj = storage.get('user-data');
 
-    for (var site in dataArray) {
-      if ( dataArray[site].hasOwnProperty('details') !== false && dataArray[site].hasOwnProperty('diff') !== false ) {
+    for (var site in dataObj.sites) {
+      if ( dataObj.sites[site].hasOwnProperty('details') !== false && dataObj.sites[site].hasOwnProperty('diff') !== false ) {
         // Build item container
         if ( !$('.list-social').length ) {
           var itemsContainer = '<div class="list-social"><ul class="social-wrapper"></ul></div>';
@@ -135,20 +135,20 @@ var data = {
         var totalSites = 0;
 
         // Display data on main screen
-        for (site in dataArray) {
-          data.render(site, dataArray[site].username, dataArray[site].followers, dataArray[site].details);
+        for (site in dataObj.sites) {
+          data.render(site, dataObj.sites[site].username, dataObj.sites[site].followers, dataObj.sites[site].details);
 
           // Render username in config screen
-          $('.choose-social').find('.' + site).find('span').css('marginLeft', '-240px').parent().find('input').show().val(dataArray[site].username);
+          $('.choose-social').find('.' + site).find('span').css('marginLeft', '-240px').parent().find('input').show().val(dataObj.sites[site].username);
           var clear = $('<span class="icon-clear"></span>');
           if ( !$('.choose-social').find('.' + site).find('.icon-clear').length ) $('.choose-social').find('.' + site).append(clear);
 
           // Calculate total followers
-          totalFollowers += parseInt(dataArray[site].followers);
+          totalFollowers += parseInt(dataObj.sites[site].followers);
         }
 
         // Display total followers and total network connected
-        totalSites = Object.keys(dataArray).length + ((Object.keys(dataArray).length > 1) ? ' networks connected' : ' network connected');
+        totalSites = Object.keys(dataObj.sites).length + ((Object.keys(dataObj.sites).length > 1) ? ' networks connected' : ' network connected');
         data.render('total', totalSites, totalFollowers);
 
         // Finally display items and remove class after animation completed
@@ -159,7 +159,7 @@ var data = {
         }).addClass('bounceIn');
       } else {
         $('.loading').fadeIn(timingEffect).find('p').text('Upgrade to the new version');
-        api[site]('upgrade', dataArray[site].username, site);
+        api[site]('upgrade', dataObj.sites[site].username, site);
         storage.rem('user-diff');
       }
     }

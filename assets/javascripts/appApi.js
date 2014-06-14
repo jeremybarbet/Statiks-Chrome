@@ -30,14 +30,14 @@ var api = {
     * Push data to object and store it
     */
     if (localStorage !== null) {
-      dataArray[site] = {
+      dataObj['sites'][site] = {
         username: username,
         followers: followers,
         details: details,
         diff: 0
       };
 
-      storage.set('user-data', dataArray);
+      storage.set('user-data', dataObj);
     }
   },
 
@@ -93,17 +93,17 @@ var api = {
    * the diff since the last app launched.
    */
   reload: function($this, site, followers, details) {
-    if ( dataArray[site].followers !== followers ) {
-      var diff = followers - dataArray[site].followers;
+    if ( dataObj.sites[site].followers !== followers ) {
+      var diff = followers - dataObj.sites[site].followers;
       var socialItem = $('.list-social').find('.' + site + ' .right');
       var totalItem = $('.total').find('.right');
 
       // Update value of object
-      dataArray[site].diff = diff;
-      dataArray[site].followers = followers;
+      dataObj.sites[site].diff = diff;
+      dataObj.sites[site].followers = followers;
 
       // Push to localstorage
-      storage.set('user-data', dataArray);
+      storage.set('user-data', dataObj);
 
       // Render new data for each networks
       socialItem.find('.nbr').text(format(followers));
@@ -112,20 +112,20 @@ var api = {
       var totalFollowers = 0;
       var totalDiff = 0;
 
-      for (site in dataArray) {
-        totalFollowers += parseInt(dataArray[site].followers);
-        totalDiff += parseInt(dataArray[site].diff);
+      for (site in dataObj.sites) {
+        totalFollowers += parseInt(dataObj.sites[site].followers);
+        totalDiff += parseInt(dataObj.sites[site].diff);
       }
 
       totalItem.find('.nbr').text(format(totalFollowers));
       if ( totalDiff !== null && typeof totalDiff === 'number' ) totalItem.find('p span').text((totalDiff > 0 ? '+' : '') + totalDiff);
 
-    } else if ( JSON.stringify(dataArray[site].details) !== JSON.stringify(details) ) {
+    } else if ( JSON.stringify(dataObj.sites[site].details) !== JSON.stringify(details) ) {
       // Update value of object
-      dataArray[site].details = details;
+      dataObj.sites[site].details = details;
 
       // Push to localstorage
-      storage.set('user-data', dataArray);
+      storage.set('user-data', dataObj);
 
       for (var key in details) {
         $('.' + site).find('.' + key + ' .right').text(format(details[key]));
@@ -136,10 +136,10 @@ var api = {
   },
 
   upgrade: function($this, site, followers, details) {
-    dataArray[site].followers = followers;
-    dataArray[site].details = details;
-    dataArray[site].diff = 0;
-    storage.set('user-data', dataArray);
+    dataObj.sites[site].followers = followers;
+    dataObj.sites[site].details = details;
+    dataObj.sites[site].diff = 0;
+    storage.set('user-data', dataObj);
 
     setTimeout(function() {
       $('.loading').fadeOut(timingEffect);
@@ -153,7 +153,7 @@ var api = {
   notification: function() {
     reload++;
 
-    if ( Object.keys(dataArray).length == reload ) {
+    if ( Object.keys(dataObj.sites).length == reload ) {
       api.fail(null, 'Nothing new :(');
     }
   },
