@@ -33,8 +33,8 @@ $('.icon-reload').on('click', function() {
 
   if ( $(this).hasClass('pause') ) $(this).removeClass('pause');
 
-  for (var site in dataArray) {
-    api[site]('reload', dataArray[site].username, site);
+  for (var site in dataObj.sites) {
+    api[site]('reload', dataObj.sites[site].username, site);
   }
 
   $(document).ajaxStop(function() {
@@ -114,7 +114,7 @@ $('.choose-social').on('click', 'li', function(e) {
  * and the back button at the bottom of the settings views
  */
 $('.choose-social .btn-back, .icon-back').on('click', function() {
-  if ( isEmpty(dataArray) === true ) {
+  if ( isEmpty(dataObj.sites) === true ) {
     $('.icon-settings, .icon-back, .choose-social').hide();
     $('.add-social').show();
   } else {
@@ -142,12 +142,12 @@ $(document).on('click', '.icon-clear', function() {
   $(this).remove();
   $('.list-social').find('.' + site).remove();
 
-  delete dataArray[site];
+  delete dataObj.sites[site];
 
-  if ( isEmpty(dataArray) === true ) {
+  if ( isEmpty(dataObj.sites) === true ) {
     storage.rem('user-data');
   } else {
-    storage.set('user-data', dataArray);
+    storage.set('user-data', dataObj);
   }
 });
 
