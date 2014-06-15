@@ -36,7 +36,8 @@ var api = {
         details: details,
         diff: {
           value: 0,
-          data: [0, 0, 0, 0, 0, 0, 0]
+          followers: [0, 0, 0, 0, 0, 0, 0],
+          following: [0, 0, 0, 0, 0, 0, 0]
         }
       };
 
@@ -115,11 +116,10 @@ var api = {
       var totalFollowers = 0;
       var totalDiff = 0;
 
-      for (var i = 0; i < dataObj.graph.length; i++) {
-        if ( dataObj.graph[i] === 0 ) {
-          dataObj.sites[site].diff.data[i] = followers;
-
-          console.log(site + ': ' + dataObj.sites[site].diff.data);
+      for (var i = 0; i < dataObj.graph.followers.length; i++) {
+        if ( dataObj.graph.followers[i] === 0 ) {
+          dataObj.sites[site].diff.followers[i] = followers;
+          if (dataObj.sites[site].details.hasOwnProperty('following')) dataObj.sites[site].diff.following[i] = details.following;
 
           break;
         }
@@ -154,20 +154,16 @@ var api = {
   },
 
   graph: function() {
-    // Until there is a 0 in the array don't count graph data
-    // if ( graph.indexOf(0) > -1 ) {}
-
-    $.each(dataObj.graph, function(i, data) {
+    $.each(dataObj.graph.followers, function(i, data) {
       if ( data === 0 ) {
         for (site in dataObj.sites) {
-          dataObj.graph[i] += parseInt(dataObj.sites[site].diff.data[i]);
+          dataObj.graph.followers[i] += parseInt(dataObj.sites[site].diff.followers[i]);
+          dataObj.graph.following[i] += parseInt(dataObj.sites[site].diff.following[i]);
         }
       }
     });
 
     storage.set('user-data', dataObj);
-
-    console.log('graph: ' + dataObj.graph);
   },
 
   upgrade: function($this, site, followers, details) {

@@ -2,7 +2,16 @@
  * Declare global array to store data.
  * @global
  */
-var dataObj = {}; dataObj['sites'] = {}; dataObj['graph'] = [0, 0, 0, 0, 0, 0, 0]; dataObj['order'] = [];
+var dataObj = {};
+
+dataObj['sites'] = {};
+
+dataObj['graph'] = {
+  followers: [0, 0, 0, 0, 0, 0, 0],
+  following: [0, 0, 0, 0, 0, 0, 0]
+};
+
+dataObj['order'] = [];
 
 /**
  * Function to check if an object is empty
@@ -190,19 +199,19 @@ var data = {
     var data = {
       labels: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
       datasets : [
-        // {
-        //   fillColor: 'rgba(220, 220, 220, 0.5)',
-        //   strokeColor: 'rgba(220, 220, 220, 1)',
-        //   pointColor: 'rgba(220, 220, 220, 1)',
-        //   pointStrokeColor: '#fff',
-        //   data: dataObj['graph'].following
-        // },
+        {
+          fillColor: 'rgba(220, 220, 220, 0.5)',
+          strokeColor: 'rgba(220, 220, 220, 1)',
+          pointColor: 'rgba(220, 220, 220, 1)',
+          pointStrokeColor: '#fff',
+          data: dataObj['graph'].following
+        },
         {
           fillColor: 'rgba(70, 195, 64, 0.15)',
           strokeColor: 'rgba(70, 195, 64, 1)',
           pointColor: '#f4f4f4',
           pointStrokeColor: 'rgba(70, 195, 64, 1)',
-          data: dataObj['graph']
+          data: dataObj['graph'].followers
         }
       ]
     }
@@ -213,14 +222,14 @@ var data = {
       scaleFontColor: gray,
       scaleFontSize: 10,
       scaleGridLineColor : 'rgba(0, 0, 0, .03)',
+      bezierCurve: false,
       pointDotStrokeWidth: 1,
       datasetStrokeWidth: 1,
-      dataLabel: false,
+      dataLabel: true,
       dataLabelColor: gray,
       animation: false
     };
 
-    if ( dataObj['graph'] !== null )
-      new Chart(ctx).Line(data, options);
+    if ( dataObj['graph'].followers && dataObj['graph'].following !== null ) new Chart(ctx).Line(data, options);
   }
 };
