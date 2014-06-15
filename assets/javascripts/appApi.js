@@ -34,7 +34,11 @@ var api = {
         username: username,
         followers: followers,
         details: details,
-        diff: 0
+        diff: {
+          value: 0,
+          followers: [0, 0, 0, 0, 0, 0, 0],
+          following: [0, 0, 0, 0, 0, 0, 0]
+        }
       };
 
       storage.set('user-data', dataObj);
@@ -99,7 +103,7 @@ var api = {
       var totalItem = $('.total').find('.right');
 
       // Update value of object
-      dataObj.sites[site].diff = diff;
+      dataObj.sites[site].diff.value = diff;
       dataObj.sites[site].followers = followers;
 
       // Push to localstorage
@@ -112,14 +116,25 @@ var api = {
       var totalFollowers = 0;
       var totalDiff = 0;
 
+      for (var i = 0; i < dataObj.graph.followers.length; i++) {
+        if ( dataObj.graph.followers[i] === 0 ) {
+          dataObj.sites[site].diff.followers[i] = followers;
+          if (dataObj.sites[site].details.hasOwnProperty('following')) dataObj.sites[site].diff.following[i] = details.following;
+
+          break;
+        }
+      }
+
+      // Push to localstorage
+      storage.set('user-data', dataObj);
+
       for (site in dataObj.sites) {
         totalFollowers += parseInt(dataObj.sites[site].followers);
-        totalDiff += parseInt(dataObj.sites[site].diff);
+        totalDiff += parseInt(dataObj.sites[site].diff.value);
       }
 
       totalItem.find('.nbr').text(format(totalFollowers));
       if ( totalDiff !== null && typeof totalDiff === 'number' ) totalItem.find('p span').text((totalDiff > 0 ? '+' : '') + totalDiff);
-
     } else if ( JSON.stringify(dataObj.sites[site].details) !== JSON.stringify(details) ) {
       // Update value of object
       dataObj.sites[site].details = details;
@@ -133,6 +148,19 @@ var api = {
     } else {
       api.notification();
     }
+  },
+
+  graph: function() {
+    $.each(dataObj.graph.followers, function(i, data) {
+      if ( data === 0 ) {
+        for (site in dataObj.sites) {
+          dataObj.graph.followers[i] += parseInt(dataObj.sites[site].diff.followers[i]);
+          dataObj.graph.following[i] += parseInt(dataObj.sites[site].diff.following[i]);
+        }
+      }
+    });
+
+    storage.set('user-data', dataObj);
   },
 
   upgrade: function($this, site, followers, details) {
