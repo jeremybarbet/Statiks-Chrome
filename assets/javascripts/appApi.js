@@ -41,6 +41,8 @@ var api = {
         }
       };
 
+      dataObj['order'].push(Object.keys(dataObj.sites).length - 1);
+
       storage.set('user-data', dataObj);
     }
   },
