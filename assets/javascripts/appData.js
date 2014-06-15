@@ -190,7 +190,7 @@ var data = {
   },
 
   graph: function() {
-    var canvas = '<li><canvas width="295" id="graph"></canvas></li>';
+    var canvas = '<li><canvas width="295" height="200" id="graph"></canvas></li>';
     $('.total').find('.detail-social').append(canvas);
 
     var ctx = $('#graph').get(0).getContext('2d');
@@ -225,9 +225,13 @@ var data = {
       bezierCurve: false,
       pointDotStrokeWidth: 1,
       datasetStrokeWidth: 1,
-      dataLabel: true,
-      dataLabelColor: gray,
-      animation: false
+      animation: false,
+      inGraphDataShow: true,
+      inGraphDataPaddingX: 8,
+      inGraphDataPaddingY: 0,
+      inGraphDataRotate: -10,
+      inGraphDataFontSize: 10,
+      inGraphDataFontColor: gray
     };
 
     if ( dataObj['graph'].followers && dataObj['graph'].following !== null ) new Chart(ctx).Line(data, options);

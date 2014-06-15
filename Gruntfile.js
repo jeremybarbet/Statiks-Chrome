@@ -107,7 +107,7 @@ module.exports = function (grunt) {
       },
       lib: {
         files: {
-          'dist/chart.min.js': 'assets/javascripts/lib/chart.js'
+          'dist/chartnew.min.js': 'assets/javascripts/lib/chartnew.js'
         }
       },
       dist: {
@@ -157,8 +157,8 @@ module.exports = function (grunt) {
         tasks: ['less:dev']
       },
       uglify: {
-        files: ['assets/javascripts/*.js'],
-        tasks: ['uglify:dev']
+        files: ['assets/javascripts/**/**.js'],
+        tasks: ['uglify:dev', 'uglify:lib']
       }
     }
   });

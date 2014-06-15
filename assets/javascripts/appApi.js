@@ -97,6 +97,19 @@ var api = {
    * the diff since the last app launched.
    */
   reload: function($this, site, followers, details) {
+    // Build data for graph
+    for (var i = 0; i < dataObj.graph.followers.length; i++) {
+      if ( dataObj.graph.followers[i] === 0 ) {
+        dataObj.sites[site].diff.followers[i] = followers;
+        if (dataObj.sites[site].details.hasOwnProperty('following')) dataObj.sites[site].diff.following[i] = details.following;
+
+        break;
+      }
+    }
+
+    // Push to localstorage
+    storage.set('user-data', dataObj);
+
     if ( dataObj.sites[site].followers !== followers ) {
       var diff = followers - dataObj.sites[site].followers;
       var socialItem = $('.list-social').find('.' + site + ' .right');
@@ -115,18 +128,6 @@ var api = {
 
       var totalFollowers = 0;
       var totalDiff = 0;
-
-      for (var i = 0; i < dataObj.graph.followers.length; i++) {
-        if ( dataObj.graph.followers[i] === 0 ) {
-          dataObj.sites[site].diff.followers[i] = followers;
-          if (dataObj.sites[site].details.hasOwnProperty('following')) dataObj.sites[site].diff.following[i] = details.following;
-
-          break;
-        }
-      }
-
-      // Push to localstorage
-      storage.set('user-data', dataObj);
 
       for (site in dataObj.sites) {
         totalFollowers += parseInt(dataObj.sites[site].followers);
