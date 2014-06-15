@@ -2,7 +2,7 @@
  * Declare global array to store data.
  * @global
  */
-var dataObj = {}; dataObj['sites'] = {}; dataObj['graph'] = []; dataObj['order'] = [];
+var dataObj = {}; dataObj['sites'] = {}; dataObj['graph'] = [0, 0, 0, 0, 0, 0, 0]; dataObj['order'] = [];
 
 /**
  * Function to check if an object is empty
@@ -98,7 +98,7 @@ var data = {
     dataObj = storage.get('user-data');
 
     for (var site in dataObj.sites) {
-      if ( dataObj.sites[site].hasOwnProperty('details') !== false && dataObj.sites[site].hasOwnProperty('diff') !== false ) {
+      // if ( dataObj.sites[site].hasOwnProperty('details') !== false && dataObj.sites[site].hasOwnProperty('diff') !== false ) {
         // Build item container
         if ( !$('.list-social').length ) {
           var itemsContainer = '<div class="list-social"><ul class="social-wrapper"></ul></div>';
@@ -126,11 +126,11 @@ var data = {
         itemsData.find('.item').bind('animationend webkitAnimationEnd', function() {
           $(this).removeClass('bounceIn');
         }).addClass('bounceIn');
-      } else {
-        $('.loading').fadeIn(timingEffect).find('p').text('Upgrade to the new version');
-        api[site]('upgrade', dataObj.sites[site].username, site);
-        storage.rem('user-diff');
-      }
+      // } else {
+      //   $('.loading').fadeIn(timingEffect).find('p').text('Upgrade to the new version');
+      //   api[site]('upgrade', dataObj.sites[site].username, site);
+      //   storage.rem('user-diff');
+      // }
     }
 
     // Display total numbers
@@ -159,11 +159,14 @@ var data = {
       totalFollowers += parseInt(dataObj.sites[site].followers);
     }
 
-    var itemTotal = '<li class="item total"><div class="left"><h2>total</h2><p>' + totalSites + ' network' + (totalSites > 1 ? 's' : '') + ' connected</p></div><div class="right"><div class="nbr">' + format(totalFollowers) + '</div><p><span></span>followers</p></div></li>';
+    var itemTotal = '<li class="item total"><div class="left"><h2>total</h2><p>' + totalSites + ' network' + (totalSites > 1 ? 's' : '') + ' connected</p></div><div class="right"><div class="nbr">' + format(totalFollowers) + '</div><p><span></span>followers</p></div><ul class="detail-social total"></ul></li>';
 
     if ( !$('.list-social').find('.total').length ) {
       // If not total sum up display to the last li child of ul
       $('.list-social').find('.item').last().parent().append(itemTotal);
+
+      // Set up graph
+      data.graph();
     } else {
       // Move to the total item bottom
       $('.list-social').find('.total').appendTo('.list-social .social-wrapper');
@@ -171,6 +174,53 @@ var data = {
       // Update total data
       $('.list-social').find('.total').find('.left p').text(format(totalSites) + ' network' + (totalSites > 1 ? 's' : '') + ' connected');
       $('.list-social').find('.total').find('.right .nbr').text(format(totalFollowers));
+
+      // Set up graph
+      data.graph();
     }
+  },
+
+  graph: function() {
+    var canvas = '<li><canvas width="295" id="graph"></canvas></li>';
+    $('.total').find('.detail-social').append(canvas);
+
+    var ctx = $('#graph').get(0).getContext('2d');
+    var gray = '#A6A6A6';
+
+    var data = {
+      labels: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
+      datasets : [
+        // {
+        //   fillColor: 'rgba(220, 220, 220, 0.5)',
+        //   strokeColor: 'rgba(220, 220, 220, 1)',
+        //   pointColor: 'rgba(220, 220, 220, 1)',
+        //   pointStrokeColor: '#fff',
+        //   data: dataObj['graph'].following
+        // },
+        {
+          fillColor: 'rgba(70, 195, 64, 0.15)',
+          strokeColor: 'rgba(70, 195, 64, 1)',
+          pointColor: '#f4f4f4',
+          pointStrokeColor: 'rgba(70, 195, 64, 1)',
+          data: dataObj['graph']
+        }
+      ]
+    }
+
+    var options = {
+      scaleLineColor: gray,
+      scaleShowLabels: false,
+      scaleFontColor: gray,
+      scaleFontSize: 10,
+      scaleGridLineColor : 'rgba(0, 0, 0, .03)',
+      pointDotStrokeWidth: 1,
+      datasetStrokeWidth: 1,
+      dataLabel: false,
+      dataLabelColor: gray,
+      animation: false
+    };
+
+    if ( dataObj['graph'] !== null )
+      new Chart(ctx).Line(data, options);
   }
 };

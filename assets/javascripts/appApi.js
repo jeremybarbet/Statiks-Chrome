@@ -34,7 +34,10 @@ var api = {
         username: username,
         followers: followers,
         details: details,
-        diff: 0
+        diff: {
+          value: 0,
+          data: [0, 0, 0, 0, 0, 0, 0]
+        }
       };
 
       storage.set('user-data', dataObj);
@@ -93,13 +96,13 @@ var api = {
    * the diff since the last app launched.
    */
   reload: function($this, site, followers, details) {
-    if ( dataObj.sites[site].followers !== followers ) {
+    // if ( dataObj.sites[site].followers !== followers ) {
       var diff = followers - dataObj.sites[site].followers;
       var socialItem = $('.list-social').find('.' + site + ' .right');
       var totalItem = $('.total').find('.right');
 
       // Update value of object
-      dataObj.sites[site].diff = diff;
+      dataObj.sites[site].diff.value = diff;
       dataObj.sites[site].followers = followers;
 
       // Push to localstorage
@@ -112,15 +115,29 @@ var api = {
       var totalFollowers = 0;
       var totalDiff = 0;
 
+      for (var i = 0; i < dataObj.graph.length; i++) {
+        if ( dataObj.graph[i] === 0 ) {
+          dataObj.sites[site].diff.data[i] = followers;
+
+          console.log(site + ': ' + dataObj.sites[site].diff.data);
+
+          break;
+        }
+      }
+
+      // Push to localstorage
+      storage.set('user-data', dataObj);
+
       for (site in dataObj.sites) {
         totalFollowers += parseInt(dataObj.sites[site].followers);
-        totalDiff += parseInt(dataObj.sites[site].diff);
+        totalDiff += parseInt(dataObj.sites[site].diff.value);
       }
 
       totalItem.find('.nbr').text(format(totalFollowers));
       if ( totalDiff !== null && typeof totalDiff === 'number' ) totalItem.find('p span').text((totalDiff > 0 ? '+' : '') + totalDiff);
-
-    } else if ( JSON.stringify(dataObj.sites[site].details) !== JSON.stringify(details) ) {
+    /*
+    }
+    else if ( JSON.stringify(dataObj.sites[site].details) !== JSON.stringify(details) ) {
       // Update value of object
       dataObj.sites[site].details = details;
 
@@ -133,6 +150,24 @@ var api = {
     } else {
       api.notification();
     }
+    */
+  },
+
+  graph: function() {
+    // Until there is a 0 in the array don't count graph data
+    // if ( graph.indexOf(0) > -1 ) {}
+
+    $.each(dataObj.graph, function(i, data) {
+      if ( data === 0 ) {
+        for (site in dataObj.sites) {
+          dataObj.graph[i] += parseInt(dataObj.sites[site].diff.data[i]);
+        }
+      }
+    });
+
+    storage.set('user-data', dataObj);
+
+    console.log('graph: ' + dataObj.graph);
   },
 
   upgrade: function($this, site, followers, details) {

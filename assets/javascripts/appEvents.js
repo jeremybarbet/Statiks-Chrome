@@ -38,6 +38,7 @@ $('.icon-reload').on('click', function() {
   }
 
   $(document).ajaxStop(function() {
+    api.graph();
     $('.icon-reload').addClass('pause');
   });
 });
@@ -156,6 +157,13 @@ $(document).on('click', '.icon-clear', function() {
  */
 $(document).on('click', '.item', function() {
   $(this).find('.detail-social').slideToggle(timingEffect);
+});
+
+/**
+ * Animate graph onclick
+ */
+$(document).on('click', '.item.total', function() {
+  
 });
 
 /**
