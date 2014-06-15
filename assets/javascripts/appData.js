@@ -72,38 +72,21 @@ var data = {
    */
   render: function(site, username, followers, details) {
     var itemList = '<li class="item ' + site + '"><div class="left"><h2>' + ((site === 'cinqcentpx') ? '500px' : site) + '</h2><p>' + username + '</p></div><div class="right"><div class="nbr">' + format(followers) + '</div><p><span></span>followers</p></div><ul class="detail-social ' + site + '"></ul></li>';
-    var itemTotal = $('.list-social').find('.total');
 
-    if ( site === 'total' ) {
-      if ( !itemTotal.length ) {
-        // If not total sum up display to the last li child of ul
-        $('.list-social').find('.item').last().parent().append(itemList);
-      } else {
-        // Move to the total item bottom
-        itemTotal.appendTo('.list-social .social-wrapper');
-
-        // Update total data
-        itemTotal.find('.left p').text(username);
-        itemTotal.find('.right .nbr').text(format(followers));
-      }
+    if ( !$('.list-social').find('.item.' + site).length ) {
+      $('.list-social').find('.social-wrapper').append(itemList);
     } else {
-      if ( !$('.list-social').find('.item.' + site).length ) {
-        $('.list-social').find('.social-wrapper').append(itemList);
-      } else {
-        $('.item.' + site).find('.left p').text(username);
-        $('.item.' + site).find('.right .nbr').text(format(followers));
-      }
-      
-      if ( site !== 'total' ) {
-        for (var key in details) {
-          var itemDetail = '<li class="' + key + '"><div class="left">' + key + '</div><div class="right">' + format(details[key]) + '</div></li>';
+      $('.item.' + site).find('.left p').text(username);
+      $('.item.' + site).find('.right .nbr').text(format(followers));
+    }
 
-          if ( !$('.item.' + site).find('.detail-social .' + key).length ) {
-            $('.item.' + site).find('.detail-social').append(itemDetail);
-          } else {
-            $('.item.' + site).find('.' + key + ' .right').text(format(details[key]));
-          }
-        }
+    for (var key in details) {
+      var itemDetail = '<li class="' + key + '"><div class="left">' + key + '</div><div class="right">' + format(details[key]) + '</div></li>';
+
+      if ( !$('.item.' + site).find('.detail-social .' + key).length ) {
+        $('.item.' + site).find('.detail-social').append(itemDetail);
+      } else {
+        $('.item.' + site).find('.' + key + ' .right').text(format(details[key]));
       }
     }
   },
@@ -131,25 +114,11 @@ var data = {
         $('.icon-settings, .icon-reload').fadeIn(timingEffect);
         $('.icon-back').fadeOut(timingEffect);
 
-        var totalFollowers = 0;
-        var totalSites = 0;
-
         // Display data on main screen
-        for (site in dataObj.sites) {
-          data.render(site, dataObj.sites[site].username, dataObj.sites[site].followers, dataObj.sites[site].details);
+        data.render(site, dataObj.sites[site].username, dataObj.sites[site].followers, dataObj.sites[site].details);
 
-          // Render username in config screen
-          $('.choose-social').find('.' + site).find('span').css('marginLeft', '-240px').parent().find('input').show().val(dataObj.sites[site].username);
-          var clear = $('<span class="icon-clear"></span>');
-          if ( !$('.choose-social').find('.' + site).find('.icon-clear').length ) $('.choose-social').find('.' + site).append(clear);
-
-          // Calculate total followers
-          totalFollowers += parseInt(dataObj.sites[site].followers);
-        }
-
-        // Display total followers and total network connected
-        totalSites = Object.keys(dataObj.sites).length + ((Object.keys(dataObj.sites).length > 1) ? ' networks connected' : ' network connected');
-        data.render('total', totalSites, totalFollowers);
+        // Render usernames in config screen
+        data.settings(site, dataObj.sites[site].username);
 
         // Finally display items and remove class after animation completed
         itemsData.fadeIn(timingEffect);
@@ -162,6 +131,46 @@ var data = {
         api[site]('upgrade', dataObj.sites[site].username, site);
         storage.rem('user-diff');
       }
+    }
+
+    // Display total numbers
+    data.total();
+  },
+
+  settings: function(site, username) {
+    $('.choose-social')
+      .find('.' + site + ' span')
+        .css('marginLeft', '-240px')
+      .parent()
+        .find('input')
+        .show()
+        .val(username);
+
+    var clear = $('<span class="icon-clear"></span>');
+
+    if ( !$('.choose-social').find('.' + site + ' .icon-clear').length ) $('.choose-social').find('.' + site).append(clear);
+  },
+
+  total: function() {
+    var totalFollowers = 0;
+    var totalSites = Object.keys(dataObj.sites).length;
+
+    for (var site in dataObj.sites) {
+      totalFollowers += parseInt(dataObj.sites[site].followers);
+    }
+
+    var itemTotal = '<li class="item total"><div class="left"><h2>total</h2><p>' + totalSites + ' network' + (totalSites > 1 ? 's' : '') + ' connected</p></div><div class="right"><div class="nbr">' + format(totalFollowers) + '</div><p><span></span>followers</p></div></li>';
+
+    if ( !$('.list-social').find('.total').length ) {
+      // If not total sum up display to the last li child of ul
+      $('.list-social').find('.item').last().parent().append(itemTotal);
+    } else {
+      // Move to the total item bottom
+      $('.list-social').find('.total').appendTo('.list-social .social-wrapper');
+
+      // Update total data
+      $('.list-social').find('.total').find('.left p').text(format(totalSites) + ' network' + (totalSites > 1 ? 's' : '') + ' connected');
+      $('.list-social').find('.total').find('.right .nbr').text(format(totalFollowers));
     }
   }
 };
