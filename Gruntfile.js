@@ -3,11 +3,6 @@ module.exports = function (grunt) {
 
   require('load-grunt-tasks')(grunt);
 
-  // Configuration
-  var configuration = {
-    pkg : grunt.file.readJSON('package.json')
-  };
-
   grunt.registerTask('default', [
     'clean',
     'copy',
@@ -35,7 +30,7 @@ module.exports = function (grunt) {
 
   // Initialization
   grunt.initConfig({
-    config: configuration,
+    pkg : grunt.file.readJSON('package.json'),
 
     // Grunt-contrib-clean
     clean: {
@@ -148,17 +143,20 @@ module.exports = function (grunt) {
       files: {
         files: [
           '*.html',
-          'dist/*.css',
-          'dist/*.js'
+          'dist/*.css'
         ]
       },
       less: {
         files: ['assets/stylesheets/*.less'],
         tasks: ['less:dev']
       },
-      uglify: {
-        files: ['assets/javascripts/**/**.js'],
-        tasks: ['uglify:dev', 'uglify:lib']
+      dev: {
+        files: ['assets/javascripts/*.js'],
+        tasks: ['uglify:dev']
+      },
+      lib: {
+        files: ['assets/javascripts/lib/*.js'],
+        tasks: ['uglify:lib']
       }
     }
   });
