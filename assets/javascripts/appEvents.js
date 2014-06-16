@@ -1,14 +1,4 @@
 /**
- * Global timing for differents fades.
- * Reload variable.
- * isMac match test
- * @global
- */
-var timingEffect = 400;
-var reload = 0;
-var isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
-
-/**
  * Add social actions. Hide the button, and display
  * connect's form to add newtworks and type username.
  * Only display if there is no connected networks.
