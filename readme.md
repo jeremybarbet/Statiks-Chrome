@@ -19,7 +19,7 @@ TODO
 Changelog
 ---------
 
-__v1.1.0__
+__v1.1.1__
 
 * Add platform detection to avoid some weird issues.
 
