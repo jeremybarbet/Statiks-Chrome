@@ -1,7 +1,9 @@
 {
-  "name": "statiks",
+  "name": "Statiks",
   "version": "1.1.1",
+  "description": "Get the stats of your favorites networks.",
   "author": "Jérémy Barbet <jeremgraph@gmail.com> (http://www.jeremybarbet.com)",
+  "homepage_url": "http://statiks.jeremybarbet.com",
   "repository": {
     "type": "git",
     "url": "https://github.com/JeremDsgn/statiks"
