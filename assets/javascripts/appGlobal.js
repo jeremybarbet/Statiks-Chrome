@@ -58,3 +58,11 @@ var storage = {
     localStorage.removeItem(item);
   }
 };
+
+/**
+ * Custom scrollbar for Windows platfom
+ * @global
+ */
+if ( !isMac ) {
+  $('body').addClass('custom-scroll');
+}

@@ -7,10 +7,25 @@ body {
 body {
   height: 500px;
   width: 325px;
+  margin-top: 41px;
   background-color: @bg-white;
   font-family: @font;
   .font-smoothing(antialiased);
   .text-rendering(optimizelegibility);
+}
+
+.custom-scroll::-webkit-scrollbar {
+  height: 10px;
+  width: 2px;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+  background: darken(@gray, 15%);
+  height: 40px;
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+  background-color: inherit;
 }
 
 ::selection {
@@ -31,7 +46,7 @@ body {
 header {
   position: fixed;
   z-index: 100;
-  background-color: fade(@bg-white, 96%);
+  background-color: @bg-white;
   top: 0;
   left: 0;
   right: 0;
@@ -196,7 +211,6 @@ header {
 
 .choose-social {
   display: none;
-  margin-top: 41px;
 
   ul li {
     position: relative;
@@ -311,7 +325,6 @@ header {
 
 .list-social {
   display: none;
-  margin-top: 41px;
   .donottouch;
 
   > ul {
