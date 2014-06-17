@@ -176,11 +176,11 @@ var data = {
       datasetStrokeWidth: 1,
       animation: false,
       inGraphDataShow: true,
-      inGraphDataPaddingX: 8,
-      inGraphDataPaddingY: 0,
-      inGraphDataRotate: -10,
+      inGraphDataPaddingX: 6,
+      inGraphDataPaddingY: 4,
       inGraphDataFontSize: 10,
-      inGraphDataFontColor: gray
+      inGraphDataFontColor: gray,
+      scaleXGridLinesStep: 0
     };
 
     if ( dataObj['graph'].followers && dataObj['graph'].following !== null ) new Chart(ctx).Line(data, options);
