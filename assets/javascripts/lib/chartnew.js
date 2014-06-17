@@ -41,7 +41,7 @@ function unFormat(config, num) {
       while (v1.indexOf(config.thousandSeparator) >= 0) v1 = "" + v1.replace(config.thousandSeparator, "");
     }
     if (config.decimalSeparator != ".") v1 = "" + v1.replace(config.decimalSeparator, ".")
-      //      v1=fmtChartJS(config,1*roundToWithThousands(1*v1,place),"none")                                                 
+      // v1=fmtChartJS(config,1*roundToWithThousands(1*v1,place),"none")
     return 1 * v1;
   } else {
     return num;
@@ -150,32 +150,7 @@ function tmplbis(str, data) {
   return data ? fn(data) : fn;
 };
 
-
 cursorDivCreated = false;
-
-function createCursorDiv() {
-  if (cursorDivCreated == false) {
-    var div = document.createElement('divCursor');
-    div.id = 'divCursor';
-    div.style.position = 'absolute';
-    document.body.appendChild(div);
-    cursorDivCreated = true;
-  }
-};
-
-
-//Default browsercheck, added to all scripts!
-function checkBrowser() {
-  this.ver = navigator.appVersion
-  this.dom = document.getElementById ? 1 : 0
-  this.ie5 = (this.ver.indexOf("MSIE 5") > -1 && this.dom) ? 1 : 0;
-  this.ie4 = (document.all && !this.dom) ? 1 : 0;
-  this.ns5 = (this.dom && parseInt(this.ver) >= 5) ? 1 : 0;
-  this.ns4 = (document.layers && !this.dom) ? 1 : 0;
-  this.bw = (this.ie5 || this.ie4 || this.ns4 || this.ns5)
-  return this
-};
-bw = new checkBrowser();
 
 //Set these variables:
 fromLeft = 10; // How much from the left of the cursor should the div be?
@@ -234,112 +209,11 @@ function sleep(ms) {
   while (new Date().getTime() < dt.getTime()) {};
 };
 
-function saveCanvas(ctx, data, config, tpgraph) {
-  cvSave = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
-
-  var saveCanvasConfig = {
-    savePng: false,
-    annotateDisplay: false,
-    animation: false,
-    dynamicDisplay: false
-  };
-
-  var savePngConfig = mergeChartConfig(config, saveCanvasConfig);
-
-  savePngConfig.clearRect = false;
-
-  /* And ink them */
-
-  switch (tpgraph) {
-    case "Line":
-      new Chart(ctx.canvas.getContext("2d")).Line(data, savePngConfig);
-      break;
-  }
-
-
-
-  if (config.savePngOuput == "NewWindow") {
-    var image = ctx.canvas.toDataURL();
-    ctx.putImageData(cvSave, 0, 0);
-    window.open(image, '_blank');
-  }
-  if (config.savePngOuput == "CurrentWindow") {
-    var image = ctx.canvas.toDataURL();
-    ctx.putImageData(cvSave, 0, 0);
-    window.location.href = image;
-  }
-  if (config.savePngOuput == "Save") {
-    document.location.href = ctx.canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
-    ctx.putImageData(cvSave, 0, 0);
-  }
-
-};
-
-
-//if (isIE() < 9 && isIE() != false) {
-
 if (typeof String.prototype.trim !== 'function') {
   String.prototype.trim = function() {
     return this.replace(/^\s+|\s+$/g, '');
   }
 };
-//};
-
-var dynamicDisplay = new Array();
-var dynamicDisplayList = new Array();
-
-function dynamicFunction(data, config, ctx, tpgraph) {
-  if (config.dynamicDisplay) {
-    if (ctx.canvas.id == "") {
-      var cvdate = new Date();
-      var cvmillsec = cvdate.getTime();
-      ctx.canvas.id = "Canvas_" + cvmillsec;
-    }
-    if (typeof(dynamicDisplay[ctx.canvas.id]) == "undefined") {
-      dynamicDisplayList[dynamicDisplayList["length"]] = ctx.canvas.id;
-      dynamicDisplay[ctx.canvas.id] = [ctx.canvas, false, false, data, config, ctx.canvas, tpgraph];
-      dynamicDisplay[ctx.canvas.id][1] = isScrolledIntoView(ctx.canvas);
-      window.onscroll = scrollFunction;
-    }
-    if (dynamicDisplay[ctx.canvas.id][1] == false || dynamicDisplay[ctx.canvas.id][2] == true) return false;
-    dynamicDisplay[ctx.canvas.id][2] = true;
-  }
-  return true;
-};
-
-function isScrolledIntoView(element) {
-  var xPosition = 0;
-  var yPosition = 0;
-
-  elem = element;
-  while (elem) {
-    xPosition += (elem.offsetLeft - elem.scrollLeft + elem.clientLeft);
-    yPosition += (elem.offsetTop - elem.scrollTop + elem.clientTop);
-    elem = elem.offsetParent;
-  }
-
-  if (xPosition + element.width / 2 >= window.pageXOffset &&
-    xPosition + element.width / 2 <= window.pageXOffset + window.innerWidth &&
-    yPosition + element.height / 2 >= window.pageYOffset &&
-    yPosition + element.height / 2 <= window.pageYOffset + window.innerHeight
-  ) return (true);
-  else return false;
-};
-
-function scrollFunction() {
-  for (var i = 0; i < dynamicDisplayList["length"]; i++) {
-    if (isScrolledIntoView(dynamicDisplay[dynamicDisplayList[i]][5]) && dynamicDisplay[dynamicDisplayList[i]][2] == false) {
-      dynamicDisplay[dynamicDisplayList[i]][1] = true;
-      switch (dynamicDisplay[dynamicDisplayList[i]][6]) {
-        case "Line":
-          new Chart(document.getElementById(dynamicDisplayList[i]).getContext("2d")).Line(dynamicDisplay[dynamicDisplayList[i]][3], dynamicDisplay[dynamicDisplayList[i]][4]);
-          break;
-      }
-    }
-  }
-};
-
-var jsGraphAnnotate = new Array();
 
 function getMousePos(canvas, evt) {
   var rect = canvas.getBoundingClientRect();
@@ -349,200 +223,12 @@ function getMousePos(canvas, evt) {
   };
 };
 
-function doMouseMove(ctx, config, event) {
-
-  var annotateDIV = document.getElementById('divCursor');
-  show = false;
-
-  annotateDIV.className = (config.annotateClassName) ? config.annotateClassName : '';
-  annotateDIV.style.border = (config.annotateClassName) ? '' : config.annotateBorder;
-  annotateDIV.style.padding = (config.annotateClassName) ? '' : config.annotatePadding;
-  annotateDIV.style.borderRadius = (config.annotateClassName) ? '' : config.annotateBorderRadius;
-  annotateDIV.style.backgroundColor = (config.annotateClassName) ? '' : config.annotateBackgroundColor;
-  annotateDIV.style.color = (config.annotateClassName) ? '' : config.annotateFontColor;
-  annotateDIV.style.fontFamily = (config.annotateClassName) ? '' : config.annotateFontFamily;
-  annotateDIV.style.fontSize = (config.annotateClassName) ? '' : config.annotateFontSize + "pt";
-  annotateDIV.style.fontStyle = (config.annotateClassName) ? '' : config.annotateFontStyle;
-
-  canvas_pos = getMousePos(ctx.canvas, event);
-  for (i = 0; i < jsGraphAnnotate[ctx.ChartNewId]["length"]; i++) {
-
-    if (jsGraphAnnotate[ctx.ChartNewId][i][0] == "ARC") // Arc
-    {
-      distance = Math.sqrt((canvas_pos.x - jsGraphAnnotate[ctx.ChartNewId][i][1]) * (canvas_pos.x - jsGraphAnnotate[ctx.ChartNewId][i][1]) + (canvas_pos.y - jsGraphAnnotate[ctx.ChartNewId][i][2]) * (canvas_pos.y - jsGraphAnnotate[ctx.ChartNewId][i][2]));
-      if (distance > jsGraphAnnotate[ctx.ChartNewId][i][3] && distance < jsGraphAnnotate[ctx.ChartNewId][i][4]) {
-
-        angle = Math.acos((canvas_pos.x - jsGraphAnnotate[ctx.ChartNewId][i][1]) / distance);
-        if (canvas_pos.y < jsGraphAnnotate[ctx.ChartNewId][i][2]) angle = -angle;
-
-        while (angle < 0) {
-          angle += 2 * Math.PI;
-        }
-        while (angle > 2 * Math.PI) {
-          angle -= 2 * Math.PI;
-        }
-        if (angle < config.startAngle * (Math.PI / 360)) angle += 2 * Math.PI;
-
-        if ((angle > jsGraphAnnotate[ctx.ChartNewId][i][5] && angle < jsGraphAnnotate[ctx.ChartNewId][i][6]) || (angle > jsGraphAnnotate[ctx.ChartNewId][i][5] - 2 * Math.PI && angle < jsGraphAnnotate[ctx.ChartNewId][i][6] - 2 * Math.PI) || (angle > jsGraphAnnotate[ctx.ChartNewId][i][5] + 2 * Math.PI && angle < jsGraphAnnotate[ctx.ChartNewId][i][6] + 2 * Math.PI)) {
-
-          v1 = fmtChartJS(config, jsGraphAnnotate[ctx.ChartNewId][i][7], config.fmtV1); // V1=Label
-          v2 = fmtChartJS(config, jsGraphAnnotate[ctx.ChartNewId][i][8], config.fmtV2); // V2=Data Value
-          v3 = fmtChartJS(config, jsGraphAnnotate[ctx.ChartNewId][i][9], config.fmtV3); // V3=Cumulated Value
-          v4 = fmtChartJS(config, jsGraphAnnotate[ctx.ChartNewId][i][10], config.fmtV4); // V4=Total Data Value
-          v5 = fmtChartJS(config, jsGraphAnnotate[ctx.ChartNewId][i][11], config.fmtV5); // V5=Angle
-
-          v6 = fmtChartJS(config, 100 * jsGraphAnnotate[ctx.ChartNewId][i][8] / jsGraphAnnotate[ctx.ChartNewId][i][10], config.fmtV6); // v6=Percentage;
-          v6 = roundToWithThousands(config, v6, config.roundPct);
-          v7 = fmtChartJS(config, jsGraphAnnotate[ctx.ChartNewId][i][1], config.fmtV7); // v7=midPointX of arc;
-          v8 = fmtChartJS(config, jsGraphAnnotate[ctx.ChartNewId][i][2], config.fmtV8); // v8=midPointY of arc;
-          v9 = fmtChartJS(config, jsGraphAnnotate[ctx.ChartNewId][i][3], config.fmtV9); // v9=radius Minimum;
-          v10 = fmtChartJS(config, jsGraphAnnotate[ctx.ChartNewId][i][4], config.fmtV10); // v10=radius Maximum;
-          v11 = fmtChartJS(config, jsGraphAnnotate[ctx.ChartNewId][i][5], config.fmtV11); // v11=start angle;
-          v12 = fmtChartJS(config, jsGraphAnnotate[ctx.ChartNewId][i][6], config.fmtV12); // v12=stop angle;
-          v13 = fmtChartJS(config, jsGraphAnnotate[ctx.ChartNewId][i][12], config.fmtV13); // v13=position in Data;
-
-          graphPosX = canvas_pos.x;
-          graphPosY = canvas_pos.y;
-
-          // create label text
-          dispString = tmplbis(config.annotateLabel, {
-            config: config,
-            v1: v1,
-            v2: v2,
-            v3: v3,
-            v4: v4,
-            v5: v5,
-            v6: v6,
-            v7: v7,
-            v8: v8,
-            v9: v9,
-            v10: v10,
-            v11: v11,
-            v12: v12,
-            v13: v13,
-            graphPosX: graphPosX,
-            graphPosY: graphPosY
-          });
-          annotateDIV.innerHTML = dispString;
-          show = true;
-
-
-          x = bw.ns4 || bw.ns5 ? event.pageX : event.x;
-          y = bw.ns4 || bw.ns5 ? event.pageY : event.y;
-          if (bw.ie4 || bw.ie5) y = y + eval(scrolled);
-          oCursor.moveIt(x + fromLeft, y + fromTop);
-        }
-      }
-    } else if (jsGraphAnnotate[ctx.ChartNewId][i][0] == "RECT") {
-      if (canvas_pos.x > jsGraphAnnotate[ctx.ChartNewId][i][1] && canvas_pos.x < jsGraphAnnotate[ctx.ChartNewId][i][3] && canvas_pos.y < jsGraphAnnotate[ctx.ChartNewId][i][2] && canvas_pos.y > jsGraphAnnotate[ctx.ChartNewId][i][4]) {
-
-        v1 = fmtChartJS(config, jsGraphAnnotate[ctx.ChartNewId][i][5], config.fmtV1); // V1=Label1
-        v2 = fmtChartJS(config, jsGraphAnnotate[ctx.ChartNewId][i][6], config.fmtV2); // V2=Label2
-        v3 = fmtChartJS(config, jsGraphAnnotate[ctx.ChartNewId][i][7], config.fmtV3); // V3=Data Value
-        v4 = fmtChartJS(config, jsGraphAnnotate[ctx.ChartNewId][i][8], config.fmtV4); // V4=Cumulated Value
-        v5 = fmtChartJS(config, jsGraphAnnotate[ctx.ChartNewId][i][9], config.fmtV5); // V5=Total Data Value
-        v6 = fmtChartJS(config, 100 * jsGraphAnnotate[ctx.ChartNewId][i][7] / jsGraphAnnotate[ctx.ChartNewId][i][9], config.fmtV6); // v6=Percentage;
-        v6 = roundToWithThousands(config, v6, config.roundPct);
-        v7 = fmtChartJS(config, jsGraphAnnotate[ctx.ChartNewId][i][1], config.fmtV7); // v7=top X of rectangle;
-        v8 = fmtChartJS(config, jsGraphAnnotate[ctx.ChartNewId][i][2], config.fmtV8); // v8=top Y of rectangle;
-        v9 = fmtChartJS(config, jsGraphAnnotate[ctx.ChartNewId][i][3], config.fmtV9); // v9=bottom X of rectangle;
-        v10 = fmtChartJS(config, jsGraphAnnotate[ctx.ChartNewId][i][4], config.fmtV10); // v10=bottom Y of rectangle;
-        v11 = fmtChartJS(config, jsGraphAnnotate[ctx.ChartNewId][i][10], config.fmtV11); // v11=position in Dataset;
-        v12 = fmtChartJS(config, jsGraphAnnotate[ctx.ChartNewId][i][11], config.fmtV12); // v12=position in Dataset[v11].Data;
-        graphPosX = canvas_pos.x;
-        graphPosY = canvas_pos.y;
-
-        dispString = tmplbis(config.annotateLabel, {
-          config: config,
-          v1: v1,
-          v2: v2,
-          v3: v3,
-          v4: v4,
-          v5: v5,
-          v6: v6,
-          v7: v7,
-          v8: v8,
-          v9: v9,
-          v10: v10,
-          v11: v11,
-          v12: v12,
-          graphPosX: graphPosX,
-          graphPosY: graphPosY
-        });
-        annotateDIV.innerHTML = dispString;
-        show = true;
-
-        x = bw.ns4 || bw.ns5 ? event.pageX : event.x;
-        y = bw.ns4 || bw.ns5 ? event.pageY : event.y;
-        if (bw.ie4 || bw.ie5) y = y + eval(scrolled);
-        oCursor.moveIt(x + fromLeft, y + fromTop);
-      }
-
-    } else if (jsGraphAnnotate[ctx.ChartNewId][i][0] == "POINT") {
-      distance = Math.sqrt((canvas_pos.x - jsGraphAnnotate[ctx.ChartNewId][i][1]) * (canvas_pos.x - jsGraphAnnotate[ctx.ChartNewId][i][1]) + (canvas_pos.y - jsGraphAnnotate[ctx.ChartNewId][i][2]) * (canvas_pos.y - jsGraphAnnotate[ctx.ChartNewId][i][2]));
-      if (distance < 10) {
-
-        v1 = fmtChartJS(config, jsGraphAnnotate[ctx.ChartNewId][i][3], config.fmtV1); // V1=Label1
-        v2 = fmtChartJS(config, jsGraphAnnotate[ctx.ChartNewId][i][4], config.fmtV2); // V2=Label2
-        v3 = fmtChartJS(config, jsGraphAnnotate[ctx.ChartNewId][i][5], config.fmtV3); // V3=Data Value
-        v4 = fmtChartJS(config, jsGraphAnnotate[ctx.ChartNewId][i][6], config.fmtV4); // V4=Difference with Previous line
-        v5 = fmtChartJS(config, jsGraphAnnotate[ctx.ChartNewId][i][7], config.fmtV5); // V5=Difference with next line;
-        v6 = fmtChartJS(config, jsGraphAnnotate[ctx.ChartNewId][i][8], config.fmtV6); // V6=max;
-        v7 = fmtChartJS(config, jsGraphAnnotate[ctx.ChartNewId][i][9], config.fmtV7); // V7=Total;
-        v8 = fmtChartJS(config, 100 * jsGraphAnnotate[ctx.ChartNewId][i][5] / jsGraphAnnotate[ctx.ChartNewId][i][9], config.fmtV8); // v8=percentage;
-        v8 = roundToWithThousands(config, v8, config.roundPct);
-        v9 = fmtChartJS(config, jsGraphAnnotate[ctx.ChartNewId][i][1], config.fmtV9); // v9=pos X of point;
-        v10 = fmtChartJS(config, jsGraphAnnotate[ctx.ChartNewId][i][2], config.fmtV10); // v10=pos Y of point;
-        v11 = fmtChartJS(config, jsGraphAnnotate[ctx.ChartNewId][i][10], config.fmtV11); // v11=position in Dataset;
-        v12 = fmtChartJS(config, jsGraphAnnotate[ctx.ChartNewId][i][11], config.fmtV12); // v12=position in Dataset[v11].Data;
-
-        graphPosX = canvas_pos.x;
-        graphPosY = canvas_pos.y;
-
-        dispString = tmplbis(config.annotateLabel, {
-          config: config,
-          v1: v1,
-          v2: v2,
-          v3: v3,
-          v4: v4,
-          v5: v5,
-          v6: v6,
-          v7: v7,
-          v8: v8,
-          v9: v9,
-          v10: v10,
-          v11: v11,
-          v12: v12,
-          graphPosX: graphPosX,
-          graphPosY: graphPosY
-        });
-        annotateDIV.innerHTML = dispString;
-        show = true;
-
-        x = bw.ns4 || bw.ns5 ? event.pageX : event.x;
-        y = bw.ns4 || bw.ns5 ? event.pageY : event.y;
-        if (bw.ie4 || bw.ie5) y = y + eval(scrolled);
-        oCursor.moveIt(x + fromLeft, y + fromTop);
-
-      }
-    }
-
-    annotateDIV.style.display = show ? '' : 'none';
-  }
-
-};
-
-
-
 ///////// GRAPHICAL PART OF THE SCRIPT ///////////////////////////////////////////
-
-
 
 //Define the global Chart Variable as a class.
 window.Chart = function(context) {
 
   var chart = this;
-
 
   //Easing functions adapted from Robert Penner's easing equations
   //http://www.robertpenner.com/easing/
@@ -550,16 +236,6 @@ window.Chart = function(context) {
   var animationOptions = {
     linear: function(t) {
       return t;
-    },
-    easeInQuad: function(t) {
-      return t * t;
-    },
-    easeOutQuad: function(t) {
-      return -1 * t * (t - 2);
-    },
-    easeInOutQuad: function(t) {
-      if ((t /= 1 / 2) < 1) return 1 / 2 * t * t;
-      return -1 / 2 * ((--t) * (t - 2) - 1);
     },
     easeInCubic: function(t) {
       return t * t * t;
@@ -570,111 +246,6 @@ window.Chart = function(context) {
     easeInOutCubic: function(t) {
       if ((t /= 1 / 2) < 1) return 1 / 2 * t * t * t;
       return 1 / 2 * ((t -= 2) * t * t + 2);
-    },
-    easeInQuart: function(t) {
-      return t * t * t * t;
-    },
-    easeOutQuart: function(t) {
-      return -1 * ((t = t / 1 - 1) * t * t * t - 1);
-    },
-    easeInOutQuart: function(t) {
-      if ((t /= 1 / 2) < 1) return 1 / 2 * t * t * t * t;
-      return -1 / 2 * ((t -= 2) * t * t * t - 2);
-    },
-    easeInQuint: function(t) {
-      return 1 * (t /= 1) * t * t * t * t;
-    },
-    easeOutQuint: function(t) {
-      return 1 * ((t = t / 1 - 1) * t * t * t * t + 1);
-    },
-    easeInOutQuint: function(t) {
-      if ((t /= 1 / 2) < 1) return 1 / 2 * t * t * t * t * t;
-      return 1 / 2 * ((t -= 2) * t * t * t * t + 2);
-    },
-    easeInSine: function(t) {
-      return -1 * Math.cos(t / 1 * (Math.PI / 2)) + 1;
-    },
-    easeOutSine: function(t) {
-      return 1 * Math.sin(t / 1 * (Math.PI / 2));
-    },
-    easeInOutSine: function(t) {
-      return -1 / 2 * (Math.cos(Math.PI * t / 1) - 1);
-    },
-    easeInExpo: function(t) {
-      return (t == 0) ? 1 : 1 * Math.pow(2, 10 * (t / 1 - 1));
-    },
-    easeOutExpo: function(t) {
-      return (t == 1) ? 1 : 1 * (-Math.pow(2, -10 * t / 1) + 1);
-    },
-    easeInOutExpo: function(t) {
-      if (t == 0) return 0;
-      if (t == 1) return 1;
-      if ((t /= 1 / 2) < 1) return 1 / 2 * Math.pow(2, 10 * (t - 1));
-      return 1 / 2 * (-Math.pow(2, -10 * --t) + 2);
-    },
-    easeInCirc: function(t) {
-      if (t >= 1) return t;
-      return -1 * (Math.sqrt(1 - (t /= 1) * t) - 1);
-    },
-    easeOutCirc: function(t) {
-      return 1 * Math.sqrt(1 - (t = t / 1 - 1) * t);
-    },
-    easeInOutCirc: function(t) {
-      if ((t /= 1 / 2) < 1) return -1 / 2 * (Math.sqrt(1 - t * t) - 1);
-      return 1 / 2 * (Math.sqrt(1 - (t -= 2) * t) + 1);
-    },
-    easeInElastic: function(t) {
-      var s = 1.70158;
-      var p = 0;
-      var a = 1;
-      if (t == 0) return 0;
-      if ((t /= 1) == 1) return 1;
-      if (!p) p = 1 * .3;
-      if (a < Math.abs(1)) {
-        a = 1;
-        var s = p / 4;
-      } else var s = p / (2 * Math.PI) * Math.asin(1 / a);
-      return -(a * Math.pow(2, 10 * (t -= 1)) * Math.sin((t * 1 - s) * (2 * Math.PI) / p));
-    },
-    easeOutElastic: function(t) {
-      var s = 1.70158;
-      var p = 0;
-      var a = 1;
-      if (t == 0) return 0;
-      if ((t /= 1) == 1) return 1;
-      if (!p) p = 1 * .3;
-      if (a < Math.abs(1)) {
-        a = 1;
-        var s = p / 4;
-      } else var s = p / (2 * Math.PI) * Math.asin(1 / a);
-      return a * Math.pow(2, -10 * t) * Math.sin((t * 1 - s) * (2 * Math.PI) / p) + 1;
-    },
-    easeInOutElastic: function(t) {
-      var s = 1.70158;
-      var p = 0;
-      var a = 1;
-      if (t == 0) return 0;
-      if ((t /= 1 / 2) == 2) return 1;
-      if (!p) p = 1 * (.3 * 1.5);
-      if (a < Math.abs(1)) {
-        a = 1;
-        var s = p / 4;
-      } else var s = p / (2 * Math.PI) * Math.asin(1 / a);
-      if (t < 1) return -.5 * (a * Math.pow(2, 10 * (t -= 1)) * Math.sin((t * 1 - s) * (2 * Math.PI) / p));
-      return a * Math.pow(2, -10 * (t -= 1)) * Math.sin((t * 1 - s) * (2 * Math.PI) / p) * .5 + 1;
-    },
-    easeInBack: function(t) {
-      var s = 1.70158;
-      return 1 * (t /= 1) * t * ((s + 1) * t - s);
-    },
-    easeOutBack: function(t) {
-      var s = 1.70158;
-      return 1 * ((t = t / 1 - 1) * t * ((s + 1) * t + s) + 1);
-    },
-    easeInOutBack: function(t) {
-      var s = 1.70158;
-      if ((t /= 1 / 2) < 1) return 1 / 2 * (t * t * (((s *= (1.525)) + 1) * t - s));
-      return 1 / 2 * ((t -= 2) * t * (((s *= (1.525)) + 1) * t + s) + 2);
     },
     easeInBounce: function(t) {
       return 1 - animationOptions.easeOutBounce(1 - t);
@@ -699,7 +270,6 @@ window.Chart = function(context) {
   //Variables global to the chart
   var width = context.canvas.width;
   var height = context.canvas.height;
-
 
   //High pixel density displays - multiply the size of the canvas height/width by the device pixel ratio, then scale.
   if (window.devicePixelRatio) {
@@ -863,22 +433,6 @@ window.Chart = function(context) {
     thousandSeparator: "",
     roundNumber: "none",
     roundPct: -1,
-    fmtV1: "none",
-    fmtV2: "none",
-    fmtV3: "none",
-    fmtV4: "none",
-    fmtV5: "none",
-    fmtV6: "none",
-    fmtV7: "none",
-    fmtV8: "none",
-    fmtV9: "none",
-    fmtV10: "none",
-    fmtV11: "none",
-    fmtV12: "none",
-    fmtV13: "none",
-    fmtXLabel: "none",
-    fmtYLabel: "none",
-    fmtLegend: "none",
     animationStartValue: 0,
     animationStopValue: 1,
     animationCount: 1,
@@ -886,7 +440,6 @@ window.Chart = function(context) {
     animationBackward: false,
     defaultStrokeColor: "rgba(220,220,220,1)",
     defaultFillColor: "rgba(220,220,220,0.5)"
-
   };
 
   chart.defaults.xyAxisCommonOptions = {
@@ -926,278 +479,7 @@ window.Chart = function(context) {
     c.clearRect(0, 0, width, height);
   };
 
-  var PolarArea = function(data, config, ctx) {
-
-    var maxSize, scaleHop, calculatedScale, labelHeight, scaleHeight, valueBounds, labelTemplateString, msr, midPosX, midPosY;
-
-    if (typeof ctx.ChartNewId == undefined) {
-      var cvdate = new Date();
-      var cvmillsec = cvdate.getTime();
-      ctx.ChartNewId = "PolarArea_" + cvmillsec;
-    }
-
-    if (!dynamicFunction(data, config, ctx, "PolarArea")) return;
-
-    var realStartAngle = config.startAngle * (Math.PI / 180) + 2 * Math.PI;
-
-    while (config.startAngle < 0) {
-      config.startAngle += 360;
-    }
-    while (config.startAngle > 360) {
-      config.startAngle -= 360;
-    }
-
-    while (realStartAngle < 0) {
-      realStartAngle += 2 * Math.PI;
-    }
-    while (realStartAngle > 2 * Math.PI) {
-      realStartAngle -= 2 * Math.PI;
-    }
-
-
-    config.logarithmic = false;
-
-    var annotateCnt = 0;
-    jsGraphAnnotate[ctx.ChartNewId] = new Array();
-
-    defMouse(ctx, data, config, "PolarArea");
-
-    setRect(ctx, config);
-
-    valueBounds = getValueBounds();
-    //Check and set the scale
-    labelTemplateString = (config.scaleShowLabels) ? config.scaleLabel : "";
-
-    if (!config.scaleOverride) {
-      calculatedScale = calculateScale(config, valueBounds.maxSteps, valueBounds.minSteps, valueBounds.maxValue, valueBounds.minValue, labelTemplateString);
-      msr = setMeasures(data, config, ctx, height, width, calculatedScale.labels, true, false, false, false, true);
-    } else {
-      calculatedScale = {
-        steps: config.scaleSteps,
-        stepValue: config.scaleStepWidth,
-        graphMin: config.scaleStartValue,
-        graphMax: config.scaleStartValue + config.scaleSteps * config.scaleStepWidth,
-        labels: []
-      }
-      populateLabels(config, labelTemplateString, calculatedScale.labels, calculatedScale.steps, config.scaleStartValue, calculatedScale.graphMax, config.scaleStepWidth);
-      msr = setMeasures(data, config, ctx, height, width, calculatedScale.labels, true, false, false, false, true);
-    }
-
-
-    midPosX = msr.leftNotUsableSize + (msr.availableWidth / 2);
-    midPosY = msr.topNotUsableSize + (msr.availableHeight / 2);
-
-
-    scaleHop = Math.floor(((Min([msr.availableHeight, msr.availableWidth]) / 2) - 5) / calculatedScale.steps);
-
-
-    //Wrap in an animation loop wrapper
-    animationLoop(config, drawScale, drawAllSegments, ctx, msr.clrx, msr.clry, msr.clrwidth, msr.clrheight, midPosX, midPosY, midPosX - ((Min([msr.availableHeight, msr.availableWidth]) / 2) - 5), midPosY + ((Min([msr.availableHeight, msr.availableWidth]) / 2) - 5), data);
-
-
-    function drawAllSegments(animationDecimal) {
-      var startAngle = -config.startAngle * (Math.PI / 180) + 2 * Math.PI,
-        cumvalue = 0,
-        angleStep = 0,
-        scaleAnimation = 1,
-        rotateAnimation = 1;
-      angleStep = 0;
-
-
-
-      for (var i = 0; i < data.length; i++)
-        if (!(typeof(data[i].value) == 'undefined')) angleStep++;
-
-      angleStep = (Math.PI * 2) / angleStep;
-
-      while (startAngle < 0) {
-        startAngle += 2 * Math.PI;
-      }
-      while (startAngle > 2 * Math.PI) {
-        startAngle -= 2 * Math.PI;
-      }
-
-
-      if (config.animation) {
-        if (config.animateScale) {
-          scaleAnimation = animationDecimal;
-        }
-        if (config.animateRotate) {
-          rotateAnimation = animationDecimal;
-        }
-      }
-      if (animationDecimal >= 1) {
-        totvalue = 0;
-        for (var i = 0; i < data.length; i++)
-          if (!(typeof(data[i].value) == 'undefined')) totvalue += 1 * data[i].value;
-      }
-
-      for (var i = 0; i < data.length; i++) {
-        if (!(typeof(data[i].value) == 'undefined')) {
-          ctx.beginPath();
-          ctx.arc(midPosX, midPosY, scaleAnimation * calculateOffset(config, 1 * data[i].value, calculatedScale, scaleHop), startAngle, startAngle + rotateAnimation * angleStep, false);
-          ctx.lineTo(midPosX, midPosY);
-          ctx.closePath();
-          if (typeof data[i].color == "function") ctx.fillStyle = data[i].color("COLOR", data, config, i, -1, animationDecimal, data[i].value);
-          else ctx.fillStyle = data[i].color;
-          ctx.fill();
-
-          startAngle += angleStep;
-
-          if (config.segmentShowStroke) {
-            ctx.strokeStyle = config.segmentStrokeColor;
-            ctx.lineWidth = config.segmentStrokeWidth;
-            ctx.stroke();
-          }
-        }
-
-      }
-      if (animationDecimal >= 1) {
-        startAngle = -config.startAngle * (Math.PI / 180) + 2 * Math.PI;
-        for (var i = 0; i < data.length; i++) {
-          if (!(typeof(data[i].value) == 'undefined')) {
-            cumvalue += 1 * data[i].value;
-            startAngle += angleStep;
-
-            if (typeof(data[i].title) == "string") lgtxt = data[i].title.trim();
-            else lgtxt = "";
-            jsGraphAnnotate[ctx.ChartNewId][annotateCnt++] = ["ARC", midPosX, midPosY, 0, calculateOffset(config, 1 * data[i].value, calculatedScale, scaleHop), startAngle - angleStep, startAngle, lgtxt, 1 * data[i].value, cumvalue, totvalue, angleStep, i];
-
-            if (config.inGraphDataShow) {
-
-              if (config.inGraphDataAnglePosition == 1) posAngle = realStartAngle + config.inGraphDataPaddingAngle * (Math.PI / 180);
-              else if (config.inGraphDataAnglePosition == 2) posAngle = realStartAngle - angleStep / 2 + config.inGraphDataPaddingAngle * (Math.PI / 180);
-              else if (config.inGraphDataAnglePosition == 3) posAngle = realStartAngle - angleStep + config.inGraphDataPaddingAngle * (Math.PI / 180);
-
-              if (config.inGraphDataRadiusPosition == 1) labelRadius = 0 + config.inGraphDataPaddingRadius;
-              else if (config.inGraphDataRadiusPosition == 2) labelRadius = calculateOffset(config, 1 * data[i].value, calculatedScale, scaleHop) / 2 + config.inGraphDataPaddingRadius;
-              else if (config.inGraphDataRadiusPosition == 3) labelRadius = calculateOffset(config, 1 * data[i].value, calculatedScale, scaleHop) + config.inGraphDataPaddingRadius;
-              else if (config.inGraphDataRadiusPosition == 4) labelRadius = scaleHop * calculatedScale.steps + config.inGraphDataPaddingRadius;
-
-
-              ctx.save()
-
-              if (config.inGraphDataAlign == "off-center") {
-                if (config.inGraphDataRotate == "inRadiusAxis" || (posAngle + 2 * Math.PI) % (2 * Math.PI) > 3 * Math.PI / 2 || (posAngle + 2 * Math.PI) % (2 * Math.PI) < Math.PI / 2) ctx.textAlign = "left";
-                else ctx.textAlign = "right";
-              } else if (config.inGraphDataAlign == "to-center") {
-                if (config.inGraphDataRotate == "inRadiusAxis" || (posAngle + 2 * Math.PI) % (2 * Math.PI) > 3 * Math.PI / 2 || (posAngle + 2 * Math.PI) % (2 * Math.PI) < Math.PI / 2) ctx.textAlign = "right";
-                else ctx.textAlign = "left";
-              } else ctx.textAlign = config.inGraphDataAlign;
-              if (config.inGraphDataVAlign == "off-center") {
-                if ((posAngle + 2 * Math.PI) % (2 * Math.PI) > Math.PI) ctx.textBaseline = "top";
-                else ctx.textBaseline = "bottom";
-              } else if (config.inGraphDataVAlign == "to-center") {
-                if ((posAngle + 2 * Math.PI) % (2 * Math.PI) > Math.PI) ctx.textBaseline = "bottom";
-                else ctx.textBaseline = "top";
-              } else ctx.textBaseline = config.inGraphDataVAlign;
-
-              ctx.font = config.inGraphDataFontStyle + ' ' + config.inGraphDataFontSize + 'px ' + config.inGraphDataFontFamily;
-              ctx.fillStyle = config.inGraphDataFontColor;
-
-              var dispString = tmplbis(config.inGraphDataTmpl, {
-                config: config,
-                v1: fmtChartJS(config, lgtxt, config.fmtV1),
-                v2: fmtChartJS(config, 1 * data[i].value, config.fmtV2),
-                v3: fmtChartJS(config, cumvalue, config.fmtV3),
-                v4: fmtChartJS(config, totvalue, config.fmtV4),
-                v5: fmtChartJS(config, angleStep, config.fmtV5),
-                v6: roundToWithThousands(config, fmtChartJS(config, 100 * data[i].value / totvalue, config.fmtV6), config.roundPct),
-                v7: fmtChartJS(config, midPosX, config.fmtV7),
-                v8: fmtChartJS(config, midPosY, config.fmtV8),
-                v9: fmtChartJS(config, 0, config.fmtV9),
-                v10: fmtChartJS(config, calculateOffset(config, 1 * data[i].value, calculatedScale, scaleHop), config.fmtV10),
-                v11: fmtChartJS(config, startAngle - angleStep, config.fmtV11),
-                v12: fmtChartJS(config, angleStep, config.fmtV12),
-                v13: fmtChartJS(config, i, config.fmtV13)
-              });
-              ctx.translate(midPosX + labelRadius * Math.cos(posAngle), midPosY - labelRadius * Math.sin(posAngle));
-
-              if (config.inGraphDataRotate == "inRadiusAxis") ctx.rotate(2 * Math.PI - posAngle);
-              else if (config.inGraphDataRotate == "inRadiusAxisRotateLabels") {
-                if ((posAngle + 2 * Math.PI) % (2 * Math.PI) > Math.PI / 2 && (posAngle + 2 * Math.PI) % (2 * Math.PI) < 3 * Math.PI / 2) ctx.rotate(3 * Math.PI - posAngle);
-                else ctx.rotate(2 * Math.PI - posAngle);
-              } else ctx.rotate(config.inGraphDataRotate * (Math.PI / 180));
-
-              ctx.fillText(dispString, 0, 0);
-              ctx.restore();
-              realStartAngle -= angleStep;
-            }
-          }
-        }
-      }
-    };
-
-    function drawScale() {
-      for (var i = 0; i < calculatedScale.steps; i++) {
-        //If the line object is there
-        if (config.scaleShowLine) {
-          ctx.beginPath();
-          ctx.arc(midPosX, midPosY, scaleHop * (i + 1), 0, (Math.PI * 2), true);
-          ctx.strokeStyle = config.scaleLineColor;
-          ctx.lineWidth = config.scaleLineWidth;
-          ctx.stroke();
-        }
-
-        if (config.scaleShowLabels) {
-          ctx.textAlign = "center";
-          ctx.font = config.scaleFontStyle + " " + config.scaleFontSize + "px " + config.scaleFontFamily;
-          var label = calculatedScale.labels[i + 1];
-          //If the backdrop object is within the font object
-          if (config.scaleShowLabelBackdrop) {
-            var textWidth = ctx.measureText(label).width;
-            ctx.fillStyle = config.scaleBackdropColor;
-            ctx.beginPath();
-            ctx.rect(
-              Math.round(midPosX - textWidth / 2 - config.scaleBackdropPaddingX), //X
-              Math.round(midPosY - (scaleHop * (i + 1)) - config.scaleFontSize * 0.5 - config.scaleBackdropPaddingY), //Y
-              Math.round(textWidth + (config.scaleBackdropPaddingX * 2)), //Width
-              Math.round(config.scaleFontSize + (config.scaleBackdropPaddingY * 2)) //Height
-            );
-            ctx.fill();
-          }
-          ctx.textBaseline = "middle";
-          ctx.fillStyle = config.scaleFontColor;
-          ctx.fillText(label, midPosX, midPosY - (scaleHop * (i + 1)));
-        }
-      }
-    };
-
-    function getValueBounds() {
-      var upperValue = Number.MIN_VALUE;
-      var lowerValue = Number.MAX_VALUE;
-      for (var i = 0; i < data.length; i++) {
-        if (1 * data[i].value > upperValue) {
-          upperValue = 1 * data[i].value;
-        }
-        if (1 * data[i].value < lowerValue) {
-          lowerValue = 1 * data[i].value;
-        }
-      };
-
-      if (Math.abs(upperValue - lowerValue) < 0.00000001) {
-        upperValue = Max([upperValue * 2, 1]);
-        lowerValue = 0;
-      }
-
-      if (!isNaN(config.graphMin)) lowerValue = config.graphMin;
-      if (!isNaN(config.graphMax)) upperValue = config.graphMax;
-
-      var maxSteps = Math.floor((scaleHeight / (labelHeight * 0.66)));
-      var minSteps = Math.floor((scaleHeight / labelHeight * 0.5));
-
-      return {
-        maxValue: upperValue,
-        minValue: lowerValue,
-        maxSteps: maxSteps,
-        minSteps: minSteps
-      };
-    };
-  };
-
-
   var Line = function(data, config, ctx) {
-
     var maxSize, scaleHop, calculatedScale, labelHeight, scaleHeight, valueBounds, labelTemplateString, valueHop, widestXLabel, xAxisLength, yAxisPosX, xAxisPosY, rotateLabels = 0,
         msr;
 
@@ -1218,14 +500,6 @@ window.Chart = function(context) {
         if (typeof(data.datasets[i].data[0] != "undefined")) data.datasets[i].data = [undefined, data.datasets[i].data[0], undefined];
       }
     }
-
-    if (!dynamicFunction(data, config, ctx, "Line")) return;
-
-    jsGraphAnnotate[ctx.ChartNewId] = new Array();
-
-    defMouse(ctx, data, config, "Line");
-
-    setRect(ctx, config);
 
     msr = setMeasures(data, config, ctx, height, width, [""], false, false, true, true, config.datasetFill);
 
@@ -1280,7 +554,6 @@ window.Chart = function(context) {
     if (valueBounds.minValue < 0) {
       var zeroY = calculateOffset(config, 0, calculatedScale, scaleHop);
     }
-
 
     animationLoop(config, drawScale, drawLines, ctx, msr.clrx, msr.clry, msr.clrwidth, msr.clrheight, yAxisPosX + msr.availableWidth / 2, xAxisPosY - msr.availableHeight / 2, yAxisPosX, xAxisPosY, data);
 
@@ -1371,9 +644,9 @@ window.Chart = function(context) {
             if (msr.rotateLabels > 0) {
               ctx.translate(yAxisPosX + i * valueHop - config.scaleFontSize / 2, msr.xLabelPos);
               ctx.rotate(-(msr.rotateLabels * (Math.PI / 180)));
-              ctx.fillText(fmtChartJS(config, data.labels[i], config.fmtXLabel), 0, 0);
+              ctx.fillText(fmtChartJS(config, data.labels[i]), 0, 0);
             } else {
-              ctx.fillText(fmtChartJS(config, data.labels[i], config.fmtXLabel), yAxisPosX + i * valueHop, msr.xLabelPos);
+              ctx.fillText(fmtChartJS(config, data.labels[i]), yAxisPosX + i * valueHop, msr.xLabelPos);
             }
             ctx.restore();
           }
@@ -1489,8 +762,6 @@ window.Chart = function(context) {
 
       if (!(isIE() < 9 && isIE() != false) && config.clearRect) ctx.clearRect(clrx, clry, clrwidth, clrheight);
 
-      dispCrossText(ctx, config, midPosX, midPosY, borderX, borderY, false, data, easeAdjustedAnimationPercent, cntiter);
-
       if (config.scaleOverlay) {
         drawData(easeAdjustedAnimationPercent);
         drawScale();
@@ -1498,7 +769,6 @@ window.Chart = function(context) {
         drawScale();
         drawData(easeAdjustedAnimationPercent);
       }
-      dispCrossText(ctx, config, midPosX, midPosY, borderX, borderY, true, data, easeAdjustedAnimationPercent, cntiter);
     };
 
     function animLoop() {
@@ -1534,12 +804,9 @@ window.Chart = function(context) {
           }
           window.setTimeout(animLoop, 2000);
         }
-
-
       }
     };
   };
-
 
   //Declare global functions to be called within this namespace here.
 
@@ -1593,7 +860,6 @@ window.Chart = function(context) {
 
     populateLabels(config, labelTemplateString, labels, numberOfSteps, graphMin, graphMax, stepValue);
 
-
     return {
       steps: numberOfSteps,
       stepValue: stepValue,
@@ -1614,14 +880,14 @@ window.Chart = function(context) {
       if (!config.logarithmic) { // no logarithmic scale
         for (var i = 0; i < numberOfSteps + 1; i++) {
           labels.push(tmpl(labelTemplateString, {
-            value: fmtChartJS(config, 1 * ((graphMin + (stepValue * i)).toFixed(getDecimalPlaces(stepValue))), config.fmtYLabel)
+            value: fmtChartJS(config, 1 * ((graphMin + (stepValue * i)).toFixed(getDecimalPlaces(stepValue))))
           }));
         }
       } else { // logarithmic scale 10,100,1000,...
         var value = graphMin;
         while (value < graphMax) {
           labels.push(tmpl(labelTemplateString, {
-            value: fmtChartJS(config, 1 * value.toFixed(getDecimalPlaces(stepValue)), config.fmtYLabel)
+            value: fmtChartJS(config, 1 * value.toFixed(getDecimalPlaces(stepValue)))
           }));
           value *= 10;
         }
@@ -1675,7 +941,6 @@ window.Chart = function(context) {
     } else {
       return 0;
     }
-
   };
 
   function mergeChartConfig(defaults, userDefined) {
@@ -1719,103 +984,6 @@ window.Chart = function(context) {
 
     // Provide some basic currying to the user
     return data ? fn(data) : fn;
-  };
-
-  function dispCrossText(ctx, config, posX, posY, borderX, borderY, overlay, data, animPC, cntiter) {
-
-    var i, disptxt, txtposx, txtposy, txtAlign, txtBaseline;
-
-    for (i = 0; i < config.crossText.length; i++) {
-
-      if (config.crossText[i] != "" && config.crossTextOverlay[Min([i, config.crossTextOverlay.length - 1])] == overlay && ((cntiter == 1 && config.crossTextIter[Min([i, config.crossTextIter.length - 1])] == "first") || config.crossTextIter[Min([i, config.crossTextIter.length - 1])] == cntiter || config.crossTextIter[Min([i, config.crossTextIter.length - 1])] == "all" || (animPC == 1 && config.crossTextIter[Min([i, config.crossTextIter.length - 1])] == "last"))) {
-        ctx.save();
-        ctx.beginPath();
-        ctx.font = config.crossTextFontStyle[Min([i, config.crossTextFontStyle.length - 1])] + " " + config.crossTextFontSize[Min([i, config.crossTextFontSize.length - 1])] + "px " + config.crossTextFontFamily[Min([i, config.crossTextFontFamily.length - 1])];
-        ctx.fillStyle = config.crossTextFontColor[Min([i, config.crossTextFontColor.length - 1])];
-
-        textAlign = config.crossTextAlign[Min([i, config.crossTextAlign.length - 1])];
-        textBaseline = config.crossTextBaseline[Min([i, config.crossTextBaseline.length - 1])];
-
-        txtposx = 1 * config.crossTextPosX[Min([i, config.crossTextPosX.length - 1])];
-        txtposy = 1 * config.crossTextPosY[Min([i, config.crossTextPosY.length - 1])];
-
-        switch (1 * config.crossTextRelativePosX[Min([i, config.crossTextRelativePosX.length - 1])]) {
-          case 0:
-            if (textAlign == "default") textAlign = "left";
-            break;
-          case 1:
-            txtposx += borderX;
-            if (textAlign == "default") textAlign = "right";
-            break;
-          case 2:
-            txtposx += posX;
-            if (textAlign == "default") textAlign = "center";
-            break;
-          case -2:
-            txtposx += context.canvas.width / 2;
-            if (textAlign == "default") textAlign = "center";
-            break;
-          case 3:
-            txtposx += txtposx + 2 * posX - borderX;
-            if (textAlign == "default") textAlign = "left";
-            break;
-          case 4:
-            // posX=width;
-            txtposx += context.canvas.width;
-            if (textAlign == "default") textAlign = "right";
-            break;
-          default:
-            txtposx += posX;
-            if (textAlign == "default") textAlign = "center";
-            break;
-        }
-
-        switch (1 * config.crossTextRelativePosY[Min([i, config.crossTextRelativePosY.length - 1])]) {
-          case 0:
-            if (textBaseline == "default") textBaseline = "top";
-            break;
-          case 3:
-            txtposy += borderY;
-            if (textBaseline == "default") textBaseline = "top";
-            break;
-          case 2:
-            txtposy += posY;
-            if (textBaseline == "default") textBaseline = "middle";
-            break;
-          case -2:
-            txtposy += context.canvas.height / 2;
-            if (textBaseline == "default") textBaseline = "middle";
-            break;
-          case 1:
-            txtposy += txtposy + 2 * posY - borderY;
-            if (textBaseline == "default") textBaseline = "bottom";
-            break;
-          case 4:
-            txtposy += context.canvas.height;
-            if (textBaseline == "default") textBaseline = "bottom";
-            break;
-          default:
-            txtposy += posY;
-            if (textBaseline == "default") textBaseline = "middle";
-            break;
-        }
-
-        ctx.textAlign = textAlign;
-        ctx.textBaseline = textBaseline;
-
-        ctx.translate(1 * txtposx, 1 * txtposy);
-
-        ctx.rotate(config.crossTextAngle[Min([i, config.crossTextAngle.length - 1])]);
-
-        if (config.crossText[i].substring(0, 1) == "%") {
-          if (typeof config.crossTextFunction == "function") disptxt = config.crossTextFunction(i, config.crossText[i], ctx, config, posX, posY, borderX, borderY, overlay, data, animPC);
-        } else disptxt = config.crossText[i];
-
-        ctx.fillText(disptxt, 0, 0);
-        ctx.stroke();
-        ctx.restore();
-      }
-    }
   };
 
   //****************************************************************************************
@@ -1873,7 +1041,7 @@ window.Chart = function(context) {
     if (drawAxis) {
       ctx.font = config.scaleFontStyle + " " + config.scaleFontSize + "px " + config.scaleFontFamily;
       for (var i = 0; i < data.labels.length; i++) {
-        var textLength = ctx.measureText(fmtChartJS(config, data.labels[i], config.fmtXLabel)).width;
+        var textLength = ctx.measureText(fmtChartJS(config, data.labels[i])).width;
         //If the text length is longer - make that equal to longest text!
         widestXLabel = (textLength > widestXLabel) ? textLength : widestXLabel;
       }
@@ -1889,7 +1057,7 @@ window.Chart = function(context) {
         for (var i = ylabels.length - 1; i >= 0; i--) {
           if (typeof(ylabels[i]) == "string") {
             if (ylabels[i].trim() != "") {
-              var textLength = ctx.measureText(fmtChartJS(config, ylabels[i], config.fmtYLabel)).width;
+              var textLength = ctx.measureText(fmtChartJS(config, ylabels[i])).width;
               //If the text length is longer - make that equal to longest text!
               widestYLabel = (textLength > widestYLabel) ? textLength : widestYLabel;
             }
@@ -1970,7 +1138,7 @@ window.Chart = function(context) {
 
               if (data.datasets[i].title.trim() != "") {
                 nbeltLegend++;
-                var textLength = ctx.measureText(fmtChartJS(config, data.datasets[i].title, config.fmtLegend)).width;
+                var textLength = ctx.measureText(fmtChartJS(config, data.datasets[i].title)).width;
                 //If the text length is longer - make that equal to longest text!
                 widestLegend = (textLength > widestLegend) ? textLength : widestLegend;
               }
@@ -1981,7 +1149,7 @@ window.Chart = function(context) {
             if (typeof(data[i].title) == "string") {
               if (data[i].title.trim() != "") {
                 nbeltLegend++;
-                var textLength = ctx.measureText(fmtChartJS(config, data[i].title, config.fmtLegend)).width;
+                var textLength = ctx.measureText(fmtChartJS(config, data[i].title)).width;
                 //If the text length is longer - make that equal to longest text!
                 widestLegend = (textLength > widestLegend) ? textLength : widestLegend;
               }
@@ -2238,8 +1406,8 @@ window.Chart = function(context) {
         else tpof = typeof(data[orderi].title)
 
         if (tpof == "string") {
-          if (drawLegendOnData) lgtxt = fmtChartJS(config, data.datasets[orderi].title, config.fmtLegend).trim();
-          else lgtxt = fmtChartJS(config, data[orderi].title, config.fmtLegend).trim();
+          if (drawLegendOnData) lgtxt = fmtChartJS(config, data.datasets[orderi].title).trim();
+          else lgtxt = fmtChartJS(config, data[orderi].title).trim();
           if (lgtxt != "") {
             nbcols++;
             if (nbcols == nbLegendCols) {
@@ -2341,6 +1509,7 @@ window.Chart = function(context) {
   };
 
   // Function for additionalLine (BarLine|Line)
+
   function drawLinesDataset(animPc, data, config, ctx, vars) {
     var xAxisPosY = vars.xAxisPosY;
     var yAxisPosX = vars.yAxisPosX;
@@ -2406,7 +1575,7 @@ window.Chart = function(context) {
 
             if (typeof(data.labels[j]) == "string") lgtxt2 = data.labels[j].trim();
             else lgtxt2 = "";
-            jsGraphAnnotate[ctx.ChartNewId][annotateCnt++] = ["POINT", xPos(j), yPos(i, j), lgtxt, lgtxt2, 1 * data.datasets[i].data[j], divprev, divnext, maxvalue[j], totvalue[j], i, j];
+            
             if (config.inGraphDataShow) {
               ctx.save();
               ctx.textAlign = config.inGraphDataAlign;
@@ -2419,18 +1588,16 @@ window.Chart = function(context) {
                 paddingTextY = config.inGraphDataPaddingY;
               var dispString = tmplbis(config.inGraphDataTmpl, {
                 config: config,
-                v1: fmtChartJS(config, lgtxt, config.fmtV1),
-                v2: fmtChartJS(config, lgtxt2, config.fmtV2),
-                v3: fmtChartJS(config, 1 * data.datasets[i].data[j], config.fmtV3),
-                v4: fmtChartJS(config, divprev, config.fmtV4),
-                v5: fmtChartJS(config, divnext, config.fmtV5),
-                v6: fmtChartJS(config, maxvalue[j], config.fmtV6),
-                v7: fmtChartJS(config, totvalue[j], config.fmtV7),
-                v8: roundToWithThousands(config, fmtChartJS(config, 100 * data.datasets[i].data[j] / totvalue[j], config.fmtV8), config.roundPct),
-                v9: fmtChartJS(config, yAxisPosX + (valueHop * k), config.fmtV9),
-                v10: fmtChartJS(config, xAxisPosY - (calculateOffset(config, data.datasets[i].data[j], calculatedScale, scaleHop)), config.fmtV10),
-                v11: fmtChartJS(config, i, config.fmtV11),
-                v12: fmtChartJS(config, j, config.fmtV12)
+                v1: fmtChartJS(config, lgtxt),
+                v2: fmtChartJS(config, lgtxt2),
+                v3: fmtChartJS(config, 1 * data.datasets[i].data[j]),
+                v4: fmtChartJS(config, divprev),
+                v5: fmtChartJS(config, divnext),
+                v6: fmtChartJS(config, maxvalue[j]),
+                v7: fmtChartJS(config, totvalue[j]),
+                v8: roundToWithThousands(config, fmtChartJS(config, 100 * data.datasets[i].data[j] / totvalue[j]), config.roundPct),
+                v9: fmtChartJS(config, yAxisPosX + (valueHop * k)),
+                v10: fmtChartJS(config, xAxisPosY - (calculateOffset(config, data.datasets[i].data[j], calculatedScale, scaleHop))),
               });
               ctx.translate(xPos(j) + paddingTextX, yPos(i, j) - paddingTextY);
               ctx.rotate(config.inGraphDataRotate * (Math.PI / 180));
@@ -2440,7 +1607,9 @@ window.Chart = function(context) {
           }
         }
       }
+
       ctx.stroke();
+
       if (config.datasetFill) {
         ctx.lineTo(yAxisPosX + (valueHop * (data.datasets[i].data.length - 1)), xAxisPosY - zeroY);
         ctx.lineTo(xPos(frstpt), xAxisPosY - zeroY);
@@ -2450,7 +1619,6 @@ window.Chart = function(context) {
         else if (typeof data.datasets[i].fillColor == "string") ctx.fillStyle = data.datasets[i].fillColor;
         else ctx.fillStyle = config.defaultFillColor;
         ctx.fill();
-
       } else {
         ctx.closePath();
       }
@@ -2481,68 +1649,7 @@ window.Chart = function(context) {
     };
   }
 
-
-
   function log10(val) {
     return Math.log(val) / Math.LN10;
   };
-
-  function setRect(ctx, config) {
-    if (config.clearRect) {
-      clear(ctx);
-      ctx.clearRect(0, 0, width, height);
-    } else {
-      clear(ctx);
-      ctx.clearRect(0, 0, width, height);
-      ctx.fillStyle = config.savePngBackgroundColor;
-      ctx.strokeStyle = config.savePngBackgroundColor;
-      ctx.beginPath();
-      ctx.moveTo(0, 0);
-      ctx.lineTo(0, ctx.canvas.height);
-      ctx.lineTo(ctx.canvas.width, ctx.canvas.height);
-      ctx.lineTo(ctx.canvas.width, 0);
-      ctx.lineTo(0, 0);
-      ctx.stroke();
-      ctx.fill();
-
-    }
-  };
-
-
-  function defMouse(ctx, data, config, tpgraph) {
-
-    if (config.annotateDisplay == true) {
-      if (cursorDivCreated == false) oCursor = new makeCursorObj('divCursor');
-      if (isIE() < 9 && isIE() != false) ctx.canvas.attachEvent("on" + config.annotateFunction.split(' ')[0], function(event) {
-        if ((config.annotateFunction.split(' ')[1] == "left" && event.which == 1) ||
-          (config.annotateFunction.split(' ')[1] == "middle" && event.which == 2) ||
-          (config.annotateFunction.split(' ')[1] == "right" && event.which == 3) ||
-          (typeof(config.annotateFunction.split(' ')[1]) != "string")) doMouseMove(ctx, config, event)
-      });
-      else ctx.canvas.addEventListener(config.annotateFunction.split(' ')[0], function(event) {
-        if ((config.annotateFunction.split(' ')[1] == "left" && event.which == 1) ||
-          (config.annotateFunction.split(' ')[1] == "middle" && event.which == 2) ||
-          (config.annotateFunction.split(' ')[1] == "right" && event.which == 3) ||
-          (typeof(config.annotateFunction.split(' ')[1]) != "string")) doMouseMove(ctx, config, event)
-      }, false);
-    }
-
-    if (config.savePng) {
-      if (isIE() < 9 && isIE() != false) ctx.canvas.attachEvent("on" + config.savePngFunction.split(' ')[0], function(event) {
-        if ((config.savePngFunction.split(' ')[1] == "left" && event.which == 1) ||
-          (config.savePngFunction.split(' ')[1] == "middle" && event.which == 2) ||
-          (config.savePngFunction.split(' ')[1] == "right" && event.which == 3) ||
-          (typeof(config.savePngFunction.split(' ')[1]) != "string")) saveCanvas(ctx, data, config, tpgraph);
-      });
-      else ctx.canvas.addEventListener(config.savePngFunction.split(' ')[0], function(event) {
-        if ((config.savePngFunction.split(' ')[1] == "left" && event.which == 1) ||
-          (config.savePngFunction.split(' ')[1] == "middle" && event.which == 2) ||
-          (config.savePngFunction.split(' ')[1] == "right" && event.which == 3) ||
-          (typeof(config.savePngFunction.split(' ')[1]) != "string")) saveCanvas(ctx, data, config, tpgraph);
-      }, false);
-
-    }
-
-  };
-
 };
