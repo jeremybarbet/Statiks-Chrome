@@ -227,7 +227,8 @@ header {
 
     .icon-check,
     .icon-error,
-    .icon-clear {
+    .icon-clear,
+    .api-loader {
       position: absolute;
       right: 15px;
       font-size: 18px;
@@ -242,6 +243,18 @@ header {
       border-radius: 18px;
 
       &:hover { box-shadow: inset 0 0 0 4px @white; }
+    }
+
+    .api-loader {
+      width: 18px;
+      height: 18px;
+      border: 1px solid @white;
+      border-top-color: transparent;
+      border-left-color: transparent;
+      transition: all .4s ease;
+      border-radius: 18px;
+      -webkit-animation: loader 1s infinite linear;
+              animation: loader 1s infinite linear;
     }
 
     form {

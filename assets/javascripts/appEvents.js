@@ -95,7 +95,12 @@ $('.choose-social').on('click', 'li', function(e) {
       var site = $this.data('social');
       var value = $this.find('input').val();
 
-      if ( value !== '' ) api[site]($this, value, site);
+      if ( value !== '' ) {
+        var loader = $('<span class="api-loader"></span>');
+        $this.append(loader);
+
+        api[site]($this, value, site);
+      }
 
       e.preventDefault();
     });

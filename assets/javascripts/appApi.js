@@ -11,7 +11,7 @@ var api = {
     var success = $('<span class="icon-check"></span>');
 
     $this.find('input').blur();
-    $this.find('.icon-error, .icon-clear').remove();
+    $this.find('.icon-error, .icon-clear, .api-loader').remove();
 
     /*
     * Display the check icon during a short time
@@ -57,7 +57,7 @@ var api = {
     */
     if ( $this !== null ) {
       $this.find('input').val('');
-      $this.find('.icon-check, .icon-clear').remove();
+      $this.find('.icon-check, .icon-clear, .api-loader').remove();
 
       if ( !$this.find('.icon-error').length ) {
         $this.append(error);
