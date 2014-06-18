@@ -375,7 +375,7 @@ var api = {
         var getMedias = data.match(/\"media\":([^\,]+)/g);
 
         var username = value;
-        var followers = isMac ? getFollowers[1].substr(getFollowers[1].indexOf(':') + 1) : getFollowers[0].substr(getFollowers[0].indexOf(':') + 1);
+        var followers = (getFollowers.length == 2) ? getFollowers[1].substr(getFollowers[1].indexOf(':') + 1) : getFollowers[0].substr(getFollowers[0].indexOf(':') + 1);
 
         var details = {
           following: getFollowing[0].substr(getFollowing[0].indexOf(':') + 1),
