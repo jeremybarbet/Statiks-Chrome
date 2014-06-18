@@ -153,14 +153,14 @@ var data = {
           strokeColor: 'rgba(220, 220, 220, 1)',
           pointColor: 'rgba(220, 220, 220, 1)',
           pointStrokeColor: '#fff',
-          data: dataObj['graph'].following
+          data: dataObj.graph['following']
         },
         {
           fillColor: 'rgba(70, 195, 64, 0.15)',
           strokeColor: 'rgba(70, 195, 64, 1)',
           pointColor: '#f4f4f4',
           pointStrokeColor: 'rgba(70, 195, 64, 1)',
-          data: dataObj['graph'].followers
+          data: dataObj.graph['followers']
         }
       ]
     }
@@ -183,6 +183,6 @@ var data = {
       scaleXGridLinesStep: 0
     };
 
-    if ( dataObj['graph'].followers && dataObj['graph'].following !== null ) new Chart(ctx).Line(data, options);
+    if ( dataObj.graph['followers'] !== null && dataObj.graph['following'] !== null ) new Chart(ctx).Line(data, options);
   }
 };

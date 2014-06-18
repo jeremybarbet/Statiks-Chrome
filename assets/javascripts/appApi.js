@@ -37,7 +37,7 @@ var api = {
     * Push data to object and store it
     */
     if (localStorage !== null) {
-      dataObj['sites'][site] = {
+      dataObj.sites[site] = {
         username: username,
         followers: followers,
         details: details,
