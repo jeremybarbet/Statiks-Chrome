@@ -19,6 +19,10 @@ TODO
 Changelog
 ---------
 
+__v1.1.2__
+
+* Fix instagram issue.
+
 __v1.1.1__
 
 * Add platform detection to avoid some weird issues.
