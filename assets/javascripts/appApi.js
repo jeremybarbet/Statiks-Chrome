@@ -5,6 +5,13 @@
  */
 var api = {
   /**
+   * Alert messages
+   */
+  errorApi: 'Data from API are incorrect.',
+  errorUsername: ' is not found.',
+  noUpdate: 'Nothing new :(',
+
+  /**
    * Success fallback when retrieve data
    */
   success: function($this, site, username, followers, details) {
@@ -183,7 +190,7 @@ var api = {
     reload++;
 
     if ( Object.keys(dataObj.sites).length == reload ) {
-      api.fail(null, 'Nothing new :(');
+      api.fail(null, api.noUpdate);
     }
   },
 
@@ -211,12 +218,11 @@ var api = {
           api.success($this, site, username, followers, details);
         }
       } else {
-        var errorCustomMessage = 'Data from API are incorrect.';
-        api.fail($this, errorCustomMessage);
+        api.fail($this, api.errorApi);
       }
     })
-    .fail(function(response) {
-      api.fail($this, response.responseJSON.message[1]);
+    .fail(function() {
+      api.fail($this, value + api.errorUsername);
     });
   },
 
@@ -255,8 +261,7 @@ var api = {
       }
     })
     .fail(function() {
-      var errorCustomMessage = 'Invalid username.';
-      api.fail($this, errorCustomMessage);
+      api.fail($this, value + api.errorUsername);
     });
   },
 
@@ -284,12 +289,11 @@ var api = {
           api.success($this, site, username, followers, details);
         }
       } else {
-        var errorCustomMessage = 'Data from API are incorrect.';
-        api.fail($this, errorCustomMessage);
+        api.fail($this, api.errorApi);
       }
     })
-    .fail(function(response) {
-      api.fail($this, response.responseJSON.http_code);
+    .fail(function() {
+      api.fail($this, value + api.errorUsername);
     });
   },
 
@@ -317,12 +321,11 @@ var api = {
           api.success($this, site, username, followers, details);
         }
       } else {
-        var errorCustomMessage = 'Data from API are incorrect.';
-        api.fail($this, errorCustomMessage);
+        api.fail($this, api.errorApi);
       }
     })
-    .fail(function(response) {
-      api.fail($this, response.responseJSON.error);
+    .fail(function() {
+      api.fail($this, value + api.errorUsername);
     });
   },
 
@@ -349,12 +352,11 @@ var api = {
           api.success($this, site, username, followers, details);
         }
       } else {
-        var errorCustomMessage = 'Data from API are incorrect.';
-        api.fail($this, errorCustomMessage);
+        api.fail($this, api.errorApi);
       }
     })
-    .fail(function(response) {
-      api.fail($this, response.responseJSON.message);
+    .fail(function() {
+      api.fail($this, value + api.errorUsername);
     });
   },
 
@@ -381,12 +383,11 @@ var api = {
           api.success($this, site, username, followers, details);
         }
       } else {
-        var errorCustomMessage = 'Data from API are incorrect.';
-        api.fail($this, errorCustomMessage);
+        api.fail($this, api.errorApi);
       }
     })
-    .fail(function(response) {
-      api.fail($this, response.responseText);
+    .fail(function() {
+      api.fail($this, value + api.errorUsername);
     });
   },
 
@@ -421,8 +422,7 @@ var api = {
       }
     })
     .fail(function() {
-      var errorCustomMessage = 'Invalid username.';
-      api.fail($this, errorCustomMessage);
+      api.fail($this, value + api.errorUsername);
     });
   },
 
@@ -461,8 +461,7 @@ var api = {
       }
     })
     .fail(function() {
-      var errorCustomMessage = 'Invalid username.';
-      api.fail($this, errorCustomMessage);
+      api.fail($this, value + api.errorUsername);
     });
   },
 
@@ -487,12 +486,11 @@ var api = {
           api.success($this, site, username, followers, details);
         }
       } else {
-        var errorCustomMessage = 'Data from API are incorrect.';
-        api.fail($this, errorCustomMessage);
+        api.fail($this, api.errorApi);
       }
     })
-    .fail(function(response) {
-      api.fail($this, response.statusText);
+    .fail(function() {
+      api.fail($this, value + api.errorUsername);
     });
   },
 
@@ -520,12 +518,11 @@ var api = {
           api.success($this, site, username, followers, details);
         }
       } else {
-        var errorCustomMessage = 'Data from API are incorrect.';
-        api.fail($this, errorCustomMessage);
+        api.fail($this, api.errorApi);
       }
     })
-    .fail(function(response) {
-      api.fail($this, response.statusText);
+    .fail(function() {
+      api.fail($this, value + api.errorUsername);
     });
   },
 
@@ -553,12 +550,11 @@ var api = {
           api.success($this, site, username, followers, details);
         }
       } else {
-        var errorCustomMessage = 'Data from API are incorrect.';
-        api.fail($this, errorCustomMessage);
+        api.fail($this, api.errorApi);
       }
     })
-    .fail(function(response) {
-      api.fail($this, response.statusText);
+    .fail(function() {
+      api.fail($this, value + api.errorUsername);
     });
   }
 };
