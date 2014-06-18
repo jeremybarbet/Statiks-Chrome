@@ -346,6 +346,13 @@ header {
       padding-bottom: 4px;
       color: @white;
 
+      &:hover {
+        .left h2::after {
+          width: 20px;
+          transition: all .2s ease;
+        }
+      }
+
       .left,
       .right {
         display: inline-block;
@@ -363,6 +370,17 @@ header {
           margin-top: 26px;
           margin-bottom: 4px;
           font-weight: 300;
+          cursor: pointer;
+
+          &::after {
+            content: '';
+            width: 0;
+            height: 1px;
+            margin-top: 5px;
+            margin-left: 2px;
+            background: @bg-white;
+            display: block;
+          }
         }
 
         p {
@@ -401,6 +419,8 @@ header {
       &.total {
         color: #333;
         background-color: #f4f4f4;
+
+        .left h2::after { background: @gray; }
 
         p {
           color: lighten(#333, 40%);
