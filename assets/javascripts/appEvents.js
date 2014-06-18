@@ -97,7 +97,7 @@ $('.choose-social').on('click', 'li', function(e) {
 
       if ( value !== '' ) {
         var loader = $('<span class="api-loader"></span>');
-        $this.append(loader);
+        if ( !$this.find('.api-loader').length ) $this.append(loader);
 
         api[site]($this, value, site);
       }

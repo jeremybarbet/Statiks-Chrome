@@ -36,7 +36,7 @@ var api = {
     * Check if localstorage exist
     * Push data to object and store it
     */
-    if (localStorage !== null) {
+    if ( localStorage !== null ) {
       dataObj.sites[site] = {
         username: username,
         followers: followers,
@@ -55,49 +55,47 @@ var api = {
   /**
    * Fail fallback when can't retrieve data
    */
-  fail: function($this, alert) {
+  fail: function($this) {
     var error = $('<span class="icon-error"></span>');
+
+    $this.find('input').val('');
+    $this.find('.icon-check, .icon-clear, .api-loader').remove();
 
     /*
     * Display the cross icon during a short time
     * Not add it on the DOM again, if is already append
     */
-    if ( $this !== null ) {
-      $this.find('input').val('');
-      $this.find('.icon-check, .icon-clear, .api-loader').remove();
-
-      if ( !$this.find('.icon-error').length ) {
-        $this.append(error);
-
-        setTimeout(function() {
-          $this.find('.icon-error').remove();
-        }, timingEffect * 3);
-      }
-    }
-
-    /*
-    * Display alert when an error occured
-    */
-    if (alert) {
-      // Not add it on the DOM again, if is already append
-      if ( !$('.alert').length ) {
-        var alertWrapper = '<div class="alert"><p></p></div>';
-        $(alertWrapper).insertAfter('header');
-      }
-
-      $('.alert').animate({
-        marginTop: '41px',
-        opacity: '1'
-      }, timingEffect).find('p').text(alert);
+    if ( !$this.find('.icon-error').length ) {
+      $this.append(error);
 
       setTimeout(function() {
-        $('.alert').animate({
-          marginTop: '-41px',
-          opacity: '0'
-        }, timingEffect);
-      }, 4000);
+        $this.find('.icon-error').remove();
+      }, timingEffect * 3);
     }
   },
+
+  /**
+   * Alert messages
+   */
+   alert: function(message) {
+    // Not add it on the DOM again, if is already append
+    if ( !$('.alert').length ) {
+      var alertWrapper = '<div class="alert"><p></p></div>';
+      $(alertWrapper).insertAfter('header');
+    }
+
+    $('.alert').animate({
+      marginTop: '41px',
+      opacity: '1'
+    }, timingEffect).find('p').text(message);
+
+    setTimeout(function() {
+      $('.alert').animate({
+        marginTop: '-41px',
+        opacity: '0'
+      }, timingEffect);
+    }, 4000);
+   },
 
   /**
    * Method to reload data and store on another object
@@ -108,7 +106,7 @@ var api = {
     for (var i = 0; i < dataObj.graph.followers.length; i++) {
       if ( dataObj.graph.followers[i] === 0 ) {
         dataObj.sites[site].diff.followers[i] = followers;
-        if (dataObj.sites[site].details.hasOwnProperty('following')) dataObj.sites[site].diff.following[i] = details.following;
+        if ( dataObj.sites[site].details.hasOwnProperty('following') ) dataObj.sites[site].diff.following[i] = details.following;
 
         break;
       }
@@ -154,10 +152,22 @@ var api = {
         $('.' + site).find('.' + key + ' .right').text(format(details[key]));
       }
     } else {
-      api.notification();
+      api.reloadCount();
     }
   },
 
+  /**
+   * If there is no new followers for each networks, display an alert message
+   */
+  reloadCount: function() {
+    reload++;
+
+    if ( Object.keys(dataObj.sites).length == reload ) api.alert(api.noUpdate);
+  },
+
+  /**
+   * Method to sum up total of followers and following for all networks
+   */
   graph: function() {
     $.each(dataObj.graph.followers, function(i, data) {
       if ( data === 0 ) {
@@ -171,6 +181,9 @@ var api = {
     storage.set('user-data', dataObj);
   },
 
+  /**
+   * Method to upgrade old datas for upcoming version of the extension
+   */
   upgrade: function($this, site, followers, details) {
     dataObj.sites[site].followers = followers;
     dataObj.sites[site].details = details;
@@ -184,14 +197,6 @@ var api = {
         data.build();
       }, timingEffect);
     }, timingEffect * 6);
-  },
-
-  notification: function() {
-    reload++;
-
-    if ( Object.keys(dataObj.sites).length == reload ) {
-      api.fail(null, api.noUpdate);
-    }
   },
 
   /**
@@ -218,11 +223,13 @@ var api = {
           api.success($this, site, username, followers, details);
         }
       } else {
-        api.fail($this, api.errorApi);
+        api.fail($this);
+        api.alert(api.errorApi);
       }
     })
     .fail(function() {
-      api.fail($this, value + api.errorUsername);
+      api.fail($this);
+      api.alert(value + api.errorUsername);
     });
   },
 
@@ -261,7 +268,8 @@ var api = {
       }
     })
     .fail(function() {
-      api.fail($this, value + api.errorUsername);
+      api.fail($this);
+      api.alert(value + api.errorUsername);
     });
   },
 
@@ -289,11 +297,13 @@ var api = {
           api.success($this, site, username, followers, details);
         }
       } else {
-        api.fail($this, api.errorApi);
+        api.fail($this);
+        api.alert(api.errorApi);
       }
     })
     .fail(function() {
-      api.fail($this, value + api.errorUsername);
+      api.fail($this);
+      api.alert(value + api.errorUsername);
     });
   },
 
@@ -321,11 +331,13 @@ var api = {
           api.success($this, site, username, followers, details);
         }
       } else {
-        api.fail($this, api.errorApi);
+        api.fail($this);
+        api.alert(api.errorApi);
       }
     })
     .fail(function() {
-      api.fail($this, value + api.errorUsername);
+      api.fail($this);
+      api.alert(value + api.errorUsername);
     });
   },
 
@@ -352,11 +364,13 @@ var api = {
           api.success($this, site, username, followers, details);
         }
       } else {
-        api.fail($this, api.errorApi);
+        api.fail($this);
+        api.alert(api.errorApi);
       }
     })
     .fail(function() {
-      api.fail($this, value + api.errorUsername);
+      api.fail($this);
+      api.alert(value + api.errorUsername);
     });
   },
 
@@ -383,11 +397,13 @@ var api = {
           api.success($this, site, username, followers, details);
         }
       } else {
-        api.fail($this, api.errorApi);
+        api.fail($this);
+        api.alert(api.errorApi);
       }
     })
     .fail(function() {
-      api.fail($this, value + api.errorUsername);
+      api.fail($this);
+      api.alert(value + api.errorUsername);
     });
   },
 
@@ -422,7 +438,8 @@ var api = {
       }
     })
     .fail(function() {
-      api.fail($this, value + api.errorUsername);
+      api.fail($this);
+      api.alert(value + api.errorUsername);
     });
   },
 
@@ -461,7 +478,8 @@ var api = {
       }
     })
     .fail(function() {
-      api.fail($this, value + api.errorUsername);
+      api.fail($this);
+      api.alert(value + api.errorUsername);
     });
   },
 
@@ -486,11 +504,13 @@ var api = {
           api.success($this, site, username, followers, details);
         }
       } else {
-        api.fail($this, api.errorApi);
+        api.fail($this);
+        api.alert(api.errorApi);
       }
     })
     .fail(function() {
-      api.fail($this, value + api.errorUsername);
+      api.fail($this);
+      api.alert(value + api.errorUsername);
     });
   },
 
@@ -518,11 +538,13 @@ var api = {
           api.success($this, site, username, followers, details);
         }
       } else {
-        api.fail($this, api.errorApi);
+        api.fail($this);
+        api.alert(api.errorApi);
       }
     })
     .fail(function() {
-      api.fail($this, value + api.errorUsername);
+      api.fail($this);
+      api.alert(value + api.errorUsername);
     });
   },
 
@@ -550,11 +572,13 @@ var api = {
           api.success($this, site, username, followers, details);
         }
       } else {
-        api.fail($this, api.errorApi);
+        api.fail($this);
+        api.alert(api.errorApi);
       }
     })
     .fail(function() {
-      api.fail($this, value + api.errorUsername);
+      api.fail($this);
+      api.alert(value + api.errorUsername);
     });
   }
 };
