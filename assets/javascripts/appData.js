@@ -55,7 +55,7 @@ var data = {
   build: function() {
     dataObj = storage.get('user-data');
 
-    $.each(dataObj.order, function(i, id) {
+    for (var i = 0; i < dataObj.order.length; i++) {
       var index = 0;
 
       for (var site in dataObj.sites) {
@@ -76,7 +76,7 @@ var data = {
           $('.icon-back').fadeOut(timingEffect);
 
           // Display data on main screen
-          data.render(site, dataObj.sites[site].username, dataObj.sites[site].followers, dataObj.sites[site].details, index, id);
+          data.render(site, dataObj.sites[site].username, dataObj.sites[site].followers, dataObj.sites[site].details, index, dataObj.order[i]);
 
           // Render usernames in config screen
           data.settings(site, dataObj.sites[site].username);
@@ -113,7 +113,7 @@ var data = {
           storage.rem('user-diff');
         }
       }
-    });
+    }
 
     // Display total numbers
     data.total();
