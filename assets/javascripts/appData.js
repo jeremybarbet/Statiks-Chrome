@@ -122,20 +122,17 @@ var data = {
     if ( !$('.list-social').find('.total').length ) {
       // If not total sum up display to the last li child of ul
       $('.list-social').find('.item').last().parent().append(itemTotal);
-
-      // Set up graph
-      data.graph();
     } else {
       // Move to the total item bottom
-      $('.list-social').find('.total').appendTo('.list-social .social-wrapper');
+      $('.list-social').find('.item.total').appendTo('.list-social .social-wrapper');
 
       // Update total data
-      $('.list-social').find('.total').find('.left p').text(format(totalSites) + ' network' + (totalSites > 1 ? 's' : '') + ' connected');
-      $('.list-social').find('.total').find('.right .nbr').text(format(totalFollowers));
-
-      // Set up graph
-      data.graph();
+      $('.list-social').find('.item.total').find('.left p').text(format(totalSites) + ' network' + (totalSites > 1 ? 's' : '') + ' connected');
+      $('.list-social').find('.item.total').find('.right .nbr').text(format(totalFollowers));
     }
+
+    // Set up graph
+    data.graph();
   },
 
   graph: function() {
