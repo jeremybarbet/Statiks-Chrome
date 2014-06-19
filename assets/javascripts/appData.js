@@ -139,10 +139,15 @@ var data = {
   },
 
   graph: function() {
-    var canvas = '<li><canvas width="295" height="200" id="graph"></canvas></li>';
-    $('.total').find('.detail-social').append(canvas);
+    if ( !$('#graph').length ) {
+      var canvas = '<li><canvas width="295" height="200" id="graph"></canvas></li>';
+      $('.total').find('.detail-social').append(canvas);
+    }
 
     var ctx = $('#graph').get(0).getContext('2d');
+    var maxFollowers = Math.max.apply(Math, dataObj.graph.followers);
+    var maxFollowing = Math.max.apply(Math, dataObj.graph.following);
+    var scaleW = (maxFollowers > maxFollowing) ? parseInt(maxFollowers / 7) : parseInt(maxFollowing / 7);
     var gray = '#A6A6A6';
 
     var data = {
@@ -166,11 +171,15 @@ var data = {
     }
 
     var options = {
+      scaleOverride: true,
+      scaleStartValue: 0,
+      scaleSteps: 8,
+      scaleStepWidth: scaleW,
       scaleLineColor: gray,
       scaleShowLabels: false,
       scaleFontColor: gray,
       scaleFontSize: 10,
-      scaleGridLineColor : 'rgba(0, 0, 0, .03)',
+      scaleGridLineColor: 'rgba(0, 0, 0, .03)',
       bezierCurve: false,
       pointDotStrokeWidth: 1,
       datasetStrokeWidth: 1,
