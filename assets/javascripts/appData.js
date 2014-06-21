@@ -147,6 +147,14 @@ var data = {
     var scaleW = (maxFollowers > maxFollowing) ? parseInt(maxFollowers / 7) : parseInt(maxFollowing / 7);
     var gray = '#A6A6A6';
 
+    // Get the index of last dataObj value of followers array
+    for (var i = 0; i < dataObj.graph['followers'].length; i++) {
+      if ( dataObj.graph['followers'][i] === 0 ) {
+        var animStart = i - 1;
+        break;
+      }
+    }
+
     var data = {
       labels: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
       datasets : [
@@ -180,7 +188,8 @@ var data = {
       bezierCurve: false,
       pointDotStrokeWidth: 1,
       datasetStrokeWidth: 1,
-      animation: false,
+      animation: true,
+      animationStartWithData: animStart,
       inGraphDataShow: true,
       inGraphDataPaddingX: 6,
       inGraphDataPaddingY: 4,
