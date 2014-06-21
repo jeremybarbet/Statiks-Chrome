@@ -75,6 +75,14 @@ Statiks run with node.js and npm dependencies.
 `npm install`  
 `grunt`
 
+__Launching__
+
+* Go to Chrome -> Tools -> Extensions
+* Activate Developer mode if false
+* Load unpackage extension
+* Choose the statiks folder (where you clone it)
+* Voilà
+
 Here we go, you are ready to edit the extension. Gratz!
 
 Contributors
