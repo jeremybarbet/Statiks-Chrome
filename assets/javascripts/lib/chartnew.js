@@ -120,12 +120,33 @@ function fmtChartJS(config, value, fmt) {
   return (return_value);
 };
 
+//Is a number function
+function isNumber(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+};
 
 function tmplbis(str, data) {
+  var mathFunctionList = ["mean", "varianz", "stddev", "cv"];
+  var regexMath = new RegExp('<%=((?:(?:.*?)\\W)??)((?:' + mathFunctionList.join('|') + ')(?:Dif)?)\\(([0-9]*?)\\)(.*?)%>', 'g');
+  while (regexMath.test(str)) {
+    str = str.replace(regexMath, function($0, $1, $2, $3, $4) {
+      if ($3) {
+        var rndFac = $3;
+      } else {
+        var rndFac = 2;
+      }
+      var value = addParameters2Function(data, $2, "mathFunctions");
+      if (isNumber(value)) {
+        return '<%=' + $1 + '' + Math.round(Math.pow(10, rndFac) * value) / Math.pow(10, rndFac) + '' + $4 + '%>';
+      }
+      return '<%= %>';
+    });
+  }
+
   // Figure out if we're getting a template, or if we need to
   // load the template - and be sure to cache the result.
-  var fn = !/\W/.test(str) ?
-    cachebis[str] = cachebis[str] ||
+  // first check if it's can be an id
+  var fn = /^[A-Za-z][-A-Za-z0-9_:.]*$/.test(str) ? cachebis[str] = cachebis[str] ||
     tmplbis(document.getElementById(str).innerHTML) :
 
     // Generate a reusable function that will serve as a template
@@ -138,7 +159,8 @@ function tmplbis(str, data) {
 
       // Convert the template into pure JavaScript
       str
-      .replace(/[\r\t\n]/g, " ")
+      .replace(/[\r\n]/g, "\\n")
+      .replace(/[\t]/g, " ")
       .split("<%").join("\t")
       .replace(/((^|%>)[^\t]*)'/g, "$1\r")
       .replace(/\t=(.*?)%>/g, "',$1,'")
@@ -150,7 +172,47 @@ function tmplbis(str, data) {
   return data ? fn(data) : fn;
 };
 
-cursorDivCreated = false;
+/**
+ * ctx.prototype
+ * fillText option for canvas Multiline Support
+ * @param text string \n for newline
+ * @param x x position
+ * @param y y position
+ * @param yLevel = "bottom" => last line has this y-Pos [default], = "middle" => the middle line has this y-Pos)
+ * @param lineHeight lineHeight
+ */
+CanvasRenderingContext2D.prototype.fillTextMultiLine = function(text, x, y, yLevel, lineHeight) {
+
+  var lines = ("" + text).split("\n");
+  // if its one line => in the middle 
+  // two lines one above the mid one below etc. 
+  if (yLevel == "middle") {
+    y -= ((lines.length - 1) / 2) * lineHeight;
+  } else if (yLevel == "bottom") { // default
+    y -= (lines.length - 1) * lineHeight;
+  }
+  for (var i = 0; i < lines.length; i++) {
+    this.fillText(lines[i], x, y);
+    y += lineHeight;
+  }
+}
+
+CanvasRenderingContext2D.prototype.measureTextMultiLine = function(text, lineHeight) {
+  var textWidth = 0;
+  var lg;
+  var lines = ("" + text).split("\n");
+  var textHeight = lines.length * lineHeight;
+  // if its one line => in the middle 
+  // two lines one above the mid one below etc. 
+  for (var i = 0; i < lines.length; i++) {
+    lg = this.measureText(lines[i]).width;
+    if (lg > textWidth) textWidth = lg;
+  }
+  return {
+    textWidth: textWidth,
+    textHeight: textHeight
+  };
+}
 
 //Set these variables:
 fromLeft = 10; // How much from the left of the cursor should the div be?
@@ -168,8 +230,6 @@ function cursorInit() {
 Contructs the cursorobjects
 *********************************************************************/
 function makeCursorObj(obj, nest) {
-
-  createCursorDiv();
 
   nest = (!nest) ? '' : 'document.' + nest + '.'
   this.css = bw.dom ? document.getElementById(obj).style : bw.ie4 ? document.all[obj].style : bw.ns4 ? eval(nest + "document.layers." + obj) : 0;
@@ -240,30 +300,8 @@ window.Chart = function(context) {
     easeInCubic: function(t) {
       return t * t * t;
     },
-    easeOutCubic: function(t) {
-      return 1 * ((t = t / 1 - 1) * t * t + 1);
-    },
-    easeInOutCubic: function(t) {
-      if ((t /= 1 / 2) < 1) return 1 / 2 * t * t * t;
-      return 1 / 2 * ((t -= 2) * t * t + 2);
-    },
-    easeInBounce: function(t) {
-      return 1 - animationOptions.easeOutBounce(1 - t);
-    },
-    easeOutBounce: function(t) {
-      if ((t /= 1) < (1 / 2.75)) {
-        return 1 * (7.5625 * t * t);
-      } else if (t < (2 / 2.75)) {
-        return 1 * (7.5625 * (t -= (1.5 / 2.75)) * t + .75);
-      } else if (t < (2.5 / 2.75)) {
-        return 1 * (7.5625 * (t -= (2.25 / 2.75)) * t + .9375);
-      } else {
-        return 1 * (7.5625 * (t -= (2.625 / 2.75)) * t + .984375);
-      }
-    },
-    easeInOutBounce: function(t) {
-      if (t < 1 / 2) return animationOptions.easeInBounce(t * 2) * .5;
-      return animationOptions.easeOutBounce(t * 2 - 1) * .5 + 1 * .5;
+    easeOutQuart: function(t) {
+      return -1 * ((t = t / 1 - 1) * t * t * t - 1);
     }
   };
 
@@ -433,11 +471,28 @@ window.Chart = function(context) {
     thousandSeparator: "",
     roundNumber: "none",
     roundPct: -1,
+    fmtV1: "none",
+    fmtV2: "none",
+    fmtV3: "none",
+    fmtV4: "none",
+    fmtV5: "none",
+    fmtV6: "none",
+    fmtV7: "none",
+    fmtV8: "none",
+    fmtV9: "none",
+    fmtV10: "none",
+    fmtV11: "none",
+    fmtV12: "none",
+    fmtV13: "none",
+    fmtXLabel: "none",
+    fmtYLabel: "none",
+    fmtLegend: "none",
     animationStartValue: 0,
     animationStopValue: 1,
     animationCount: 1,
     animationPauseTime: 5,
     animationBackward: false,
+    animationStartWithData: 0,
     defaultStrokeColor: "rgba(220,220,220,1)",
     defaultFillColor: "rgba(220,220,220,0.5)"
   };
@@ -480,9 +535,7 @@ window.Chart = function(context) {
   };
 
   var Line = function(data, config, ctx) {
-    var maxSize, scaleHop, calculatedScale, labelHeight, scaleHeight, valueBounds, labelTemplateString, valueHop, widestXLabel, xAxisLength, yAxisPosX, xAxisPosY, rotateLabels = 0,
-        msr;
-
+    var maxSize, scaleHop, calculatedScale, labelHeight, scaleHeight, valueBounds, labelTemplateString, valueHop, widestXLabel, xAxisLength, yAxisPosX, xAxisPosY, rotateLabels = 0, msr;
     var annotateCnt = 0;
 
     if (typeof ctx.ChartNewId == "undefined") {
@@ -537,6 +590,12 @@ window.Chart = function(context) {
     }
     msr.availableHeight = msr.availableHeight - config.scaleTickSizeBottom - config.scaleTickSizeTop;
     msr.availableWidth = msr.availableWidth - config.scaleTickSizeLeft - config.scaleTickSizeRight;
+    var inGraphDataHeight = 0;
+    if (config.inGraphDataShow) {
+      // values are at the top of the bars and must be visible padding-top:2px
+      inGraphDataHeight = (config.inGraphDataTmpl.split("\n").length) * config.inGraphDataFontSize + 2;
+      msr.availableHeight -= inGraphDataHeight;
+    }
 
     scaleHop = Math.floor(msr.availableHeight / calculatedScale.steps);
     valueHop = Math.floor(msr.availableWidth / (data.labels.length - 1));
@@ -547,7 +606,7 @@ window.Chart = function(context) {
     msr.availableHeight = (calculatedScale.steps) * scaleHop;
 
     yAxisPosX = msr.leftNotUsableSize + config.scaleTickSizeLeft;
-    xAxisPosY = msr.topNotUsableSize + msr.availableHeight + config.scaleTickSizeTop;
+    xAxisPosY = msr.topNotUsableSize + msr.availableHeight + inGraphDataHeight + config.scaleTickSizeTop;
 
     drawLabels();
     var zeroY = 0;
@@ -567,6 +626,19 @@ window.Chart = function(context) {
         calculatedScale: calculatedScale,
         annotateCnt: annotateCnt
       });
+      if (animPc >= 1) {
+        if (typeof drawMath == "function") {
+          drawMath(ctx, config, data, msr, {
+            xAxisPosY: xAxisPosY,
+            yAxisPosX: yAxisPosX,
+            valueHop: valueHop,
+            scaleHop: scaleHop,
+            zeroY: zeroY,
+            calculatedScale: calculatedScale,
+            calculateOffset: calculateOffset
+          });
+        }
+      }
     };
 
     function drawScale() {
@@ -642,11 +714,11 @@ window.Chart = function(context) {
           for (var i = 0; i < data.labels.length; i++) {
             ctx.save();
             if (msr.rotateLabels > 0) {
-              ctx.translate(yAxisPosX + i * valueHop - config.scaleFontSize / 2, msr.xLabelPos);
+              ctx.translate(yAxisPosX + i * valueHop - msr.highestXLabel / 2, msr.xLabelPos);
               ctx.rotate(-(msr.rotateLabels * (Math.PI / 180)));
-              ctx.fillText(fmtChartJS(config, data.labels[i]), 0, 0);
+              ctx.fillTextMultiLine(fmtChartJS(config, data.labels[i], config.fmtXLabel), 0, 0, ctx.textBaseline, config.scaleFontSize);
             } else {
-              ctx.fillText(fmtChartJS(config, data.labels[i]), yAxisPosX + i * valueHop, msr.xLabelPos);
+              ctx.fillTextMultiLine(fmtChartJS(config, data.labels[i], config.fmtXLabel), yAxisPosX + i * valueHop, msr.xLabelPos, ctx.textBaseline, config.scaleFontSize);
             }
             ctx.restore();
           }
@@ -662,11 +734,11 @@ window.Chart = function(context) {
         if (config.scaleShowLabels) {
           if (config.yAxisLeft) {
             ctx.textAlign = "right";
-            ctx.fillText(calculatedScale.labels[j + 1], yAxisPosX - (config.scaleTickSizeLeft + config.yAxisSpaceRight), xAxisPosY - ((j + 1) * scaleHop));
+            ctx.fillTextMultiLine(calculatedScale.labels[j + 1], yAxisPosX - (config.scaleTickSizeLeft + config.yAxisSpaceRight), xAxisPosY - ((j + 1) * scaleHop), ctx.textBaseline, config.scaleFontSize);
           }
           if (config.yAxisRight) {
             ctx.textAlign = "left";
-            ctx.fillText(calculatedScale.labels[j + 1], yAxisPosX + msr.availableWidth + (config.scaleTickSizeRight + config.yAxisSpaceRight), xAxisPosY - ((j + 1) * scaleHop));
+            ctx.fillTextMultiLine(calculatedScale.labels[j + 1], yAxisPosX + msr.availableWidth + (config.scaleTickSizeRight + config.yAxisSpaceRight), xAxisPosY - ((j + 1) * scaleHop), ctx.textBaseline, config.scaleFontSize);
           }
         }
       }
@@ -676,13 +748,23 @@ window.Chart = function(context) {
       var upperValue = Number.MIN_VALUE;
       var lowerValue = Number.MAX_VALUE;
       for (var i = 0; i < data.datasets.length; i++) {
+        var mathFctName = data.datasets[i].drawMathDeviation;
+        var mathValueHeight = 0;
+        if (typeof eval(mathFctName) == "function") {
+          var parameter = {
+            data: data,
+            datasetNr: i
+          };
+          mathValueHeight = window[mathFctName](parameter);
+        }
         for (var j = 0; j < data.datasets[i].data.length; j++) {
-          if (1 * data.datasets[i].data[j] > upperValue) {
-            upperValue = 1 * data.datasets[i].data[j]
+          if (1 * data.datasets[i].data[j] + mathValueHeight > upperValue) {
+            upperValue = 1 * data.datasets[i].data[j] + mathValueHeight
           };
-          if (1 * data.datasets[i].data[j] < lowerValue) {
-            lowerValue = 1 * data.datasets[i].data[j]
+          if (1 * data.datasets[i].data[j] - mathValueHeight < lowerValue) {
+            lowerValue = 1 * data.datasets[i].data[j] - mathValueHeight
           };
+
         }
       };
 
@@ -697,8 +779,6 @@ window.Chart = function(context) {
 
       labelHeight = config.scaleFontSize;
       scaleHeight = msr.availableHeight;
-
-      //scaleHeight+" "+labelHeight);
 
       var maxSteps = Math.floor((scaleHeight / (labelHeight * 0.66)));
       var minSteps = Math.floor((scaleHeight / labelHeight * 0.5));
@@ -857,7 +937,6 @@ window.Chart = function(context) {
     }
 
     var labels = [];
-
     populateLabels(config, labelTemplateString, labels, numberOfSteps, graphMin, graphMax, stepValue);
 
     return {
@@ -880,14 +959,14 @@ window.Chart = function(context) {
       if (!config.logarithmic) { // no logarithmic scale
         for (var i = 0; i < numberOfSteps + 1; i++) {
           labels.push(tmpl(labelTemplateString, {
-            value: fmtChartJS(config, 1 * ((graphMin + (stepValue * i)).toFixed(getDecimalPlaces(stepValue))))
+            value: fmtChartJS(config, 1 * ((graphMin + (stepValue * i)).toFixed(getDecimalPlaces(stepValue))), config.fmtYLabel)
           }));
         }
       } else { // logarithmic scale 10,100,1000,...
         var value = graphMin;
         while (value < graphMax) {
           labels.push(tmpl(labelTemplateString, {
-            value: fmtChartJS(config, 1 * value.toFixed(getDecimalPlaces(stepValue)))
+            value: fmtChartJS(config, 1 * value.toFixed(getDecimalPlaces(stepValue)), config.fmtYLabel)
           }));
           value *= 10;
         }
@@ -912,11 +991,6 @@ window.Chart = function(context) {
     } else {
       return userDeclared;
     }
-  };
-
-  //Is a number function
-  function isNumber(n) {
-    return !isNaN(parseFloat(n)) && isFinite(n);
   };
 
   //Apply cap a value at a high or low number
@@ -1025,6 +1099,10 @@ window.Chart = function(context) {
     var xLabelHeight = 0;
 
     var widestXLabel = 1;
+    var highestXLabel = 1;
+
+    var widestYLabel = 0;
+    var highestYLabel = 1;
 
     var leftNotUsableSize = 0;
     var rightNotUsableSize = 0;
@@ -1041,25 +1119,25 @@ window.Chart = function(context) {
     if (drawAxis) {
       ctx.font = config.scaleFontStyle + " " + config.scaleFontSize + "px " + config.scaleFontFamily;
       for (var i = 0; i < data.labels.length; i++) {
-        var textLength = ctx.measureText(fmtChartJS(config, data.labels[i])).width;
+        var textMsr = ctx.measureTextMultiLine(fmtChartJS(config, data.labels[i], config.fmtXLabel), config.scaleFontSize);
         //If the text length is longer - make that equal to longest text!
-        widestXLabel = (textLength > widestXLabel) ? textLength : widestXLabel;
+        widestXLabel = (textMsr.textWidth > widestXLabel) ? textMsr.textWidth : widestXLabel;
+        highestXLabel = (textMsr.textHeight > highestXLabel) ? textMsr.textHeight : highestXLabel;
       }
     }
 
     // compute Y Label Width
-
-    widestYLabel = 1;
-
     if (drawAxis) {
+      widestYLabel = 1;
       if (ylabels != null) {
         ctx.font = config.scaleFontStyle + " " + config.scaleFontSize + "px " + config.scaleFontFamily;
         for (var i = ylabels.length - 1; i >= 0; i--) {
           if (typeof(ylabels[i]) == "string") {
             if (ylabels[i].trim() != "") {
-              var textLength = ctx.measureText(fmtChartJS(config, ylabels[i])).width;
+              var textMsr = ctx.measureTextMultiLine(fmtChartJS(config, ylabels[i], config.fmtYLabel), config.scaleFontSize);
               //If the text length is longer - make that equal to longest text!
-              widestYLabel = (textLength > widestYLabel) ? textLength : widestYLabel;
+              widestYLabel = (textMsr.textWidth > widestYLabel) ? textMsr.textWidth : widestYLabel;
+              highestYLabel = (textMsr.textHeight > highestYLabel) ? textMsr.textHeight : highestYLabel;
             }
           }
         }
@@ -1119,6 +1197,7 @@ window.Chart = function(context) {
 
     topNotUsableSize = borderWidth + config.spaceTop + graphTitleHeight + graphSubTitleHeight + yAxisUnitHeight + config.graphSpaceBefore;
 
+
     // footNote
 
     if (typeof(config.footNote) != "undefined") {
@@ -1138,7 +1217,7 @@ window.Chart = function(context) {
 
               if (data.datasets[i].title.trim() != "") {
                 nbeltLegend++;
-                var textLength = ctx.measureText(fmtChartJS(config, data.datasets[i].title)).width;
+                var textLength = ctx.measureText(fmtChartJS(config, data.datasets[i].title, config.fmtLegend)).width;
                 //If the text length is longer - make that equal to longest text!
                 widestLegend = (textLength > widestLegend) ? textLength : widestLegend;
               }
@@ -1149,7 +1228,7 @@ window.Chart = function(context) {
             if (typeof(data[i].title) == "string") {
               if (data[i].title.trim() != "") {
                 nbeltLegend++;
-                var textLength = ctx.measureText(fmtChartJS(config, data[i].title)).width;
+                var textLength = ctx.measureText(fmtChartJS(config, data[i].title, config.fmtLegend)).width;
                 //If the text length is longer - make that equal to longest text!
                 widestLegend = (textLength > widestLegend) ? textLength : widestLegend;
               }
@@ -1200,10 +1279,12 @@ window.Chart = function(context) {
 
     if (drawAxis && (config.xAxisBottom || config.xAxisTop)) {
       if (reverseAxis == false) {
-        widestLabel = widestXLabel;
+        var widestLabel = widestXLabel;
+        var highestLabel = highestXLabel;
         nblab = data.labels.length;
       } else {
-        widestLabel = widestYLabel;
+        var widestLabel = widestYLabel;
+        var highestLabel = highestYLabel;
         nblab = ylabels.length;
       }
       if (config.rotateLabels == "smart") {
@@ -1221,9 +1302,9 @@ window.Chart = function(context) {
       }
 
       if (rotateLabels > 90) rotateLabels += 180;
-      xLabelHeight = Math.abs(Math.sin(rotateLabels * Math.PI / 180) * widestLabel) + Math.abs(Math.sin((rotateLabels + 90) * Math.PI / 180) * config.scaleFontSize) + config.xAxisSpaceBefore + config.xAxisSpaceAfter;
+      xLabelHeight = Math.abs(Math.sin(rotateLabels * Math.PI / 180) * widestLabel) + Math.abs(Math.sin((rotateLabels + 90) * Math.PI / 180) * highestLabel) + config.xAxisSpaceBefore + config.xAxisSpaceAfter;
       xLabelPos = height - borderWidth - config.spaceBottom - footNoteHeight - spaceLegendHeight - xAxisLabelHeight - (xLabelHeight - config.xAxisSpaceBefore) - config.graphSpaceAfter;
-      xLabelWidth = Math.abs(Math.cos(rotateLabels * Math.PI / 180) * widestLabel) + Math.abs(Math.cos((rotateLabels + 90) * Math.PI / 180) * config.scaleFontSize);
+      xLabelWidth = Math.abs(Math.cos(rotateLabels * Math.PI / 180) * widestLabel) + Math.abs(Math.cos((rotateLabels + 90) * Math.PI / 180) * highestLabel);
 
       leftNotUsableSize = Max([leftNotUsableSize, borderWidth + config.spaceLeft + xLabelWidth / 2]);
       rightNotUsableSize = Max([rightNotUsableSize, borderWidth + config.spaceRight + xLabelWidth / 2]);
@@ -1242,253 +1323,261 @@ window.Chart = function(context) {
 
     // ----------------------- DRAW EXTERNAL ELEMENTS -------------------------------------------------
 
-    // Draw Borders
+    if (widestYLabel != 1) {
 
-    if (borderWidth > 0) {
-      ctx.save();
-      ctx.beginPath();
-      ctx.lineWidth = 2 * borderWidth;
-      ctx.strokeStyle = config.canvasBordersColor;
-      ctx.moveTo(0, 0);
-      ctx.lineTo(0, height);
-      ctx.lineTo(width, height);
-      ctx.lineTo(width, 0);
-      ctx.lineTo(0, 0);
-      ctx.stroke();
-      ctx.restore();
-    }
+      // Draw Borders
 
-    // Draw Graph Title
-
-    if (graphTitleHeight > 0) {
-      ctx.save();
-      ctx.beginPath();
-      ctx.font = config.graphTitleFontStyle + " " + config.graphTitleFontSize + "px " + config.graphTitleFontFamily;
-      ctx.fillStyle = config.graphTitleFontColor;
-      ctx.textAlign = "center";
-      ctx.textBaseline = "bottom";
-      ctx.translate(config.spaceLeft + (width - config.spaceLeft - config.spaceRight) / 2, graphTitlePosY);
-      ctx.fillText(config.graphTitle, 0, 0);
-      ctx.stroke();
-      ctx.restore();
-    }
-
-    // Draw Graph Sub-Title
-
-    if (graphSubTitleHeight > 0) {
-      ctx.save();
-      ctx.beginPath();
-      ctx.font = config.graphSubTitleFontStyle + " " + config.graphSubTitleFontSize + "px " + config.graphSubTitleFontFamily;
-      ctx.fillStyle = config.graphSubTitleFontColor;
-      ctx.textAlign = "center";
-      ctx.textBaseline = "bottom";
-      ctx.translate(config.spaceLeft + (width - config.spaceLeft - config.spaceRight) / 2, graphSubTitlePosY);
-      ctx.fillText(config.graphSubTitle, 0, 0);
-      ctx.stroke();
-      ctx.restore();
-    }
-
-    // Draw Y Axis Unit
-
-    if (yAxisUnitHeight > 0) {
-      if (config.yAxisLeft) {
+      if (borderWidth > 0) {
         ctx.save();
         ctx.beginPath();
-        ctx.font = config.yAxisUnitFontStyle + " " + config.yAxisUnitFontSize + "px " + config.yAxisUnitFontFamily;
-        ctx.fillStyle = config.yAxisUnitFontColor;
+        ctx.lineWidth = 2 * borderWidth;
+        ctx.strokeStyle = config.canvasBordersColor;
+        ctx.moveTo(0, 0);
+        ctx.lineTo(0, height);
+        ctx.lineTo(width, height);
+        ctx.lineTo(width, 0);
+        ctx.lineTo(0, 0);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      // Draw Graph Title
+
+      if (graphTitleHeight > 0) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.font = config.graphTitleFontStyle + " " + config.graphTitleFontSize + "px " + config.graphTitleFontFamily;
+        ctx.fillStyle = config.graphTitleFontColor;
         ctx.textAlign = "center";
         ctx.textBaseline = "bottom";
-        ctx.translate(leftNotUsableSize, yAxisUnitPosY);
-        ctx.fillText(config.yAxisUnit, 0, 0);
+        ctx.translate(config.spaceLeft + (width - config.spaceLeft - config.spaceRight) / 2, graphTitlePosY);
+        ctx.fillText(config.graphTitle, 0, 0);
         ctx.stroke();
         ctx.restore();
       }
-      if (config.yAxisRight) {
+
+      // Draw Graph Sub-Title
+
+      if (graphSubTitleHeight > 0) {
         ctx.save();
         ctx.beginPath();
-        ctx.font = config.yAxisUnitFontStyle + " " + config.yAxisUnitFontSize + "px " + config.yAxisUnitFontFamily;
-        ctx.fillStyle = config.yAxisUnitFontColor;
+        ctx.font = config.graphSubTitleFontStyle + " " + config.graphSubTitleFontSize + "px " + config.graphSubTitleFontFamily;
+        ctx.fillStyle = config.graphSubTitleFontColor;
         ctx.textAlign = "center";
         ctx.textBaseline = "bottom";
-        ctx.translate(width - rightNotUsableSize, yAxisUnitPosY);
-        ctx.fillText(config.yAxisUnit, 0, 0);
-        ctx.stroke();
-        ctx.restore();
-      }
-    }
-
-    // Draw Y Axis Label
-
-    if (yAxisLabelWidth > 0) {
-      if (config.yAxisLeft) {
-        ctx.save();
-        ctx.beginPath();
-        ctx.font = config.yAxisFontStyle + " " + config.yAxisFontSize + "px " + config.yAxisFontFamily;
-        ctx.fillStyle = config.yAxisFontColor;
-        ctx.textAlign = "center";
-        ctx.textBaseline = "bottom";
-        ctx.translate(yAxisLabelPosLeft, topNotUsableSize + (availableHeight / 2));
-        ctx.rotate(-(90 * (Math.PI / 180)));
-        ctx.fillText(config.yAxisLabel, 0, 0);
-        ctx.stroke();
-        ctx.restore();
-      }
-      if (config.yAxisRight) {
-        ctx.save();
-        ctx.beginPath();
-        ctx.font = config.yAxisFontStyle + " " + config.yAxisFontSize + "px " + config.yAxisFontFamily;
-        ctx.fillStyle = config.yAxisFontColor;
-        ctx.textAlign = "center";
-        ctx.textBaseline = "bottom";
-        ctx.translate(yAxisLabelPosRight, topNotUsableSize + (availableHeight / 2));
-        ctx.rotate(+(90 * (Math.PI / 180)));
-        ctx.fillText(config.yAxisLabel, 0, 0);
-        ctx.stroke();
-        ctx.restore();
-      }
-    }
-
-    // Draw X Axis Label
-
-    if (xAxisLabelHeight > 0) {
-      if (config.xAxisBottom) {
-        ctx.save();
-        ctx.beginPath();
-        ctx.font = config.xAxisFontStyle + " " + config.xAxisFontSize + "px " + config.xAxisFontFamily;
-        ctx.fillStyle = config.xAxisFontColor;
-        ctx.textAlign = "center";
-        ctx.textBaseline = "bottom";
-        ctx.translate(leftNotUsableSize + (availableWidth / 2), xAxisLabelPos);
-        ctx.fillText(config.xAxisLabel, 0, 0);
-        ctx.stroke();
-        ctx.restore();
-      }
-    }
-
-    // Draw Legend
-
-    if (nbeltLegend > 1) {
-      if (config.legendBorders == true) {
-        ctx.save();
-        ctx.beginPath();
-
-        ctx.lineWidth = config.legendBordersWidth;
-        ctx.strokeStyle = config.legendBordersColors;
-
-        ctx.moveTo(xLegendBorderPos, yLegendBorderPos);
-        ctx.lineTo(xLegendBorderPos, yLegendBorderPos + legendBorderHeight);
-        ctx.lineTo(xLegendBorderPos + legendBorderWidth, yLegendBorderPos + legendBorderHeight);
-        ctx.lineTo(xLegendBorderPos + legendBorderWidth, yLegendBorderPos);
-        ctx.lineTo(xLegendBorderPos, yLegendBorderPos);
-        ctx.lineTo(xLegendBorderPos + legendBorderWidth, yLegendBorderPos);
-        ctx.lineTo(xLegendBorderPos, yLegendBorderPos);
-        ctx.lineTo(xLegendBorderPos, yLegendBorderPos + legendBorderHeight);
-
+        ctx.translate(config.spaceLeft + (width - config.spaceLeft - config.spaceRight) / 2, graphSubTitlePosY);
+        ctx.fillText(config.graphSubTitle, 0, 0);
         ctx.stroke();
         ctx.restore();
       }
 
-      nbcols = nbLegendCols - 1;
-      ypos = yFirstLegendTextPos - (config.legendFontSize + config.legendSpaceBetweenTextVertical);
-      xpos = 0;
+      // Draw Y Axis Unit
 
-      if (drawLegendOnData) fromi = data.datasets.length;
-      else fromi = data.length;
+      if (yAxisUnitHeight > 0) {
+        if (config.yAxisLeft) {
+          ctx.save();
+          ctx.beginPath();
+          ctx.font = config.yAxisUnitFontStyle + " " + config.yAxisUnitFontSize + "px " + config.yAxisUnitFontFamily;
+          ctx.fillStyle = config.yAxisUnitFontColor;
+          ctx.textAlign = "center";
+          ctx.textBaseline = "bottom";
+          ctx.translate(leftNotUsableSize, yAxisUnitPosY);
+          ctx.fillText(config.yAxisUnit, 0, 0);
+          ctx.stroke();
+          ctx.restore();
+        }
+        if (config.yAxisRight) {
+          ctx.save();
+          ctx.beginPath();
+          ctx.font = config.yAxisUnitFontStyle + " " + config.yAxisUnitFontSize + "px " + config.yAxisUnitFontFamily;
+          ctx.fillStyle = config.yAxisUnitFontColor;
+          ctx.textAlign = "center";
+          ctx.textBaseline = "bottom";
+          ctx.translate(width - rightNotUsableSize, yAxisUnitPosY);
+          ctx.fillText(config.yAxisUnit, 0, 0);
+          ctx.stroke();
+          ctx.restore();
+        }
+      }
 
-      for (var i = fromi - 1; i >= 0; i--) {
-        orderi = i;
-        if (reverseLegend) {
-          if (drawLegendOnData) orderi = data.datasets.length - i - 1;
-          else orderi = data.length - i - 1;
+      // Draw Y Axis Label
+
+      if (yAxisLabelWidth > 0) {
+        if (config.yAxisLeft) {
+          ctx.save();
+          ctx.beginPath();
+          ctx.font = config.yAxisFontStyle + " " + config.yAxisFontSize + "px " + config.yAxisFontFamily;
+          ctx.fillStyle = config.yAxisFontColor;
+          ctx.textAlign = "center";
+          ctx.textBaseline = "bottom";
+          ctx.translate(yAxisLabelPosLeft, topNotUsableSize + (availableHeight / 2));
+          ctx.rotate(-(90 * (Math.PI / 180)));
+          ctx.fillText(config.yAxisLabel, 0, 0);
+          ctx.stroke();
+          ctx.restore();
+        }
+        if (config.yAxisRight) {
+          ctx.save();
+          ctx.beginPath();
+          ctx.font = config.yAxisFontStyle + " " + config.yAxisFontSize + "px " + config.yAxisFontFamily;
+          ctx.fillStyle = config.yAxisFontColor;
+          ctx.textAlign = "center";
+          ctx.textBaseline = "bottom";
+          ctx.translate(yAxisLabelPosRight, topNotUsableSize + (availableHeight / 2));
+          ctx.rotate(+(90 * (Math.PI / 180)));
+          ctx.fillText(config.yAxisLabel, 0, 0);
+          ctx.stroke();
+          ctx.restore();
+        }
+      }
+
+      // Draw X Axis Label
+
+      if (xAxisLabelHeight > 0) {
+        if (config.xAxisBottom) {
+          ctx.save();
+          ctx.beginPath();
+          ctx.font = config.xAxisFontStyle + " " + config.xAxisFontSize + "px " + config.xAxisFontFamily;
+          ctx.fillStyle = config.xAxisFontColor;
+          ctx.textAlign = "center";
+          ctx.textBaseline = "bottom";
+          ctx.translate(leftNotUsableSize + (availableWidth / 2), xAxisLabelPos);
+          ctx.fillText(config.xAxisLabel, 0, 0);
+          ctx.stroke();
+          ctx.restore();
+        }
+      }
+
+      // Draw Legend
+
+      if (nbeltLegend > 1) {
+        if (config.legendBorders == true) {
+          ctx.save();
+          ctx.beginPath();
+
+          ctx.lineWidth = config.legendBordersWidth;
+          ctx.strokeStyle = config.legendBordersColors;
+
+          ctx.moveTo(xLegendBorderPos, yLegendBorderPos);
+          ctx.lineTo(xLegendBorderPos, yLegendBorderPos + legendBorderHeight);
+          ctx.lineTo(xLegendBorderPos + legendBorderWidth, yLegendBorderPos + legendBorderHeight);
+          ctx.lineTo(xLegendBorderPos + legendBorderWidth, yLegendBorderPos);
+          ctx.lineTo(xLegendBorderPos, yLegendBorderPos);
+          ctx.lineTo(xLegendBorderPos + legendBorderWidth, yLegendBorderPos);
+          ctx.lineTo(xLegendBorderPos, yLegendBorderPos);
+          ctx.lineTo(xLegendBorderPos, yLegendBorderPos + legendBorderHeight);
+
+          ctx.stroke();
+          ctx.restore();
         }
 
-        if (drawLegendOnData) tpof = typeof(data.datasets[orderi].title);
-        else tpof = typeof(data[orderi].title)
+        nbcols = nbLegendCols - 1;
+        ypos = yFirstLegendTextPos - (config.legendFontSize + config.legendSpaceBetweenTextVertical);
+        xpos = 0;
 
-        if (tpof == "string") {
-          if (drawLegendOnData) lgtxt = fmtChartJS(config, data.datasets[orderi].title).trim();
-          else lgtxt = fmtChartJS(config, data[orderi].title).trim();
-          if (lgtxt != "") {
-            nbcols++;
-            if (nbcols == nbLegendCols) {
-              nbcols = 0;
-              xpos = xFirstLegendTextPos;
-              ypos += config.legendFontSize + config.legendSpaceBetweenTextVertical;
-            } else {
-              xpos += widestLegend + config.legendSpaceBetweenTextHorizontal;
-            }
+        if (drawLegendOnData) fromi = data.datasets.length;
+        else fromi = data.length;
 
-            ctx.save();
-            ctx.beginPath();
+        for (var i = fromi - 1; i >= 0; i--) {
+          orderi = i;
+          if (reverseLegend) {
+            if (drawLegendOnData) orderi = data.datasets.length - i - 1;
+            else orderi = data.length - i - 1;
+          }
 
-            if (drawLegendOnData) {
-              if (typeof data.datasets[orderi].strokeColor == "function") ctx.strokeStyle = data.datasets[orderi].strokeColor("STROKECOLOR", data, config, orderi, -1, 1, -1);
-              else if (typeof data.datasets[orderi].strokeColor == "string") ctx.strokeStyle = data.datasets[orderi].strokeColor;
-              else ctx.strokeStyle = config.defaultStrokeColor;
-            } else {
-              if (typeof data[orderi].color == "function") ctx.fillStyle = data[orderi].color("COLOR", data, config, orderi, -1, 1, data[orderi].value);
-              else if (typeof data[orderi].color == "string") ctx.strokeStyle = data[orderi].color;
-              else ctx.strokeStyle = config.defaultStrokeColor;
-            }
+          if (drawLegendOnData) tpof = typeof(data.datasets[orderi].title);
+          else tpof = typeof(data[orderi].title)
 
-
-
-            if (legendBox) {
-              ctx.lineWidth = 1;
-              ctx.moveTo(xpos, ypos);
-              ctx.lineTo(xpos + config.legendBlockSize, ypos);
-              ctx.lineTo(xpos + config.legendBlockSize, ypos - config.legendFontSize);
-              ctx.lineTo(xpos, ypos - config.legendFontSize);
-              ctx.lineTo(xpos, ypos);
-              ctx.closePath();
-              if (drawLegendOnData) {
-                if (typeof data.datasets[i].fillColor == "function") ctx.fillStyle = data.datasets[i].fillColor("FILLCOLOR", data, config, i, -1, 1, -1);
-                else if (typeof data.datasets[orderi].fillColor == "string") ctx.fillStyle = data.datasets[orderi].fillColor;
-                else ctx.fillStyle = config.defaultFillColor;
+          if (tpof == "string") {
+            if (drawLegendOnData) lgtxt = fmtChartJS(config, data.datasets[orderi].title, config.fmtLegend).trim();
+            else lgtxt = fmtChartJS(config, data[orderi].title, config.fmtLegend).trim();
+            if (lgtxt != "") {
+              nbcols++;
+              if (nbcols == nbLegendCols) {
+                nbcols = 0;
+                xpos = xFirstLegendTextPos;
+                ypos += config.legendFontSize + config.legendSpaceBetweenTextVertical;
               } else {
-                if (typeof data[orderi].color == "string") ctx.fillStyle = data[orderi].color;
-                else ctx.fillStyle = config.defaultFillColor;
+                xpos += widestLegend + config.legendSpaceBetweenTextHorizontal;
               }
-              ctx.fill();
-            } else {
-              ctx.lineWidth = config.datasetStrokeWidth;
-              ctx.moveTo(xpos + 2, ypos - (config.legendFontSize / 2));
-              ctx.lineTo(xpos + 2 + config.legendBlockSize, ypos - (config.legendFontSize / 2));
+
+              ctx.save();
+              ctx.beginPath();
+
+              if (drawLegendOnData) {
+                if (typeof data.datasets[orderi].strokeColor == "function") ctx.strokeStyle = data.datasets[orderi].strokeColor("STROKECOLOR", data, config, orderi, -1, 1, -1);
+                else if (typeof data.datasets[orderi].strokeColor == "string") ctx.strokeStyle = data.datasets[orderi].strokeColor;
+                else ctx.strokeStyle = config.defaultStrokeColor;
+              } else {
+                if (typeof data[orderi].color == "function") ctx.fillStyle = data[orderi].color("COLOR", data, config, orderi, -1, 1, data[orderi].value);
+                else if (typeof data[orderi].color == "string") ctx.strokeStyle = data[orderi].color;
+                else ctx.strokeStyle = config.defaultStrokeColor;
+              }
+
+              if (legendBox) {
+                ctx.lineWidth = 1;
+                ctx.moveTo(xpos, ypos);
+                ctx.lineTo(xpos + config.legendBlockSize, ypos);
+                ctx.lineTo(xpos + config.legendBlockSize, ypos - config.legendFontSize);
+                ctx.lineTo(xpos, ypos - config.legendFontSize);
+                ctx.lineTo(xpos, ypos);
+                ctx.closePath();
+                if (drawLegendOnData) {
+                  if (typeof data.datasets[i].fillColor == "function") ctx.fillStyle = data.datasets[i].fillColor("FILLCOLOR", data, config, i, -1, 1, -1);
+                  else if (typeof data.datasets[orderi].fillColor == "string") ctx.fillStyle = data.datasets[orderi].fillColor;
+                  else ctx.fillStyle = config.defaultFillColor;
+                } else {
+                  if (typeof data[orderi].color == "string") ctx.fillStyle = data[orderi].color;
+                  else ctx.fillStyle = config.defaultFillColor;
+                }
+                ctx.fill();
+              } else {
+                ctx.lineWidth = config.legendColorIndicatorStrokeWidth ?
+                  config.legendColorIndicatorStrokeWidth : config.datasetStrokeWidth;
+                if (config.legendColorIndicatorStrokeWidth && config.legendColorIndicatorStrokeWidth > config.legendFontSize) {
+                  ctx.lineWidth = config.legendFontSize;
+                }
+                ctx.moveTo(xpos + 2, ypos - (config.legendFontSize / 2));
+                ctx.lineTo(xpos + 2 + config.legendBlockSize, ypos - (config.legendFontSize / 2));
+              }
+              ctx.stroke();
+              ctx.restore();
+              ctx.save();
+              ctx.beginPath();
+              ctx.font = config.legendFontStyle + " " + config.legendFontSize + "px " + config.legendFontFamily;
+              ctx.fillStyle = config.legendFontColor;
+              ctx.textAlign = "left";
+              ctx.textBaseline = "bottom";
+              ctx.translate(xpos + config.legendBlockSize + config.legendSpaceBetweenBoxAndText, ypos);
+              ctx.fillText(lgtxt, 0, 0);
+              ctx.stroke();
+              ctx.restore();
             }
-            ctx.stroke();
-            ctx.restore();
-            ctx.save();
-            ctx.beginPath();
-            ctx.font = config.legendFontStyle + " " + config.legendFontSize + "px " + config.legendFontFamily;
-            ctx.fillStyle = config.legendFontColor;
-            ctx.textAlign = "left";
-            ctx.textBaseline = "bottom";
-            ctx.translate(xpos + config.legendBlockSize + config.legendSpaceBetweenBoxAndText, ypos);
-            ctx.fillText(lgtxt, 0, 0);
-            ctx.stroke();
-            ctx.restore();
           }
         }
       }
-    }
 
-    // Draw FootNote
-    if (config.footNote.trim() != "") {
-      ctx.save();
-      ctx.font = config.footNoteFontStyle + " " + config.footNoteFontSize + "px " + config.footNoteFontFamily;
-      ctx.fillStyle = config.footNoteFontColor;
-      ctx.textAlign = "center";
-      ctx.textBaseline = "bottom";
-      ctx.translate(leftNotUsableSize + (availableWidth / 2), footNotePosY);
-      ctx.fillText(config.footNote, 0, 0);
-      ctx.stroke();
-      ctx.restore();
+      // Draw FootNote
+      if (config.footNote.trim() != "") {
+        ctx.save();
+        ctx.font = config.footNoteFontStyle + " " + config.footNoteFontSize + "px " + config.footNoteFontFamily;
+        ctx.fillStyle = config.footNoteFontColor;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "bottom";
+        ctx.translate(leftNotUsableSize + (availableWidth / 2), footNotePosY);
+        ctx.fillText(config.footNote, 0, 0);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+
     }
 
     clrx = leftNotUsableSize;
     clrwidth = availableWidth;
     clry = topNotUsableSize;
     clrheight = availableHeight;
+
 
     return {
       leftNotUsableSize: leftNotUsableSize,
@@ -1499,6 +1588,9 @@ window.Chart = function(context) {
       bottomNotUsableHeightWithXLabels: bottomNotUsableHeightWithXLabels,
       availableHeight: availableHeight,
       widestXLabel: widestXLabel,
+      highestXLabel: highestXLabel,
+      widestYLabel: widestYLabel,
+      highestYLabel: highestYLabel,
       rotateLabels: rotateLabels,
       xLabelPos: xLabelPos,
       clrx: clrx,
@@ -1509,7 +1601,6 @@ window.Chart = function(context) {
   };
 
   // Function for additionalLine (BarLine|Line)
-
   function drawLinesDataset(animPc, data, config, ctx, vars) {
     var xAxisPosY = vars.xAxisPosY;
     var yAxisPosX = vars.yAxisPosX;
@@ -1575,7 +1666,6 @@ window.Chart = function(context) {
 
             if (typeof(data.labels[j]) == "string") lgtxt2 = data.labels[j].trim();
             else lgtxt2 = "";
-            
             if (config.inGraphDataShow) {
               ctx.save();
               ctx.textAlign = config.inGraphDataAlign;
@@ -1588,28 +1678,29 @@ window.Chart = function(context) {
                 paddingTextY = config.inGraphDataPaddingY;
               var dispString = tmplbis(config.inGraphDataTmpl, {
                 config: config,
-                v1: fmtChartJS(config, lgtxt),
-                v2: fmtChartJS(config, lgtxt2),
-                v3: fmtChartJS(config, 1 * data.datasets[i].data[j]),
-                v4: fmtChartJS(config, divprev),
-                v5: fmtChartJS(config, divnext),
-                v6: fmtChartJS(config, maxvalue[j]),
-                v7: fmtChartJS(config, totvalue[j]),
-                v8: roundToWithThousands(config, fmtChartJS(config, 100 * data.datasets[i].data[j] / totvalue[j]), config.roundPct),
-                v9: fmtChartJS(config, yAxisPosX + (valueHop * k)),
-                v10: fmtChartJS(config, xAxisPosY - (calculateOffset(config, data.datasets[i].data[j], calculatedScale, scaleHop))),
+                v1: fmtChartJS(config, lgtxt, config.fmtV1),
+                v2: fmtChartJS(config, lgtxt2, config.fmtV2),
+                v3: fmtChartJS(config, 1 * data.datasets[i].data[j], config.fmtV3),
+                v4: fmtChartJS(config, divprev, config.fmtV4),
+                v5: fmtChartJS(config, divnext, config.fmtV5),
+                v6: fmtChartJS(config, maxvalue[j], config.fmtV6),
+                v7: fmtChartJS(config, totvalue[j], config.fmtV7),
+                v8: roundToWithThousands(config, fmtChartJS(config, 100 * data.datasets[i].data[j] / totvalue[j], config.fmtV8), config.roundPct),
+                v9: fmtChartJS(config, yAxisPosX + (valueHop * k), config.fmtV9),
+                v10: fmtChartJS(config, xAxisPosY - (calculateOffset(config, data.datasets[i].data[j], calculatedScale, scaleHop)), config.fmtV10),
+                v11: fmtChartJS(config, i, config.fmtV11),
+                v12: fmtChartJS(config, j, config.fmtV12),
+                data: data
               });
               ctx.translate(xPos(j) + paddingTextX, yPos(i, j) - paddingTextY);
               ctx.rotate(config.inGraphDataRotate * (Math.PI / 180));
-              ctx.fillText(dispString, 0, 0);
+              ctx.fillTextMultiLine(dispString, 0, 0, ctx.textBaseline, config.inGraphDataFontSize);
               ctx.restore();
             }
           }
         }
       }
-
       ctx.stroke();
-
       if (config.datasetFill) {
         ctx.lineTo(yAxisPosX + (valueHop * (data.datasets[i].data.length - 1)), xAxisPosY - zeroY);
         ctx.lineTo(xPos(frstpt), xAxisPosY - zeroY);
@@ -1619,6 +1710,7 @@ window.Chart = function(context) {
         else if (typeof data.datasets[i].fillColor == "string") ctx.fillStyle = data.datasets[i].fillColor;
         else ctx.fillStyle = config.defaultFillColor;
         ctx.fill();
+
       } else {
         ctx.closePath();
       }
@@ -1632,7 +1724,7 @@ window.Chart = function(context) {
         for (var k = 0; k < data.datasets[i].data.length; k++) {
           if (!(typeof(data.datasets[i].data[k]) == 'undefined')) {
             ctx.beginPath();
-            ctx.arc(yAxisPosX + (valueHop * k), xAxisPosY - animPc * (calculateOffset(config, data.datasets[i].data[k], calculatedScale, scaleHop)), config.pointDotRadius, 0, Math.PI * 2, true);
+            ctx.arc(xPos(k), yPos(i, k), config.pointDotRadius, 0, Math.PI * 2, true);
             ctx.fill();
             ctx.stroke();
           }
@@ -1641,7 +1733,11 @@ window.Chart = function(context) {
     };
 
     function yPos(dataSet, iteration) {
-      return xAxisPosY - animPc * (calculateOffset(config, data.datasets[dataSet].data[iteration], calculatedScale, scaleHop));
+      var animVal = animPc;
+      if (iteration < config.animationStartWithData) {
+        animVal = 1;
+      }
+      return xAxisPosY - zeroY - animVal * (calculateOffset(config, data.datasets[dataSet].data[iteration], calculatedScale, scaleHop) - zeroY);
     };
 
     function xPos(iteration) {
