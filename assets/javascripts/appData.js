@@ -55,41 +55,35 @@ var data = {
   build: function() {
     dataObj = storage.get('user-data');
 
-    for (var site in dataObj.sites) {
-      if ( dataObj.sites[site].hasOwnProperty('details') !== false && dataObj.sites[site].hasOwnProperty('diff') !== false ) {
-        // Build item container
-        if ( !$('.list-social').length ) {
-          var itemsContainer = '<div class="list-social"><ul class="social-wrapper"></ul></div>';
-          $(itemsContainer).insertAfter('.choose-social');
-        }
-
-        var itemsData = $('.list-social');
-
-        // Hide choose social list
-        $('.choose-social').hide();
-
-        // Display parameters button
-        $('.icon-settings, .icon-reload').fadeIn(timingEffect);
-        $('.icon-back').fadeOut(timingEffect);
-
-        // Display data on main screen
-        data.render(site, dataObj.sites[site].username, dataObj.sites[site].followers, dataObj.sites[site].details);
-
-        // Render usernames in config screen
-        data.settings(site, dataObj.sites[site].username);
-
-        // Finally display items and remove class after animation completed
-        itemsData.fadeIn(timingEffect);
-
-        itemsData.find('.item').bind('animationend webkitAnimationEnd', function() {
-          $(this).removeClass('bounceIn');
-        }).addClass('bounceIn');
-      } else {
-        $('.loading').fadeIn(timingEffect).find('p').text('Upgrade to the new version');
-        api[site]('upgrade', dataObj.sites[site].username, site);
-        storage.rem('user-diff');
-      }
+    // Build item container
+    if ( !$('.list-social').length ) {
+      var itemsContainer = '<div class="list-social"><ul class="social-wrapper"></ul></div>';
+      $(itemsContainer).insertAfter('.choose-social');
     }
+
+    var itemsData = $('.list-social');
+
+    // Hide choose social list
+    $('.choose-social').hide();
+
+    // Display parameters button
+    $('.icon-settings, .icon-reload').fadeIn(timingEffect);
+    $('.icon-back').fadeOut(timingEffect);
+
+    for (var site in dataObj.sites) {
+      // Display data on main screen
+      data.render(site, dataObj.sites[site].username, dataObj.sites[site].followers, dataObj.sites[site].details);
+
+      // Render usernames in config screen
+      data.settings(site, dataObj.sites[site].username);
+    }
+
+    // Finally display items and remove class after animation completed
+    itemsData.fadeIn(timingEffect);
+
+    itemsData.find('.item').bind('animationend webkitAnimationEnd', function() {
+      $(this).removeClass('bounceIn');
+    }).addClass('bounceIn');
 
     // Display total numbers
     data.total();
@@ -139,41 +133,46 @@ var data = {
     if ( !$('#graph').length ) {
       var canvas = '<li><canvas width="295" height="200" id="graph"></canvas></li>';
       $('.total').find('.detail-social').append(canvas);
+
+      var ctx = $('#graph').get(0).getContext('2d');
+      chart = new Chart(ctx);
     }
 
-    var ctx = $('#graph').get(0).getContext('2d');
     var maxFollowers = Math.max.apply(Math, dataObj.graph.followers);
     var maxFollowing = Math.max.apply(Math, dataObj.graph.following);
     var scaleW = (maxFollowers > maxFollowing) ? parseInt(maxFollowers / 7) : parseInt(maxFollowing / 7);
     var gray = '#A6A6A6';
+    var animStart;
 
     // Get the index of last dataObj value of followers array
-    for (var i = 0; i < dataObj.graph['followers'].length; i++) {
-      if ( dataObj.graph['followers'][i] === 0 ) {
-        var animStart = i - 1;
+    for (var i = 0; i < dataObj.graph.followers.length; i++) {
+      if ( dataObj.graph.followers[i] === 0 ) {
+        animStart = i - 1;
         break;
       }
+
+      if ( typeof(animStart) === undefined ) animStart = dataObj.graph.followers.length - 1;
     }
 
     var data = {
-      labels: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
-      datasets : [
+      labels: ['', '', '', '', '', '', ''],
+      datasets: [
         {
           fillColor: 'rgba(220, 220, 220, 0.5)',
           strokeColor: 'rgba(220, 220, 220, 1)',
           pointColor: 'rgba(220, 220, 220, 1)',
           pointStrokeColor: '#fff',
-          data: dataObj.graph['following']
+          data: dataObj.graph.following
         },
         {
           fillColor: 'rgba(70, 195, 64, 0.15)',
           strokeColor: 'rgba(70, 195, 64, 1)',
           pointColor: '#f4f4f4',
           pointStrokeColor: 'rgba(70, 195, 64, 1)',
-          data: dataObj.graph['followers']
+          data: dataObj.graph.followers
         }
       ]
-    }
+    };
 
     var options = {
       scaleOverride: true,
@@ -198,6 +197,6 @@ var data = {
       scaleXGridLinesStep: 0
     };
 
-    if ( dataObj.graph['followers'] !== null && dataObj.graph['following'] !== null ) new Chart(ctx).Line(data, options);
+    if ( dataObj.graph.followers !== null && dataObj.graph.following !== null ) chart.Line(data, options);
   }
 };
