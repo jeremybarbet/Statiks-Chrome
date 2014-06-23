@@ -4,23 +4,34 @@
  */
 var dataObj = {};
 
-dataObj['sites'] = {};
+dataObj.sites = {};
 
-dataObj['graph'] = {
+dataObj.graph = {
   followers: [0, 0, 0, 0, 0, 0, 0],
   following: [0, 0, 0, 0, 0, 0, 0]
 };
 
-dataObj['order'] = [];
+dataObj.order = [];
+
+/**
+ * Add Statiks version to storage for easily upgrade
+ * @global
+ */
+var app = {
+  version: function() {
+    $.getJSON('package.json').done(function(data) {
+      var version = data.version;
+      storage.set('statiks-version', version);
+    });
+  }
+};
 
 /**
  * Global timing for differents fades.
- * Reload variable.
  * isMac match test
  * @global
  */
 var timingEffect = 400;
-var reload = 0;
 var isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
 
 /**
