@@ -19,7 +19,7 @@ $('.add-social').on('click', function() {
  * Action to reload data with the connected networks.
  */
 $('.icon-reload').on('click', function() {
-  reload = 0;
+  api.reloadNbr = 0;
 
   $(this).addClass('inprogress');
 
@@ -31,6 +31,7 @@ $('.icon-reload').on('click', function() {
 
   $(document).ajaxStop(function() {
     api.graph();
+    data.graph();
     $('.icon-reload').addClass('pause');
   });
 });
@@ -98,6 +99,7 @@ $('.choose-social').on('click', 'li', function(e) {
       if ( value !== '' ) {
         var loader = $('<span class="api-loader"></span>');
         if ( !$this.find('.api-loader').length ) $this.append(loader);
+        if ( $this.find('.icon-clear') ) $this.find('.icon-clear').remove();
 
         api[site]($this, value, site);
       }
@@ -118,6 +120,12 @@ $('.choose-social .btn-back, .icon-back').on('click', function() {
   } else {
     if ( storage.get('user-data') !== null ) {
       $('.add-social, .loading').hide();
+
+      if ( api.buildGraph === true ) {
+        api.graph();
+        api.buildGraph = false;
+      }
+
       data.build();
     }
   }
@@ -167,5 +175,6 @@ $(document).on('click', '.item.total', function() {
  * Initialization after loaded app
  */
 $(window).load(function() {
+  api.check();
   data.loading();
 });
