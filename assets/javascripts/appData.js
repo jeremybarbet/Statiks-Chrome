@@ -151,7 +151,7 @@ var data = {
         break;
       }
 
-      if ( typeof(animStart) === undefined ) animStart = dataObj.graph.followers.length - 1;
+      if ( typeof(animStart) === undefined || i === dataObj.graph.followers.length - 1 ) animStart = dataObj.graph.followers.length - 1;
     }
 
     var data = {
