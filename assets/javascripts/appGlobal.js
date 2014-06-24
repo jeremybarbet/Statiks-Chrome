@@ -47,6 +47,14 @@ function isEmpty(o) {
 }
 
 /**
+ * Function to check if an array contains a value
+ * @global
+ */
+function isInArray(value, array) {
+  return array.indexOf(value) > -1;
+}
+
+/**
  * Formatting big numbers
  * @global
  */
