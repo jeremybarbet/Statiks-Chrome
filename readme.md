@@ -1,24 +1,30 @@
 Statiks
 ========
 
-Statiks is an easy-to-use chrome extension allowing you to connect several social networks and retrieve your followers data.
-You can reload your data and consult for each network how many followers you gained (or lost).
+Statiks is an easy-to-use chrome extension allowing you to connect several social networks and retrieve your details stats.
+You can reload your networks and consult for each network how many followers you gained (or lost) through a dynamic graph.
 
-This is a _MVP_ Minimal Valuable Product, I will keep improving, adding new networks and more stats. Feel free to contribute.
+I keep improving, fixing, adding new networks and more stats. Feel free to contribute.
 
 [Visit the application's website](http://statiks.jeremybarbet.com)
 
 TODO
 ----
 
-* ~~Add graph for total stats~~
 * Possibility to sort networks
-* ~~Add loader when adding networks take too much time, to avoid repetitive Enter press~~
-* ~~Remove scrollbar on Windows platform~~
 * Share your stats on your favorites networks
 
 Changelog
 ---------
+
+__v1.2.2__
+
+* Fix upgrade function
+
+__v1.2.1__
+
+* Add method to remove stats of a deleted networks
+  * It removes followers/following stats from the graph, it didn't add a new point to the graph actually.
 
 __v1.2.0__
 
