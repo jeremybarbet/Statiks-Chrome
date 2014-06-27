@@ -119,7 +119,7 @@ var api = {
   graph: {
     // Detect when arrays are full and called the related function to clean them
     isFull: function() {
-      for (var i = 0; i < dataObj.graph.followers.length; i++) {
+      for (var i = dataObj.graph.followers.length - 1; i >= 0; i--) {
         if ( isInArray(0, dataObj.graph.followers) === false ) {
           var totalFollowers = dataObj.graph.followers[i];
           var totalFollowing = dataObj.graph.following[i];
