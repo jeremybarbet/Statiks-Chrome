@@ -108,6 +108,8 @@ var api = {
       }
     };
 
+    dataObj.order.push(Object.keys(dataObj.sites).length - 1);
+
     api.graph.sum.networks(site, followers, details);
 
     storage.set('user-data', dataObj);

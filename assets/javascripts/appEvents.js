@@ -180,13 +180,6 @@ $(document).on('click', '.item', function() {
 });
 
 /**
- * Animate graph onclick
- */
-$(document).on('click', '.item.total', function() {
-  
-});
-
-/**
  * Initialization after loaded app
  */
 $(window).load(function() {
