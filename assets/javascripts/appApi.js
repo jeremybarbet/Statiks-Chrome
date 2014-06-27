@@ -1,9 +1,25 @@
 /**
  * API namespace with related methods
- * Success, fail, reload and API connects
+ * Variables, success, fail, alert, store, graph, reload, reloadCount, check, upgrade and API connects
  * @global
  */
 var api = {
+  /*
+   * Global variables
+   */
+  reloadNbr: 0,
+  reloadAllow: false,
+  buildGraph: false,
+  curIndex: 0,
+  curSite: [],
+
+  /**
+   * Alert messages
+   */
+  errorApi: 'Data from API are incorrect.',
+  errorUsername: ' is not found.',
+  noUpdate: 'Nothing new :(',
+
   /**
    * Success fallback when retrieve data
    */
@@ -11,7 +27,7 @@ var api = {
     var success = $('<span class="icon-check"></span>');
 
     $this.find('input').blur();
-    $this.find('.icon-error, .icon-clear').remove();
+    $this.find('.icon-error, .icon-clear, .api-loader').remove();
 
     /*
     * Display the check icon during a short time
@@ -27,64 +43,215 @@ var api = {
 
     /*
     * Check if localstorage exist
-    * Push data to object and store it
+    * Call function to store data
     */
-    if (localStorage !== null) {
-      dataArray[site] = {
-        username: username,
-        followers: followers,
-        details: details,
-        diff: 0
-      };
-
-      storage.set('user-data', dataArray);
-    }
+    if ( localStorage !== null ) api.store(dataObj, site, username, followers, details);
   },
 
   /**
    * Fail fallback when can't retrieve data
    */
-  fail: function($this, alert) {
+  fail: function($this) {
     var error = $('<span class="icon-error"></span>');
+
+    $this.find('input').val('');
+    $this.find('.icon-check, .icon-clear, .api-loader').remove();
 
     /*
     * Display the cross icon during a short time
     * Not add it on the DOM again, if is already append
     */
-    if ( $this !== null ) {
-      $this.find('input').val('');
-      $this.find('.icon-check, .icon-clear').remove();
-
-      if ( !$this.find('.icon-error').length ) {
-        $this.append(error);
-
-        setTimeout(function() {
-          $this.find('.icon-error').remove();
-        }, timingEffect * 3);
-      }
-    }
-
-    /*
-    * Display alert when an error occured
-    */
-    if (alert) {
-      // Not add it on the DOM again, if is already append
-      if ( !$('.alert').length ) {
-        var alertWrapper = '<div class="alert"><p></p></div>';
-        $(alertWrapper).insertAfter('header');
-      }
-
-      $('.alert').animate({
-        marginTop: '41px',
-        opacity: '1'
-      }, timingEffect).find('p').text(alert);
+    if ( !$this.find('.icon-error').length ) {
+      $this.append(error);
 
       setTimeout(function() {
-        $('.alert').animate({
-          marginTop: '-41px',
-          opacity: '0'
-        }, timingEffect);
-      }, 4000);
+        $this.find('.icon-error').remove();
+      }, timingEffect * 3);
+    }
+  },
+
+  /**
+   * Alert messages
+   */
+  alert: function(message) {
+    // Not add it on the DOM again, if is already append
+    if ( !$('.alert').length ) {
+      var alertWrapper = '<div class="alert"><p></p></div>';
+      $(alertWrapper).insertAfter('header');
+    }
+
+    $('.alert').animate({
+      marginTop: '41px',
+      opacity: '1'
+    }, timingEffect).find('p').text(message);
+
+    setTimeout(function() {
+      $('.alert').animate({
+        marginTop: '-41px',
+        opacity: '0'
+      }, timingEffect);
+    }, 4000);
+  },
+
+  /**
+   * Function to store data to localstorage if all is good
+   */
+  store: function(dataObj, site, username, followers, details) {
+    dataObj.sites[site] = {
+      username: username,
+      followers: followers,
+      details: details,
+      diff: {
+        value: 0,
+        followers: [0, 0, 0, 0, 0, 0, 0],
+        following: [0, 0, 0, 0, 0, 0, 0]
+      }
+    };
+
+    api.graph.sum.networks(site, followers, details);
+
+    storage.set('user-data', dataObj);
+  },
+
+  /**
+   * Clean classes to remove followers/following data on full arrays
+   */
+  graph: {
+    // Detect when arrays are full and called the related function to clean them
+    isFull: function() {
+      for (var i = dataObj.graph.followers.length - 1; i >= 0; i--) {
+        if ( isInArray(0, dataObj.graph.followers) === false ) {
+          var totalFollowers = dataObj.graph.followers[i];
+          var totalFollowing = dataObj.graph.following[i];
+
+          for (var site in dataObj.sites) {
+            var networksFollowers = dataObj.sites[site].diff.followers[i];
+            var networksFollowing = dataObj.sites[site].diff.following[i];
+
+            api.graph.clean.networks(site, networksFollowers, networksFollowing);
+          }
+
+          api.graph.clean.total(totalFollowers, totalFollowing);
+
+          break;
+        }
+      }
+    },
+
+    sum: {
+      // Add newtworks total
+      networks: function(site, followers, details) {
+        var tmp = storage.get('user-data');
+
+        // Add followers/following numbers to related's site arrays
+        for (i = 0; i < dataObj.graph.followers.length; i++) {
+          if ( dataObj.graph.followers[i] === 0 ) {
+            var curIndex = i;
+            var curSite = site;
+
+            dataObj.sites[site].diff.followers[i] = followers;
+            if ( dataObj.sites[site].details.hasOwnProperty('following') ) dataObj.sites[site].diff.following[i] = details.following;
+
+            break;
+          }
+        }
+
+        if ( tmp !== null ) {
+          // Enable the call to the function to sum up total followers/following
+          for (var key in tmp.sites) {
+            if ( !tmp.sites.hasOwnProperty(site) ) {
+              // Copy last followers/following number to related index
+              api.curIndex = curIndex;
+              api.curSite.push(site);
+
+              // Allow the build of graph data
+              api.buildGraph = true;
+
+              break;
+            }
+          }
+        } else {
+          api.buildGraph = true;
+        }
+      },
+
+      // Method to sum up total of followers and following for all networks
+      total: function() {
+        for (var i = 0; i < dataObj.graph.followers.length; i++ ) {
+          if ( dataObj.graph.followers[i] === 0 ) {
+            for (site in dataObj.sites) {
+              dataObj.graph.followers[i] += parseInt(dataObj.sites[site].diff.followers[i]);
+              dataObj.graph.following[i] += parseInt(dataObj.sites[site].diff.following[i]);
+            }
+          }
+        }
+
+        storage.set('user-data', dataObj);
+      },
+
+      // Method to sum up missing followers/following values of previous networks
+      missing: function(index, site) {
+        for (var key in dataObj.sites) {
+          for (var i = 0; i < site.length; i++) {
+            if ( key !== site[i] ) {
+              // First loop to store the value with the highest index
+              for (var i = index; i >= 0; i--) {
+                if ( isSame(dataObj.sites[key].diff.followers) === true ) var followersValue = followingValue = 0;
+
+                if ( dataObj.sites[key].diff.followers[i] !== 0 ) {
+                  var followersValue = dataObj.sites[key].diff.followers[i];
+                  var followingValue = dataObj.sites[key].diff.following[i];
+                }
+              }
+
+              // Second loop to complete and according to current index
+              for (var i = index; i >= 0; i--) {
+                if ( dataObj.sites[key].diff.followers[i] === 0 ) {
+                  dataObj.sites[key].diff.followers[i] = followersValue;
+                  if ( dataObj.sites[key].details.hasOwnProperty('following') ) dataObj.sites[key].diff.following[i] = followingValue;
+                }
+              }
+
+              storage.set('user-data', dataObj);
+
+              break;
+            }
+          }
+        }
+      },
+    },
+
+    // Clean classes to remove followers/following data on full arrays
+    clean: {
+      // Clean data for each networks
+      networks: function(site, followers, following) {
+        for (var i = 0; i < dataObj.sites[site].diff.followers.length; i++) {
+          dataObj.sites[site].diff.followers[i] = 0;
+          dataObj.sites[site].diff.following[i] = 0;
+
+          if ( i === 0 ) {
+            dataObj.sites[site].diff.followers[i] = followers;
+            dataObj.sites[site].diff.following[i] = following;
+          }
+        }
+
+        storage.set('user-data', dataObj);
+      },
+
+      // Clean total data
+      total: function(followers, following) {
+        for (var i = 0; i < dataObj.graph.followers.length; i++) {
+          dataObj.graph.followers[i] = 0;
+          dataObj.graph.following[i] = 0;
+
+          if ( i === 0 ) {
+            dataObj.graph.followers[i] = followers;
+            dataObj.graph.following[i] = following;
+          }
+        }
+
+        storage.set('user-data', dataObj);
+      }
     }
   },
 
@@ -93,17 +260,29 @@ var api = {
    * the diff since the last app launched.
    */
   reload: function($this, site, followers, details) {
-    if ( dataArray[site].followers !== followers ) {
-      var diff = followers - dataArray[site].followers;
+    // Store followers/following data for building graph
+    for (var i = 0; i < dataObj.graph.followers.length; i++) {
+      if ( dataObj.graph.followers[i] === 0 ) {
+        dataObj.sites[site].diff.followers[i] = followers;
+        if ( dataObj.sites[site].details.hasOwnProperty('following') ) dataObj.sites[site].diff.following[i] = details.following;
+
+        break;
+      }
+    }
+
+    storage.set('user-data', dataObj);
+
+    if ( dataObj.sites[site].followers !== followers ) {
+      var diff = followers - dataObj.sites[site].followers;
       var socialItem = $('.list-social').find('.' + site + ' .right');
       var totalItem = $('.total').find('.right');
 
       // Update value of object
-      dataArray[site].diff = diff;
-      dataArray[site].followers = followers;
+      dataObj.sites[site].diff.value = diff;
+      dataObj.sites[site].followers = followers;
 
       // Push to localstorage
-      storage.set('user-data', dataArray);
+      storage.set('user-data', dataObj);
 
       // Render new data for each networks
       socialItem.find('.nbr').text(format(followers));
@@ -112,50 +291,65 @@ var api = {
       var totalFollowers = 0;
       var totalDiff = 0;
 
-      for (site in dataArray) {
-        totalFollowers += parseInt(dataArray[site].followers);
-        totalDiff += parseInt(dataArray[site].diff);
+      for (site in dataObj.sites) {
+        totalFollowers += parseInt(dataObj.sites[site].followers);
+        totalDiff += parseInt(dataObj.sites[site].diff.value);
       }
 
       totalItem.find('.nbr').text(format(totalFollowers));
       if ( totalDiff !== null && typeof totalDiff === 'number' ) totalItem.find('p span').text((totalDiff > 0 ? '+' : '') + totalDiff);
-
-    } else if ( JSON.stringify(dataArray[site].details) !== JSON.stringify(details) ) {
+    } else if ( JSON.stringify(dataObj.sites[site].details) !== JSON.stringify(details) ) {
       // Update value of object
-      dataArray[site].details = details;
+      dataObj.sites[site].details = details;
 
       // Push to localstorage
-      storage.set('user-data', dataArray);
+      storage.set('user-data', dataObj);
 
       for (var key in details) {
         $('.' + site).find('.' + key + ' .right').text(format(details[key]));
       }
     } else {
-      api.notification();
+      api.reloadCount();
     }
   },
 
-  upgrade: function($this, site, followers, details) {
-    dataArray[site].followers = followers;
-    dataArray[site].details = details;
-    dataArray[site].diff = 0;
-    storage.set('user-data', dataArray);
+  /**
+   * If there is no new followers for each networks, display an alert message
+   */
+  reloadCount: function() {
+    api.reloadNbr++;
 
-    setTimeout(function() {
-      $('.loading').fadeOut(timingEffect);
-
-      setTimeout(function() {
-        data.build();
-      }, timingEffect);
-    }, timingEffect * 6);
+    if ( Object.keys(dataObj.sites).length === api.reloadNbr ) api.alert(api.noUpdate);
   },
 
-  notification: function() {
-    reload++;
+  /**
+   * Method to ckeck if upgrade is needed to a new version of Statiks
+   */
+  check: function() {
+    var v = storage.get('statiks-version');
 
-    if ( Object.keys(dataArray).length == reload ) {
-      api.fail(null, 'Nothing new :(');
+    if ( (v <= '1.1.0' || v === null) && storage.get('user-data') !== null ) {
+      tmpObj = storage.get('user-data');
+
+      for (var site in tmpObj) {
+        api[site]('upgrade', tmpObj[site].username, site);
+        delete tmpObj[site];
+      }
+
+      $(document).ajaxStop(function() {
+        api.graph();
+      });
     }
+
+    app.version();
+  },
+
+  /**
+   * Method to upgrade with new data
+   */
+  upgrade: function($this, site, username, followers, details) {
+    $('.loading').fadeIn(timingEffect).find('p').text('Upgrade to the new version');
+    api.store(dataObj, site, username, followers, details);
   },
 
   /**
@@ -177,17 +371,18 @@ var api = {
         if ( $this === 'reload' ) {
           api.reload($this, site, followers, details);
         } else if ( $this === 'upgrade' ) {
-          api.upgrade($this, site, followers, details);
+          api.upgrade($this, site, username, followers, details);
         } else {
           api.success($this, site, username, followers, details);
         }
       } else {
-        var errorCustomMessage = 'Data from API are incorrect.';
-        api.fail($this, errorCustomMessage);
+        api.fail($this);
+        api.alert(api.errorApi);
       }
     })
-    .fail(function(response) {
-      api.fail($this, response.responseJSON.message[1]);
+    .fail(function() {
+      api.fail($this);
+      api.alert(value + api.errorUsername);
     });
   },
 
@@ -219,15 +414,15 @@ var api = {
         if ( $this === 'reload' ) {
           api.reload($this, site, followers, details);
         } else if ( $this === 'upgrade' ) {
-          api.upgrade($this, site, followers, details);
+          api.upgrade($this, site, username, followers, details);
         } else {
           api.success($this, site, username, followers, details);
         }
       }
     })
     .fail(function() {
-      var errorCustomMessage = 'Invalid username.';
-      api.fail($this, errorCustomMessage);
+      api.fail($this);
+      api.alert(value + api.errorUsername);
     });
   },
 
@@ -250,17 +445,18 @@ var api = {
         if ( $this === 'reload' ) {
           api.reload($this, site, followers, details);
         } else if ( $this === 'upgrade' ) {
-          api.upgrade($this, site, followers, details);
+          api.upgrade($this, site, username, followers, details);
         } else {
           api.success($this, site, username, followers, details);
         }
       } else {
-        var errorCustomMessage = 'Data from API are incorrect.';
-        api.fail($this, errorCustomMessage);
+        api.fail($this);
+        api.alert(api.errorApi);
       }
     })
-    .fail(function(response) {
-      api.fail($this, response.responseJSON.http_code);
+    .fail(function() {
+      api.fail($this);
+      api.alert(value + api.errorUsername);
     });
   },
 
@@ -283,17 +479,18 @@ var api = {
         if ( $this === 'reload' ) {
           api.reload($this, site, followers, details);
         } else if ( $this === 'upgrade' ) {
-          api.upgrade($this, site, followers, details);
+          api.upgrade($this, site, username, followers, details);
         } else {
           api.success($this, site, username, followers, details);
         }
       } else {
-        var errorCustomMessage = 'Data from API are incorrect.';
-        api.fail($this, errorCustomMessage);
+        api.fail($this);
+        api.alert(api.errorApi);
       }
     })
-    .fail(function(response) {
-      api.fail($this, response.responseJSON.error);
+    .fail(function() {
+      api.fail($this);
+      api.alert(value + api.errorUsername);
     });
   },
 
@@ -315,17 +512,18 @@ var api = {
         if ( $this === 'reload' ) {
           api.reload($this, site, followers, details);
         } else if ( $this === 'upgrade' ) {
-          api.upgrade($this, site, followers, details);
+          api.upgrade($this, site, username, followers, details);
         } else {
           api.success($this, site, username, followers, details);
         }
       } else {
-        var errorCustomMessage = 'Data from API are incorrect.';
-        api.fail($this, errorCustomMessage);
+        api.fail($this);
+        api.alert(api.errorApi);
       }
     })
-    .fail(function(response) {
-      api.fail($this, response.responseJSON.message);
+    .fail(function() {
+      api.fail($this);
+      api.alert(value + api.errorUsername);
     });
   },
 
@@ -347,17 +545,18 @@ var api = {
         if ( $this === 'reload' ) {
           api.reload($this, site, followers, details);
         } else if ( $this === 'upgrade' ) {
-          api.upgrade($this, site, followers, details);
+          api.upgrade($this, site, username, followers, details);
         } else {
           api.success($this, site, username, followers, details);
         }
       } else {
-        var errorCustomMessage = 'Data from API are incorrect.';
-        api.fail($this, errorCustomMessage);
+        api.fail($this);
+        api.alert(api.errorApi);
       }
     })
-    .fail(function(response) {
-      api.fail($this, response.responseText);
+    .fail(function() {
+      api.fail($this);
+      api.alert(value + api.errorUsername);
     });
   },
 
@@ -385,15 +584,15 @@ var api = {
         if ( $this === 'reload' ) {
           api.reload($this, site, followers, details);
         } else if ( $this === 'upgrade' ) {
-          api.upgrade($this, site, followers, details);
+          api.upgrade($this, site, username, followers, details);
         } else {
           api.success($this, site, username, followers, details);
         }
       }
     })
     .fail(function() {
-      var errorCustomMessage = 'Invalid username.';
-      api.fail($this, errorCustomMessage);
+      api.fail($this);
+      api.alert(value + api.errorUsername);
     });
   },
 
@@ -425,15 +624,15 @@ var api = {
         if ( $this === 'reload' ) {
           api.reload($this, site, followers, details);
         } else if ( $this === 'upgrade' ) {
-          api.upgrade($this, site, followers, details);
+          api.upgrade($this, site, username, followers, details);
         } else {
           api.success($this, site, username, followers, details);
         }
       }
     })
     .fail(function() {
-      var errorCustomMessage = 'Invalid username.';
-      api.fail($this, errorCustomMessage);
+      api.fail($this);
+      api.alert(value + api.errorUsername);
     });
   },
 
@@ -453,17 +652,18 @@ var api = {
         if ( $this === 'reload' ) {
           api.reload($this, site, followers, details);
         } else if ( $this === 'upgrade' ) {
-          api.upgrade($this, site, followers, details);
+          api.upgrade($this, site, username, followers, details);
         } else {
           api.success($this, site, username, followers, details);
         }
       } else {
-        var errorCustomMessage = 'Data from API are incorrect.';
-        api.fail($this, errorCustomMessage);
+        api.fail($this);
+        api.alert(api.errorApi);
       }
     })
-    .fail(function(response) {
-      api.fail($this, response.statusText);
+    .fail(function() {
+      api.fail($this);
+      api.alert(value + api.errorUsername);
     });
   },
 
@@ -486,17 +686,18 @@ var api = {
         if ( $this === 'reload' ) {
           api.reload($this, site, followers, details);
         } else if ( $this === 'upgrade' ) {
-          api.upgrade($this, site, followers, details);
+          api.upgrade($this, site, username, followers, details);
         } else {
           api.success($this, site, username, followers, details);
         }
       } else {
-        var errorCustomMessage = 'Data from API are incorrect.';
-        api.fail($this, errorCustomMessage);
+        api.fail($this);
+        api.alert(api.errorApi);
       }
     })
-    .fail(function(response) {
-      api.fail($this, response.statusText);
+    .fail(function() {
+      api.fail($this);
+      api.alert(value + api.errorUsername);
     });
   },
 
@@ -519,17 +720,18 @@ var api = {
         if ( $this === 'reload' ) {
           api.reload($this, site, followers, details);
         } else if ( $this === 'upgrade' ) {
-          api.upgrade($this, site, followers, details);
+          api.upgrade($this, site, username, followers, details);
         } else {
           api.success($this, site, username, followers, details);
         }
       } else {
-        var errorCustomMessage = 'Data from API are incorrect.';
-        api.fail($this, errorCustomMessage);
+        api.fail($this);
+        api.alert(api.errorApi);
       }
     })
-    .fail(function(response) {
-      api.fail($this, response.statusText);
+    .fail(function() {
+      api.fail($this);
+      api.alert(value + api.errorUsername);
     });
   }
 };

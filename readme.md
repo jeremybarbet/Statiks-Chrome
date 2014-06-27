@@ -13,8 +13,8 @@ TODO
 
 * Add graph for total stats
 * Possibility to sort networks
-* Add loader when adding networks take too much time, to avoid repetitive Enter press
-* Remove scrollbar on Windows platform
+* ~~Add loader when adding networks take too much time, to avoid repetitive Enter press~~
+* ~~Remove scrollbar on Windows platform~~
 
 Changelog
 ---------

@@ -1,14 +1,4 @@
 /**
- * Global timing for differents fades.
- * Reload variable.
- * isMac match test
- * @global
- */
-var timingEffect = 400;
-var reload = 0;
-var isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
-
-/**
  * Add social actions. Hide the button, and display
  * connect's form to add newtworks and type username.
  * Only display if there is no connected networks.
@@ -29,18 +19,27 @@ $('.add-social').on('click', function() {
  * Action to reload data with the connected networks.
  */
 $('.icon-reload').on('click', function() {
-  reload = 0;
+  api.reloadNbr = 0;
+  api.reloadAllow = false;
 
   $(this).addClass('inprogress');
 
   if ( $(this).hasClass('pause') ) $(this).removeClass('pause');
 
-  for (var site in dataArray) {
-    api[site]('reload', dataArray[site].username, site);
+  for (var site in dataObj.sites) {
+    api[site]('reload', dataObj.sites[site].username, site);
   }
 
   $(document).ajaxStop(function() {
-    $('.icon-reload').addClass('pause');
+    if ( api.reloadAllow === false ) {
+      api.graph.isFull('test');
+      api.graph.sum.total();
+      data.graph();
+
+      $('.icon-reload').addClass('pause');
+
+      api.reloadAllow = true;
+    }
   });
 });
 
@@ -104,7 +103,13 @@ $('.choose-social').on('click', 'li', function(e) {
       var site = $this.data('social');
       var value = $this.find('input').val();
 
-      if ( value !== '' ) api[site]($this, value, site);
+      if ( value !== '' ) {
+        var loader = $('<span class="api-loader"></span>');
+        if ( !$this.find('.api-loader').length ) $this.append(loader);
+        if ( $this.find('.icon-clear') ) $this.find('.icon-clear').remove();
+
+        api[site]($this, value, site);
+      }
 
       e.preventDefault();
     });
@@ -116,12 +121,26 @@ $('.choose-social').on('click', 'li', function(e) {
  * and the back button at the bottom of the settings views
  */
 $('.choose-social .btn-back, .icon-back').on('click', function() {
-  if ( isEmpty(dataArray) === true ) {
+  if ( isEmpty(dataObj.sites) === true ) {
     $('.icon-settings, .icon-back, .choose-social').hide();
     $('.add-social').show();
   } else {
     if ( storage.get('user-data') !== null ) {
       $('.add-social, .loading').hide();
+
+      // Check if arrays are full
+      api.graph.isFull();
+
+      if ( api.buildGraph === true ) {
+        // Call functions
+        api.graph.sum.missing(api.curIndex, api.curSite);
+        api.graph.sum.total();
+
+        // Reset variable
+        api.curSite.length = 0;
+        api.buildGraph = false;
+      }
+
       data.build();
     }
   }
@@ -144,12 +163,12 @@ $(document).on('click', '.icon-clear', function() {
   $(this).remove();
   $('.list-social').find('.' + site).remove();
 
-  delete dataArray[site];
+  delete dataObj.sites[site];
 
-  if ( isEmpty(dataArray) === true ) {
+  if ( isEmpty(dataObj.sites) === true ) {
     storage.rem('user-data');
   } else {
-    storage.set('user-data', dataArray);
+    storage.set('user-data', dataObj);
   }
 });
 
@@ -161,8 +180,16 @@ $(document).on('click', '.item', function() {
 });
 
 /**
+ * Animate graph onclick
+ */
+$(document).on('click', '.item.total', function() {
+  
+});
+
+/**
  * Initialization after loaded app
  */
 $(window).load(function() {
+  api.check();
   data.loading();
 });

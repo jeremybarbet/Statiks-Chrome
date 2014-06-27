@@ -8,6 +8,7 @@ module.exports = function (grunt) {
     'copy',
     'less:dev',
     'uglify:dev',
+    'uglify:lib',
     'watch'
   ]);
 
@@ -16,12 +17,14 @@ module.exports = function (grunt) {
     'copy',
     'less:dist',
     'uglify:dist',
+    'uglify:lib',
     'zip'
   ]);
 
   grunt.registerTask('test', [
     'clean',
     'uglify:dev',
+    'uglify:lib',
     'jshint'
   ]);
 
@@ -43,9 +46,6 @@ module.exports = function (grunt) {
           flatten: true,
           src: ['assets/fonts/*'],
           dest: 'dist/fonts/'
-        },
-        {
-          'dist/jquery.min.js': 'assets/javascripts/lib/jquery.min.js'
         },
         {
           'dist/popup.js': 'assets/javascripts/popup.js'
@@ -94,15 +94,23 @@ module.exports = function (grunt) {
         },
         files: {
           'dist/app.min.js': [
-            'assets/javascripts/appEvents.js',
+            'assets/javascripts/appGlobal.js',
             'assets/javascripts/*.js'
+          ]
+        }
+      },
+      lib: {
+        files: {
+          'dist/lib.min.js': [
+            'assets/javascripts/lib/jquery.min.js',
+            'assets/javascripts/lib/chartnew.js'
           ]
         }
       },
       dist: {
         files: {
           'dist/app.min.js': [
-            'assets/javascripts/appEvents.js',
+            'assets/javascripts/appGlobal.js',
             'assets/javascripts/*.js'
           ]
         }
@@ -112,7 +120,7 @@ module.exports = function (grunt) {
     // Grunt-contrib-jshint
     jshint: {
       options: {
-        ignores: ['assets/javascripts/lib/*.js']
+        ignores: ['assets/javascripts/lib/jquery.min.js']
       },
       files: ['assets/javascripts/*.js']
     },
