@@ -733,5 +733,43 @@ var api = {
       api.fail($this);
       api.alert(value + api.errorUsername);
     });
+  },
+
+  /**
+   * deviantART scrapper and catch followers from json on the page
+   */
+  deviantart: function($this, value, site) {
+    $.ajax({
+      url: 'http://' + value + '.deviantart.com/stats/gallery/',
+      success: function(data) {
+        var getFollowers = data.match(/\"friendswatching\":([^\,]+)/g);
+        var getFollowing= data.match(/\"friends\":([^\,]+)/g);
+        var getDeviations = data.match(/\"deviations\":([^\,]+)/g);
+        var getViews = data.match(/\"pageviews\":([^\,]+)/g);
+        var getComments = data.match(/\"comments_received\":([^\,]+)/g);
+
+        var username = value;
+        var followers = getFollowers[0].substr(getFollowers[0].indexOf(':') + 1);
+
+        var details = {
+          following: getFollowing[0].substr(getFollowing[0].indexOf(':') + 1),
+          deviations: getDeviations[0].substr(getDeviations[0].indexOf(':') + 1),
+          views: getViews[0].substr(getViews[0].indexOf(':') + 1),
+          comments: getComments[0].substr(getComments[0].indexOf(':') + 1)
+        };
+
+        if ( $this === 'reload' ) {
+          api.reload($this, site, followers, details);
+        } else if ( $this === 'upgrade' ) {
+          api.upgrade($this, site, followers, details);
+        } else {
+          api.success($this, site, username, followers, details);
+        }
+      }
+    })
+    .fail(function() {
+      api.fail($this);
+      api.alert(value + api.errorUsername);
+    });
   }
 };
