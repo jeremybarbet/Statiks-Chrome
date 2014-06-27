@@ -55,6 +55,18 @@ function isInArray(value, array) {
 }
 
 /**
+ * Function to check if an array contains all the same values
+ * @global
+ */
+function isSame(array) {
+  for (var i = 0; i < array.length - 1; i++) {
+    if ( array[i] != array[i + 1] ) return false;
+  }
+
+  return true;
+}
+
+/**
  * Formatting big numbers
  * @global
  */
