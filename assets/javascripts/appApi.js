@@ -349,7 +349,7 @@ var api = {
       }
 
       $(document).ajaxStop(function() {
-        api.graph();
+        api.graph.sum.total();
       });
     }
 
