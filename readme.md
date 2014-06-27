@@ -11,13 +11,28 @@ This is a _MVP_ Minimal Valuable Product, I will keep improving, adding new netw
 TODO
 ----
 
-* Add graph for total stats
+* ~~Add graph for total stats~~
 * Possibility to sort networks
 * ~~Add loader when adding networks take too much time, to avoid repetitive Enter press~~
 * ~~Remove scrollbar on Windows platform~~
+* Share your stats on your favorites networks
 
 Changelog
 ---------
+
+__v1.2.0__
+
+* Add [chartnew.js](https://github.com/FVANCOP/ChartNew.js) for dynamic graph on total item with differents datas : 
+  * You can follow the graph of followers and following stats.
+  * You can reload your stats, and the graph is update automatically.
+  * When the graph is full, and you decide to reload your data, the graph is empty and it begin again.
+* Improve scrollbar on Windows OS 9e88d4e
+* Add a loader when adding a network 4325f60
+* Hover effect on item to show click possibility d3243e3
+* Rewrite object data ac18cd9
+* A global javascript file, for common functions and variables 3f0c8a7
+* All libraries files are compiled on the same file e6e08b7
+* Lot of fixes and improvements for a better stability
 
 __v1.1.2__
 
@@ -84,6 +99,11 @@ __Launching__
 * Voilà
 
 Here we go, you are ready to edit the extension. Gratz!
+
+Thanks
+------
+
+* Thanks to the guy behind [chartnew.js](https://github.com/FVANCOP/ChartNew.js) for the great support
 
 Contributors
 ------------
