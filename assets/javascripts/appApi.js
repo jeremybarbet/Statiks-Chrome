@@ -328,7 +328,7 @@ var api = {
   check: function() {
     var v = storage.get('statiks-version');
 
-    if ( (v <= '1.1.0' || v === null) && storage.get('user-data') !== null ) {
+    if ( (v <= '1.1.2' || v === null) && storage.get('user-data') !== null ) {
       tmpObj = storage.get('user-data');
 
       for (var site in tmpObj) {
