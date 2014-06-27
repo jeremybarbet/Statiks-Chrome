@@ -163,6 +163,7 @@ $(document).on('click', '.icon-clear', function() {
   $(this).remove();
   $('.list-social').find('.' + site).remove();
 
+  api.graph.sub(site);
   delete dataObj.sites[site];
 
   if ( isEmpty(dataObj.sites) === true ) {

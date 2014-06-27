@@ -221,6 +221,18 @@ var api = {
       },
     },
 
+    // Method to substracte followers and following of delete networks from total arrays
+    sub: function(site) {
+      for (var i = dataObj.graph.followers.length - 1; i >= 0; i--) {
+        if ( dataObj.graph.followers[i] !== 0 ) {
+          dataObj.graph.followers[i] -= parseInt(dataObj.sites[site].diff.followers[i]);
+          dataObj.graph.following[i] -= parseInt(dataObj.sites[site].diff.following[i]);
+        }
+      }
+
+      storage.set('user-data', dataObj);
+    },
+
     // Clean classes to remove followers/following data on full arrays
     clean: {
       // Clean data for each networks
