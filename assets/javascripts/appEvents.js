@@ -20,6 +20,7 @@ $('.add-social').on('click', function() {
  */
 $('.icon-reload').on('click', function() {
   api.reloadNbr = 0;
+  api.reloadAllow = false;
 
   $(this).addClass('inprogress');
 
@@ -30,9 +31,15 @@ $('.icon-reload').on('click', function() {
   }
 
   $(document).ajaxStop(function() {
-    api.graph();
-    data.graph();
-    $('.icon-reload').addClass('pause');
+    if ( api.reloadAllow === false ) {
+      api.graph.isFull('test');
+      api.graph.sum.total();
+      data.graph();
+
+      $('.icon-reload').addClass('pause');
+
+      api.reloadAllow = true;
+    }
   });
 });
 
@@ -121,8 +128,16 @@ $('.choose-social .btn-back, .icon-back').on('click', function() {
     if ( storage.get('user-data') !== null ) {
       $('.add-social, .loading').hide();
 
+      // Check if arrays are full
+      api.graph.isFull();
+
       if ( api.buildGraph === true ) {
-        api.graph();
+        // Call functions
+        api.graph.sum.missing(api.curIndex, api.curSite);
+        api.graph.sum.total();
+
+        // Reset variable
+        api.curSite.length = 0;
         api.buildGraph = false;
       }
 
