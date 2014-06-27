@@ -144,12 +144,14 @@ var api = {
       // Add newtworks total
       networks: function(site, followers, details) {
         var tmp = storage.get('user-data');
+        var addIndex;
+        var addSite;
 
         // Add followers/following numbers to related's site arrays
         for (i = 0; i < dataObj.graph.followers.length; i++) {
           if ( dataObj.graph.followers[i] === 0 ) {
-            var curIndex = i;
-            var curSite = site;
+            addIndex = i;
+            addSite = site;
 
             dataObj.sites[site].diff.followers[i] = followers;
             if ( dataObj.sites[site].details.hasOwnProperty('following') ) dataObj.sites[site].diff.following[i] = details.following;
@@ -163,8 +165,8 @@ var api = {
           for (var key in tmp.sites) {
             if ( !tmp.sites.hasOwnProperty(site) ) {
               // Copy last followers/following number to related index
-              api.curIndex = curIndex;
-              api.curSite.push(site);
+              api.curIndex = addIndex;
+              api.curSite.push(addSite);
 
               // Allow the build of graph data
               api.buildGraph = true;
@@ -181,7 +183,7 @@ var api = {
       total: function() {
         for (var i = 0; i < dataObj.graph.followers.length; i++ ) {
           if ( dataObj.graph.followers[i] === 0 ) {
-            for (site in dataObj.sites) {
+            for (var site in dataObj.sites) {
               dataObj.graph.followers[i] += parseInt(dataObj.sites[site].diff.followers[i]);
               dataObj.graph.following[i] += parseInt(dataObj.sites[site].diff.following[i]);
             }
@@ -196,18 +198,24 @@ var api = {
         for (var key in dataObj.sites) {
           for (var i = 0; i < site.length; i++) {
             if ( key !== site[i] ) {
+              var followersValue;
+              var followingValue;
+
               // First loop to store the value with the highest index
-              for (var i = index; i >= 0; i--) {
-                if ( isSame(dataObj.sites[key].diff.followers) === true ) var followersValue = followingValue = 0;
+              for (i = index; i >= 0; i--) {
+                if ( isSame(dataObj.sites[key].diff.followers) === true ) {
+                  followersValue = 0;
+                  followingValue = 0;
+                }
 
                 if ( dataObj.sites[key].diff.followers[i] !== 0 ) {
-                  var followersValue = dataObj.sites[key].diff.followers[i];
-                  var followingValue = dataObj.sites[key].diff.following[i];
+                  followersValue = dataObj.sites[key].diff.followers[i];
+                  followingValue = dataObj.sites[key].diff.following[i];
                 }
               }
 
               // Second loop to complete and according to current index
-              for (var i = index; i >= 0; i--) {
+              for (i = index; i >= 0; i--) {
                 if ( dataObj.sites[key].diff.followers[i] === 0 ) {
                   dataObj.sites[key].diff.followers[i] = followersValue;
                   if ( dataObj.sites[key].details.hasOwnProperty('following') ) dataObj.sites[key].diff.following[i] = followingValue;

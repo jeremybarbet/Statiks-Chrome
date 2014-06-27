@@ -53,6 +53,8 @@ var data = {
    * Build item wrapper
    */
   build: function() {
+    var itemsData;
+
     dataObj = storage.get('user-data');
 
     for (var i = 0; i < dataObj.order.length; i++) {
@@ -65,7 +67,7 @@ var data = {
           $(itemsContainer).insertAfter('.choose-social');
         }
 
-        var itemsData = $('.list-social');
+        itemsData = $('.list-social');
 
         // Hide choose social list
         $('.choose-social').hide();
@@ -80,33 +82,33 @@ var data = {
         // Render usernames in config screen
         data.settings(site, dataObj.sites[site].username);
 
-        // Finally display items and remove class after animation completed
-        itemsData.fadeIn(timingEffect);
-
-        itemsData.find('.item').bind('animationend webkitAnimationEnd', function() {
-          $(this).removeClass('bounceIn');
-        }).addClass('bounceIn');
-
-        // Order item and save it
-        $('.list-social ul').sortable({
-          cancel: '.item.total',
-          start: function(event, ui) {
-            ui.item.addClass('sort');
-          },
-          stop: function(event, ui) {
-            ui.item.removeClass('sort');
-          },
-          update: function() {
-            var order = $(this).sortable('toArray');
-
-            dataObj.order = order;
-            storage.set('user-data', dataObj);
-          }
-        });
-
         index++;
       }
     }
+
+    // Finally display items and remove class after animation completed
+    itemsData.fadeIn(timingEffect);
+
+    itemsData.find('.item').bind('animationend webkitAnimationEnd', function() {
+      $(this).removeClass('bounceIn');
+    }).addClass('bounceIn');
+
+    // Order item and save it
+    $('.list-social ul').sortable({
+      cancel: '.item.total',
+      start: function(event, ui) {
+        ui.item.addClass('sort');
+      },
+      stop: function(event, ui) {
+        ui.item.removeClass('sort');
+      },
+      update: function() {
+        var order = $(this).sortable('toArray');
+
+        dataObj.order = order;
+        storage.set('user-data', dataObj);
+      }
+    });
 
     // Display total numbers
     data.total();
