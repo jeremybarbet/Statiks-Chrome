@@ -11,6 +11,7 @@ This is a _MVP_ Minimal Valuable Product, I will keep improving, adding new netw
 TODO
 ----
 
+* Organize by default, by highest followers numbers
 * ~~Add graph for total stats~~
 * Possibility to sort networks
 * ~~Add loader when adding networks take too much time, to avoid repetitive Enter press~~
