@@ -11,6 +11,7 @@ I keep improving, fixing, adding new networks and more stats. Feel free to contr
 TODO
 ----
 
+* Organize by default, by highest followers numbers
 * Possibility to sort networks
 * Share your stats on your favorites networks
 

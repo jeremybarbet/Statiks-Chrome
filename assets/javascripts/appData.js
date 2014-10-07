@@ -28,11 +28,11 @@ var data = {
   /**
    * Generated and append items
    */
-  render: function(site, username, followers, details) {
-    var itemList = '<li class="item ' + site + '"><div class="left"><h2>' + ((site === 'cinqcentpx') ? '500px' : site) + '</h2><p>' + username + '</p></div><div class="right"><div class="nbr">' + format(followers) + '</div><p><span></span>followers</p></div><ul class="detail-social ' + site + '"></ul></li>';
+  render: function(site, username, followers, details, index, id) {
+    var itemList = '<li id="' + index + '" class="item ' + site + '"><div class="left"><h2>' + ((site === 'cinqcentpx') ? '500px' : site) + '</h2><p>' + username + '</p></div><div class="right"><div class="nbr">' + format(followers) + '</div><p><span></span>followers</p></div><ul class="detail-social ' + site + '"></ul></li>';
 
     if ( !$('.list-social').find('.item.' + site).length ) {
-      $('.list-social').find('.social-wrapper').append(itemList);
+      if ( index == id ) $(itemList).appendTo('.list-social .social-wrapper');
     } else {
       $('.item.' + site).find('.left p').text(username);
       $('.item.' + site).find('.right .nbr').text(format(followers));
@@ -53,29 +53,37 @@ var data = {
    * Build item wrapper
    */
   build: function() {
+    var itemsData;
+
     dataObj = storage.get('user-data');
 
-    // Build item container
-    if ( !$('.list-social').length ) {
-      var itemsContainer = '<div class="list-social"><ul class="social-wrapper"></ul></div>';
-      $(itemsContainer).insertAfter('.choose-social');
-    }
+    for (var i = 0; i < dataObj.order.length; i++) {
+      var index = 0;
 
-    var itemsData = $('.list-social');
+      for (var site in dataObj.sites) {
+        // Build item container
+        if ( !$('.list-social').length ) {
+          var itemsContainer = '<div class="list-social"><ul class="social-wrapper"></ul></div>';
+          $(itemsContainer).insertAfter('.choose-social');
+        }
 
-    // Hide choose social list
-    $('.choose-social').hide();
+        itemsData = $('.list-social');
 
-    // Display parameters button
-    $('.icon-settings, .icon-reload').fadeIn(timingEffect);
-    $('.icon-back').fadeOut(timingEffect);
+        // Hide choose social list
+        $('.choose-social').hide();
 
-    for (var site in dataObj.sites) {
-      // Display data on main screen
-      data.render(site, dataObj.sites[site].username, dataObj.sites[site].followers, dataObj.sites[site].details);
+        // Display parameters button
+        $('.icon-settings, .icon-reload').fadeIn(timingEffect);
+        $('.icon-back').fadeOut(timingEffect);
 
-      // Render usernames in config screen
-      data.settings(site, dataObj.sites[site].username);
+        // Display data on main screen
+        data.render(site, dataObj.sites[site].username, dataObj.sites[site].followers, dataObj.sites[site].details, index, dataObj.order[i]);
+
+        // Render usernames in config screen
+        data.settings(site, dataObj.sites[site].username);
+
+        index++;
+      }
     }
 
     // Finally display items and remove class after animation completed
@@ -84,6 +92,23 @@ var data = {
     itemsData.find('.item').bind('animationend webkitAnimationEnd', function() {
       $(this).removeClass('bounceIn');
     }).addClass('bounceIn');
+
+    // Order item and save it
+    $('.list-social ul').sortable({
+      cancel: '.item.total',
+      start: function(event, ui) {
+        ui.item.addClass('sort');
+      },
+      stop: function(event, ui) {
+        ui.item.removeClass('sort');
+      },
+      update: function() {
+        var order = $(this).sortable('toArray');
+
+        dataObj.order = order;
+        storage.set('user-data', dataObj);
+      }
+    });
 
     // Display total numbers
     data.total();
@@ -111,7 +136,7 @@ var data = {
       totalFollowers += parseInt(dataObj.sites[site].followers);
     }
 
-    var itemTotal = '<li class="item total"><div class="left"><h2>total</h2><p>' + totalSites + ' network' + (totalSites > 1 ? 's' : '') + ' connected</p></div><div class="right"><div class="nbr">' + format(totalFollowers) + '</div><p><span></span>followers</p></div><ul class="detail-social total"></ul></li>';
+    var itemTotal = '<li id="' + Object.keys(dataObj.sites).length + '" class="item total"><div class="left"><h2>total</h2><p>' + totalSites + ' network' + (totalSites > 1 ? 's' : '') + ' connected</p></div><div class="right"><div class="nbr">' + format(totalFollowers) + '</div><p><span></span>followers</p></div><ul class="detail-social total"></ul></li>';
 
     if ( !$('.list-social').find('.total').length ) {
       // If not total sum up display to the last li child of ul

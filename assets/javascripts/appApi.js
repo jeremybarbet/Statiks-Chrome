@@ -108,6 +108,8 @@ var api = {
       }
     };
 
+    dataObj.order.push(Object.keys(dataObj.sites).length - 1);
+
     api.graph.sum.networks(site, followers, details);
 
     storage.set('user-data', dataObj);
@@ -142,12 +144,14 @@ var api = {
       // Add newtworks total
       networks: function(site, followers, details) {
         var tmp = storage.get('user-data');
+        var addIndex;
+        var addSite;
 
         // Add followers/following numbers to related's site arrays
         for (i = 0; i < dataObj.graph.followers.length; i++) {
           if ( dataObj.graph.followers[i] === 0 ) {
-            var curIndex = i;
-            var curSite = site;
+            addIndex = i;
+            addSite = site;
 
             dataObj.sites[site].diff.followers[i] = followers;
             if ( dataObj.sites[site].details.hasOwnProperty('following') ) dataObj.sites[site].diff.following[i] = details.following;
@@ -161,8 +165,8 @@ var api = {
           for (var key in tmp.sites) {
             if ( !tmp.sites.hasOwnProperty(site) ) {
               // Copy last followers/following number to related index
-              api.curIndex = curIndex;
-              api.curSite.push(site);
+              api.curIndex = addIndex;
+              api.curSite.push(addSite);
 
               // Allow the build of graph data
               api.buildGraph = true;
@@ -179,7 +183,7 @@ var api = {
       total: function() {
         for (var i = 0; i < dataObj.graph.followers.length; i++ ) {
           if ( dataObj.graph.followers[i] === 0 ) {
-            for (site in dataObj.sites) {
+            for (var site in dataObj.sites) {
               dataObj.graph.followers[i] += parseInt(dataObj.sites[site].diff.followers[i]);
               dataObj.graph.following[i] += parseInt(dataObj.sites[site].diff.following[i]);
             }
@@ -194,18 +198,24 @@ var api = {
         for (var key in dataObj.sites) {
           for (var i = 0; i < site.length; i++) {
             if ( key !== site[i] ) {
+              var followersValue;
+              var followingValue;
+
               // First loop to store the value with the highest index
-              for (var i = index; i >= 0; i--) {
-                if ( isSame(dataObj.sites[key].diff.followers) === true ) var followersValue = followingValue = 0;
+              for (i = index; i >= 0; i--) {
+                if ( isSame(dataObj.sites[key].diff.followers) === true ) {
+                  followersValue = 0;
+                  followingValue = 0;
+                }
 
                 if ( dataObj.sites[key].diff.followers[i] !== 0 ) {
-                  var followersValue = dataObj.sites[key].diff.followers[i];
-                  var followingValue = dataObj.sites[key].diff.following[i];
+                  followersValue = dataObj.sites[key].diff.followers[i];
+                  followingValue = dataObj.sites[key].diff.following[i];
                 }
               }
 
               // Second loop to complete and according to current index
-              for (var i = index; i >= 0; i--) {
+              for (i = index; i >= 0; i--) {
                 if ( dataObj.sites[key].diff.followers[i] === 0 ) {
                   dataObj.sites[key].diff.followers[i] = followersValue;
                   if ( dataObj.sites[key].details.hasOwnProperty('following') ) dataObj.sites[key].diff.following[i] = followingValue;
@@ -739,6 +749,44 @@ var api = {
       } else {
         api.fail($this);
         api.alert(api.errorApi);
+      }
+    })
+    .fail(function() {
+      api.fail($this);
+      api.alert(value + api.errorUsername);
+    });
+  },
+
+  /**
+   * deviantART scrapper and catch followers from json on the page
+   */
+  deviantart: function($this, value, site) {
+    $.ajax({
+      url: 'http://' + value + '.deviantart.com/stats/gallery/',
+      success: function(data) {
+        var getFollowers = data.match(/\"friendswatching\":([^\,]+)/g);
+        var getFollowing= data.match(/\"friends\":([^\,]+)/g);
+        var getDeviations = data.match(/\"deviations\":([^\,]+)/g);
+        var getViews = data.match(/\"pageviews\":([^\,]+)/g);
+        var getComments = data.match(/\"comments_received\":([^\,]+)/g);
+
+        var username = value;
+        var followers = getFollowers[0].substr(getFollowers[0].indexOf(':') + 1);
+
+        var details = {
+          following: getFollowing[0].substr(getFollowing[0].indexOf(':') + 1),
+          deviations: getDeviations[0].substr(getDeviations[0].indexOf(':') + 1),
+          views: getViews[0].substr(getViews[0].indexOf(':') + 1),
+          comments: getComments[0].substr(getComments[0].indexOf(':') + 1)
+        };
+
+        if ( $this === 'reload' ) {
+          api.reload($this, site, followers, details);
+        } else if ( $this === 'upgrade' ) {
+          api.upgrade($this, site, followers, details);
+        } else {
+          api.success($this, site, username, followers, details);
+        }
       }
     })
     .fail(function() {
