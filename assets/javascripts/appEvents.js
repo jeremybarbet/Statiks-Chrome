@@ -183,6 +183,12 @@ $(document).on('click', '.item', function() {
  * Initialization after loaded app
  */
 $(window).load(function() {
-  api.check();
+
+  if (storage.get('statiks-version') !== null) {
+    api.check();
+  } else {
+    app.version();
+  }
+
   data.loading();
 });
