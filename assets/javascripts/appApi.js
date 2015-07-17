@@ -417,21 +417,15 @@ var api = {
       success: function(data) {
         data = data.replace(/&quot;/g, '"');
 
-        var getFollowers = data.match(/\"followers_count\":([^\,]+)/);
-        var getFollowing = data.match(/\"friends_count\":([^\,]+)/);
-        var getTweets = data.match(/\"statuses_count\":([^\,]+)/);
-        var getFavorites = data.match(/\"favourites_count\":([^\,]+)/);
-        var getListed = data.match(/\"listed_count\":([^\,]+)/);
-
         var username = value;
-        var followers = getFollowers[1];
+        var followers = (/\"followers_count\":([\d]+)/g).exec(data)[1];
 
         var details = {
-          following: getFollowing[1],
-          tweets: getTweets[1],
-          favorites: getFavorites[1],
-          listed: getListed[1]
-        };
+          following: (/\"friends_count\":([\d]+)/g).exec(data)[1],
+          tweets: (/\"statuses_count\":([\d]+)/g).exec(data)[1],
+          favorites: (/\"favourites_count\":([\d]+)/g).exec(data)[1],
+          listed: (/\"listed_count\":([\d]+)/g).exec(data)[1]
+        }
 
         if ( $this === 'reload' ) {
           api.reload($this, site, followers, details);
@@ -623,21 +617,15 @@ var api = {
       success: function(data) {
         data = data.replace(/\\/g, '');
 
-        var getFollowers = data.match(/\"follower_count\":([^\,]+)/g);
-        var getFollowing= data.match(/\"following_count\":([^\,]+)/g);
-        var getPins = data.match(/\"pin_count\":([^\,]+)/g);
-        var getBoards = data.match(/\"board_count\":([^\,]+)/g);
-        var getLikes = data.match(/\"like_count\":([^\,]+)/g);
-
         var username = value;
-        var followers = getFollowers[1].substr(getFollowers[1].indexOf(' ') + 1);
+        var followers = (/\"follower_count\": ([\d]+)/g).exec(data)[1];
 
         var details = {
-          following: getFollowing[1].substr(getFollowing[1].indexOf(' ') + 1),
-          pins: getPins[1].substr(getPins[1].indexOf(' ') + 1),
-          boards: getBoards[1].substr(getBoards[1].indexOf(' ') + 1),
-          likes: getLikes[1].substr(getLikes[1].indexOf(' ') + 1)
-        };
+          following: (/\"following_count\": ([\d]+)/g).exec(data)[1],
+          pins: (/\"pin_count\": ([\d]+)/g).exec(data)[1],
+          boards: (/\"board_count\": ([\d]+)/g).exec(data)[1],
+          likes: (/\"like_count\": ([\d]+)/g).exec(data)[1]
+        }
 
         if ( $this === 'reload' ) {
           api.reload($this, site, followers, details);
@@ -689,7 +677,7 @@ var api = {
    * Forrst API connection
    */
   forrst: function($this, value, site) {
-    $.getJSON('https://forrst.com/api/v2/users/info?username=' + value, function(data) {
+    $.getJSON('http://forrst.com/api/v2/users/info?username=' + value, function(data) {
       var username = data.resp.username;
       var followers = data.resp.followers;
 
@@ -760,21 +748,15 @@ var api = {
     $.ajax({
       url: 'http://' + value + '.deviantart.com/stats/gallery/',
       success: function(data) {
-        var getFollowers = data.match(/\"friendswatching\":([^\,]+)/g);
-        var getFollowing= data.match(/\"friends\":([^\,]+)/g);
-        var getDeviations = data.match(/\"deviations\":([^\,]+)/g);
-        var getViews = data.match(/\"pageviews\":([^\,]+)/g);
-        var getComments = data.match(/\"comments_received\":([^\,]+)/g);
-
         var username = value;
-        var followers = getFollowers[0].substr(getFollowers[0].indexOf(':') + 1);
+        var followers = (/\"friendswatching\":([\d]+)/g).exec(data)[1];
 
         var details = {
-          following: getFollowing[0].substr(getFollowing[0].indexOf(':') + 1),
-          deviations: getDeviations[0].substr(getDeviations[0].indexOf(':') + 1),
-          views: getViews[0].substr(getViews[0].indexOf(':') + 1),
-          comments: getComments[0].substr(getComments[0].indexOf(':') + 1)
-        };
+          following: (/\"friends\":([\d]+)/g).exec(data)[1],
+          deviations: (/\"deviations\":([\d]+)/g).exec(data)[1],
+          views: (/\"pageviews\":([\d]+)/g).exec(data)[1],
+          comments: (/\"comments_received\":([\d]+)/g).exec(data)[1]
+        }
 
         if ( $this === 'reload' ) {
           api.reload($this, site, followers, details);
