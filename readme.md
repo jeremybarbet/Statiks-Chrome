@@ -18,6 +18,11 @@ TODO
 Changelog
 ---------
 
+__v1.4.0__
+
+* Fix Instagram API
+* Fix Forrst API
+
 __v1.3.0__
 
 * Order your networks as you like
