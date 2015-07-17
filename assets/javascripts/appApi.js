@@ -591,17 +591,13 @@ var api = {
       success: function(data) {
         data = data.replace(/\\/g, '');
 
-        var getFollowers = data.match(/\"followed_by\":([^\,]+)/g);
-        var getFollowing = data.match(/\"follows\":([^\}]+)/g);
-        var getMedias = data.match(/\"media\":([^\,]+)/g);
-
         var username = value;
-        var followers = (getFollowers.length == 2) ? getFollowers[1].substr(getFollowers[1].indexOf(':') + 1) : getFollowers[0].substr(getFollowers[0].indexOf(':') + 1);
+        var followers = (/\"followed_by\":{\"count\":([\d]+)/g).exec(data)[1];
 
         var details = {
-          following: getFollowing[0].substr(getFollowing[0].indexOf(':') + 1),
-          medias: getMedias[0].substr(getMedias[0].indexOf(':') + 1)
-        };
+          following: (/\"follows\":{\"count\":([\d]+)/g).exec(data)[1],
+          medias: (/\"media\":{\"count\":([\d]+)/g).exec(data)[1]
+        }
 
         if ( $this === 'reload' ) {
           api.reload($this, site, followers, details);
